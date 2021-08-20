@@ -38,6 +38,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\HaestadLibsMain\Haestad.Calculations.Shanghai.WaterGEMS.dll</HintPath>
     </Reference>
+    <Reference Include="Haestad.Calculations.Support, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b4db808388021f6e, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\HaestadLibsMain\Haestad.Calculations.Support.dll</HintPath>
+    </Reference>
     <Reference Include="Haestad.Domain, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b4db808388021f6e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\HaestadLibsMain\Haestad.Domain.dll</HintPath>
@@ -70,6 +74,7 @@
     <Compile Include="DummyData.cs" />
     <Compile Include="LiaoDongArg.cs" />
     <Compile Include="LiaoDongResult.cs" />
+    <Compile Include="Models.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WaterGemsApi.cs" />

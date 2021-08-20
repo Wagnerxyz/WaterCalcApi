@@ -36,7 +36,7 @@ namespace LiaoDongBayTest
 
             var arg = new LiaoDongArg()
             {
-                ModelPath = @"D:\BentleyModels\LiaodongBay_20210730\LiaoDongBay_20210716.wtg.sqlite",
+                ModelPath = @"D:\BentleyModels\LiaoDong\LiaoDongBay_20210813.wtg.sqlite",
                 CurrentNodePressures = DummyData.GetLiaoDongNodePressure(),
                 CurrentPipeFlows = DummyData.GetLiaoDongPipeFlow()
             };

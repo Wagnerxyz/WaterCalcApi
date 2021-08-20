@@ -1,40 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
+using System.Web.Mvc;
 using LiaoDongBayTest;
 
 namespace LiaoDongBay.Controllers
-{
-    public class WaterGemsController : ApiController
+{/// <summary>
+/// 瓮安
+/// </summary>
+    public class WAController : ApiController
     {
         object __lockObj = new object();
         private static bool isRunnning = false;
         private readonly string modelPath;
-        private const string fileName = "LiaoDongBay_20210716.wtg.sqlite";
-        public WaterGemsController()
+        private const string fileName = "WengAn20210813.wtg.sqlite";
+        public WAController()
         {
-            string path = ConfigurationManager.AppSettings["ModelsFolder"];
-            modelPath = Path.Combine(path, fileName);
+            modelPath = @"C:\Data\WengAn\WengAn20210813\WengAn20210813.wtg.sqlite";
+            //string path = ConfigurationManager.AppSettings["WengAnModelsFolder"];
+            //modelPath = Path.Combine(path, fileName);
+
         }
-        public IHttpActionResult LeakDetect(LiaoDongArg arg)
+        public IHttpActionResult RunEps(string modelPath)
         {
             if (isRunnning)
             {
                 return BadRequest("前一个请求正在运行，请稍后再试");
             }
             //override
-            arg.ModelPath = modelPath;
+            modelPath = this.modelPath;
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
-                var result = new LiaoDongResult();
-                result.IsBalanced = WaterGemsApi.CheckBalance(arg);
-                result.NodeEmitterCoefficientsInAscendingOrderInLitersPerSecondPerMetersH2O = WaterGemsApi.SettingObservedDataAndRunWaterLeakCalibration(arg);
+                var result = new WengAnEpsResult();
+                result = WaterGemsApi.RunEPS(modelPath);
                 return Ok(result);
 
             }
@@ -48,7 +47,5 @@ namespace LiaoDongBay.Controllers
             }
 
         }
-
     }
-
 }

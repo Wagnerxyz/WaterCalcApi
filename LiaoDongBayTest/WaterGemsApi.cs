@@ -6,12 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Haestad.Calculations.Shanghai.WaterGEMS;
+using Haestad.Calculations.Support;
 using Haestad.Domain;
 using Haestad.LicensingFacade;
 using Haestad.Network.Segmentation;
 using Haestad.Support.Library;
 using Haestad.Support.Support;
 using Haestad.Support.Units;
+using Haestad.Support.User;
 
 namespace LiaoDongBayTest
 {
@@ -46,6 +48,118 @@ namespace LiaoDongBayTest
 
     public class WaterGemsApi
     {
+        public static WengAnEpsResult RunEPS(string modelpath)
+        {
+            var wm = new WaterGEMSModel();
+            var result = new WengAnEpsResult();
+            try
+            {
+                wm.OpenDataSource(modelpath, false);
+                //wm.SetActiveScenario(QingDaoConsts.FirstScenarioID);
+                //IDomainElementManager pipeManager = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager);
+                //ModelingElementCollection allPipes = pipeManager.Elements();
+                //IDomainElementManager junctionManager = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoJunctionElementManager);
+                //ModelingElementCollection allJunctions = junctionManager.Elements();
+                //IDomainElementManager airManager = wm.DomainDataSet.DomainElementManager((int)DomainElementType.AirValveElementManager);
+                //ModelingElementCollection allAirValves = airManager.Elements();
+
+                #region set current value
+                //Utils.SetCurrentPumpValveTank(wm, args);
+                #endregion
+
+                //设置压力引擎开始时间
+                //wm.PressureCalculationOption.SetPressureEngineSimulationStartDate(args.StartTime);
+                //wm.PressureCalculationOption.SetPressureEngineSimulationStartTime(args.StartTime);
+
+                IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
+                var epsError = pressureNotifs?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error)?.ToList();
+                bool isCalculationFailure = true;
+                if (epsError != null)
+                {
+                    throw new Exception("eps error");
+                }
+
+                #region EPS TimePoint Result
+                var epsSteps = wm.PressureResult.GetPressureEngineCalculationTimeStepsInSeconds();//读取EPS报告点动态结果
+
+                var timePointNodeResults = new List<EpsNodeResult>();
+                HmIDCollection allNodesIds = wm.DomainDataSet.DomainElementManager((int)DomainElementType.BaseIdahoNodeElementManager).ElementIDs();
+                foreach (var id in allNodesIds)
+                {
+                    var epsResult = new EpsNodeResult();
+                    epsResult.Id = id;
+                    epsResult.Label = wm.GetDomainElementLabel(id);
+                    epsResult.TimeSteps = epsSteps;
+                    epsResult.HGL = wm.PressureResult.GetNodeHGLInMeters(id);
+                    timePointNodeResults.Add(epsResult);
+                }
+                result.EpsNodeResult = timePointNodeResults;
+
+                var timePointPipeResults = new List<EpsPipeResult>();
+                HmIDCollection allPipeIds = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager).ElementIDs();
+                foreach (var id in allPipeIds)
+                {
+                    var epsResult = new EpsPipeResult();
+                    epsResult.Id = id;
+                    epsResult.Label = wm.GetDomainElementLabel(id);
+                    epsResult.TimeSteps = epsSteps;
+                    epsResult.Flows = wm.PressureResult.GetPipeFlowInCubicMetersPerSecond(id);
+                    epsResult.Velocities = wm.PressureResult.GetPipeVelocityInMetersPerSecond(id);
+                    timePointPipeResults.Add(epsResult);
+                }
+                result.EpsPipeResult = timePointPipeResults;
+                #endregion
+                return result;
+
+            }
+            catch (EngineFatalErrorException ex)
+            {
+                throw new Exception("eps error");
+            }
+            finally
+            {
+                wm.CloseDataSource();
+            }
+        }
+        //public void GetAllNodesAndPipesEpsResult(WaterGEMSModel wm)
+        //{
+        //    double[] epsSteps = wm.ResultDataConnection.TimeStepsInSeconds(wm.DomainDataSet.ScenarioManager.ActiveScenarioID); ;//读取EPS报告点动态结果
+
+        //    var timePointNodeResults = new List<Models.DemoNodeResult>();
+        //    HmIDCollection allNodesIds = DomainDataSet
+        //        .DomainElementManager((int)DomainElementType.BaseIdahoNodeElementManager).ElementIDs();
+        //    foreach (var id in allNodesIds)
+        //    {
+        //        for (var index = 0; index < epsSteps.Length; index++)
+        //        {
+        //            var epsResult = new Models.DemoNodeResult();
+        //            epsResult.Id = id;
+        //            epsResult.Label = GetDomainElementLabel(id);
+        //            epsResult.TimeSteps = epsSteps[index];
+        //            epsResult.HGL = GetNodeHGLInMeters(id)[index];
+        //            timePointNodeResults.Add(epsResult);
+        //        }
+        //    }
+
+        //    var timePointFlowResults = new List<Models.DemoPipeResult>();
+        //    HmIDCollection allPipeIds = DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager)
+        //        .ElementIDs();
+        //    foreach (var id in allPipeIds)
+        //    {
+        //        for (var index = 0; index < epsSteps.Length; index++)
+        //        {
+        //            var epsResult = new Models.DemoPipeResult();
+        //            epsResult.Id = id;
+        //            epsResult.Label = GetDomainElementLabel(id);
+        //            epsResult.TimeSteps = epsSteps[index];
+        //            epsResult.Flows = GetPipeFlowInCubicMetersPerSecond(id)[index];
+        //            epsResult.Velocities = GetPipeVelocityInMetersPerSecond(id)[index];
+        //            epsResult.HeadLoss = GetPipeHeadLossMetersOfH2O(id)[index];
+        //            timePointFlowResults.Add(epsResult);
+        //        }
+        //    }
+        //}
+
         /// <summary>
         ///     瓮安水龄水质
         /// </summary>
@@ -316,14 +430,14 @@ namespace LiaoDongBayTest
                 int snapshotId = snapshotIds[0];
 
                 IList<ObservedPipeFlowValues> pipeFlowValues = new List<ObservedPipeFlowValues>();
-                foreach (var pressure in arg.CurrentNodePressures)
+                foreach (var pressure in arg.CurrentPipeFlows)
                 {
                     pipeFlowValues.Add(new ObservedPipeFlowValues(pressure.Key, pressure.Value));
                 }
                 //pipeFlowValues.Add(new ObservedPipeFlowValues(44, 100));   // p7
 
                 IList<ObservedNodePressureValues> nodePressureValues = new List<ObservedNodePressureValues>();
-                foreach (var flow in arg.CurrentPipeFlows)
+                foreach (var flow in arg.CurrentNodePressures)
                 {
                     nodePressureValues.Add(new ObservedNodePressureValues(flow.Key, flow.Value));
                 }
