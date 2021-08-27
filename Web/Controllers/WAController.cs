@@ -33,7 +33,7 @@ namespace LiaoDongBay.Controllers
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 var result = new WengAnEpsResult();
-                result = LiaoDongApi.RunEPS(modelPath);
+                result = WengAnApi.RunEPS(modelPath);
                 return Ok(result);
 
             }
