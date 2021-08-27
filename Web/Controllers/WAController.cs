@@ -5,9 +5,10 @@ using System.Web.Mvc;
 using LiaoDongBayTest;
 
 namespace LiaoDongBay.Controllers
-{/// <summary>
-/// 瓮安
-/// </summary>
+{
+    /// <summary>
+    /// 瓮安
+    /// </summary>
     public class WAController : ApiController
     {
         object __lockObj = new object();
