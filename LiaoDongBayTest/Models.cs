@@ -36,9 +36,14 @@ namespace LiaoDongBayTest
         /// </summary>
         public double[] Velocities { get; set; }
         /// <summary>
-        /// 水头损失
+        /// 管道水头损失
         /// </summary>
-        public double[] HeadLoss { get; set; }
+        public double[] PipeHeadLoss { get; set; }
+        /// <summary>
+        /// 管道水头损失梯度
+        /// </summary>
+        public double[] PipeHeadlossGradient { get; set; }
+        
         public double[] TimeSteps { get; set; }
     }
 }

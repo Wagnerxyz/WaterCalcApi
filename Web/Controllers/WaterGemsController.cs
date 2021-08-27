@@ -33,8 +33,8 @@ namespace LiaoDongBay.Controllers
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 var result = new LiaoDongResult();
-                result.IsBalanced = WaterGemsApi.CheckBalance(arg);
-                result.NodeEmitterCoefficientsInAscendingOrderInLitersPerSecondPerMetersH2O = WaterGemsApi.SettingObservedDataAndRunWaterLeakCalibration(arg);
+                result.IsBalanced = LiaoDongApi.CheckBalance(arg);
+                result.NodeEmitterCoefficientsInAscendingOrderInLitersPerSecondPerMetersH2O = LiaoDongApi.SettingObservedDataAndRunWaterLeakCalibration(arg);
                 return Ok(result);
 
             }

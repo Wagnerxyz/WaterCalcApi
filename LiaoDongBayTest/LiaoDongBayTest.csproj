@@ -77,11 +77,15 @@
     <Compile Include="Models.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WaterGemsApi.cs" />
+    <Compile Include="LiaoDongApi.cs" />
+    <Compile Include="WengAn\Args\BreakPipeArg.cs" />
+    <Compile Include="WengAn\Args\BreakPipeResult.cs" />
+    <Compile Include="WengAn\WengAnApi.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

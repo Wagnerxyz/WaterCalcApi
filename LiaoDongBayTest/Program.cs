@@ -9,13 +9,15 @@ using System.Threading.Tasks;
 using Haestad.Calculations.Shanghai.WaterGEMS;
 using Haestad.Domain;
 using Haestad.LicensingFacade;
+using LiaoDongBayTest.WengAn.Args;
 using Newtonsoft.Json;
 
 namespace LiaoDongBayTest
 {
     class Program
     {
-        const string modelPath = @"D:\BentleyModels\WQ-1.wtg.sqlite";
+        const string ldModel = @"D:\BentleyModels\WQ-1.wtg.sqlite";
+        const string wenganModel = @"D:\BentleyModels\WengAn\WengAn20210813\WengAn20210813.wtg.sqlite";
 
 
         static void Main(string[] args)
@@ -26,27 +28,14 @@ namespace LiaoDongBayTest
             //var contentData = new StringContent(input, Encoding.UTF8, "application/json");
             //client.Timeout = TimeSpan.FromMinutes(30);
             //var response = client.PostAsync("http://40.117.47.87/BentleyAPI/api/qingdao/FlushWater", contentData).Result;
-
-
+            var result = WengAnApi.RunEPS(wenganModel);
             //if (response.IsSuccessStatusCode)
             //{
             //    var stringData = response.Content.ReadAsStringAsync().Result;
             //    var result = JsonConvert.DeserializeObject<LiaoDongResult>(stringData);
             //}
 
-            var arg = new LiaoDongArg()
-            {
-                ModelPath = @"D:\BentleyModels\LiaoDong\LiaoDongBay_20210813.wtg.sqlite",
-                CurrentNodePressures = DummyData.GetLiaoDongNodePressure(),
-                CurrentPipeFlows = DummyData.GetLiaoDongPipeFlow()
-            };
-            File.WriteAllText(@"liaodonginput.json", JsonConvert.SerializeObject(arg));
-         //   TestWaterLeakByFindingEmitterCoefficient();
-
-            // TestSettingObservedDataAndRunWaterLeakCalibration();
-
-           
-            WaterGemsApi.SettingObservedDataAndRunWaterLeakCalibration(arg);
+            TestLiaoDong();
 
 
             //  WengAnWaterQuality();
@@ -58,6 +47,21 @@ namespace LiaoDongBayTest
             //result.Add(90, wqc.GetConcentrationInMGL(90));        //concentration at J-10
             //double[] cons = wqc.GetConcentrationInMGL(90);       //concentration at J-10
             //double[] ages = wqc.GetAgeInHours(138);       //age at P-66
+        }
+
+        private static void TestLiaoDong()
+        {
+            var arg = new LiaoDongArg()
+            {
+                ModelPath = @"D:\BentleyModels\LiaoDong\LiaoDongBay_20210813.wtg.sqlite",
+                CurrentNodePressures = DummyData.GetLiaoDongNodePressure(),
+                CurrentPipeFlows = DummyData.GetLiaoDongPipeFlow()
+            };
+            File.WriteAllText(@"liaodonginput.json", JsonConvert.SerializeObject(arg));
+            //TestWaterLeakByFindingEmitterCoefficient();
+            // TestSettingObservedDataAndRunWaterLeakCalibration();
+
+            LiaoDongApi.SettingObservedDataAndRunWaterLeakCalibration(arg);
         }
 
         public static void TestSettingObservedDataAndRunWaterLeakCalibration()
@@ -224,15 +228,15 @@ namespace LiaoDongBayTest
         {
 
             var modelPath = @"D:\P4V\Aspen\Components\Haestad.Calculations.Shanghai\Development\Haestad.Calculations.Shanghai.WaterGEMS.Test\MDBs\PipeBreakIsolationModel.wtg.sqlite";
-            var arg = new WaterGemsApi.BreakPipeArg() { ModelPath = modelPath, PipeId = 44, ValvesToExclude = new[] { 48 }, BreakPointDistanceToStartNode = 1 };
+            var arg = new BreakPipeArg() { ModelPath = modelPath, PipeId = 44, ValvesToExclude = new[] { 48 }, BreakPointDistanceToStartNode = 1 };
 
 
-            var result = WaterGemsApi.BreakPipe(arg);
+            var result = WengAnApi.BreakPipe(arg);
         }
 
         private static void WengAnWaterQuality()
         {
-            var arg = new WaterQualityArgs() { ModelPath = modelPath };
+            var arg = new WaterQualityArgs() { ModelPath = ldModel };
             var dict = new Dictionary<int, double>();
             dict.Add(123, 2.222); //T-1
             dict.Add(120, 1.111); //R-1
@@ -243,7 +247,7 @@ namespace LiaoDongBayTest
             arg.ConcentrationIds = new[] { 90, 137 };
 
 
-            var result = WaterGemsApi.WaterAgeQuality(arg);
+            var result = LiaoDongApi.WaterAgeQuality(arg);
         }
     }
 }
