@@ -9,7 +9,8 @@ using Haestad.Calculations.Shanghai.WaterGEMS;
 using Haestad.Calculations.Support;
 using Haestad.LicensingFacade;
 using Haestad.Support.User;
-using LiaoDongBayTest.WengAn.Args;
+using Models;
+using WengAn.Args;
 
 namespace LiaoDongBayTest
 {
@@ -17,7 +18,7 @@ namespace LiaoDongBayTest
     class shuiyuanarg
     {
         //public List<int> WaterSourceId { get; set; }// 写死
-        public Dictionary<int,double> allNode { get; set; }
+        public Dictionary<int, double> allNode { get; set; }
 
     }
     public class WengAnApi
@@ -42,8 +43,9 @@ namespace LiaoDongBayTest
                 #endregion
 
                 //设置压力引擎开始时间
-                //wm.PressureCalculationOption.SetPressureEngineSimulationStartDate(args.StartTime);
-                //wm.PressureCalculationOption.SetPressureEngineSimulationStartTime(args.StartTime);
+                var now = DateTime.Now;
+                wm.PressureCalculationOption.SetPressureEngineSimulationStartDate(now);
+                wm.PressureCalculationOption.SetPressureEngineSimulationStartTime(now);
 
                 IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
                 var epsError = pressureNotifs?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error)?.ToList();
@@ -79,7 +81,7 @@ namespace LiaoDongBayTest
                     epsResult.TimeSteps = epsSteps;
                     epsResult.Flows = wm.PressureResult.GetPipeFlowInCubicMetersPerSecond(id);
                     epsResult.Velocities = wm.PressureResult.GetPipeVelocityInMetersPerSecond(id);
-                    epsResult.PipeHeadLoss = wm.PressureResult.GetPipeHeadlossInMeters(id);
+                    //epsResult.PipeHeadLoss = wm.PressureResult.GetPipeHeadlossInMeters(id);
                     epsResult.PipeHeadlossGradient = wm.PressureResult.GetPipeUnitHeadlossInMeterPerKM(id);
                     timePointPipeResults.Add(epsResult);
                 }
@@ -175,7 +177,10 @@ namespace LiaoDongBayTest
                 }
 
                 #endregion
-
+                //设置压力引擎开始时间
+                var now = DateTime.Now;
+                wm.PressureCalculationOption.SetPressureEngineSimulationStartDate(now);
+                wm.PressureCalculationOption.SetPressureEngineSimulationStartTime(now);
                 wm.RunPressureCalculation();
 
                 #region 比较节点水压
@@ -215,6 +220,56 @@ namespace LiaoDongBayTest
             }
         }
 
+        public static List<WaterTraceResult> GetWaterTraceResultsForMultipleElementIds(string modelpath)
+        {
 
+            var wm = new WaterGEMSModel();
+            var result = new List<WaterTraceResult>();
+            try
+            {
+                wm.OpenDataSource(modelpath, false);
+
+                IDomainDataSet dataSet = wm.DomainDataSet;
+                License lc = wm.License;
+
+                WaterTraceCalculation wt = new WaterTraceCalculation(wm);
+                IList<int> traceElementIds = new List<int>(3);
+                traceElementIds.Add(2949);
+                traceElementIds.Add(2957);
+                traceElementIds.Add(2961);
+                IUserNotification[] notif = wt.RunTraceCalculationForMultipleTraceElements(traceElementIds);    // reservoir
+                IDomainElementManager junctionManager = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoJunctionElementManager);
+                ModelingElementCollection allJunctions = junctionManager.Elements();
+                IList<int> elementIds = new List<int>();
+                foreach (var junction in allJunctions)
+                {
+                    elementIds.Add(junction.Id);
+                }
+                double[] timeSteps;
+                IList<double[]> traceResults1 = wt.GetTraceResultsFromOneTraceSourceElementForMultipleElementIdInPercent(2949, elementIds, out timeSteps);
+                IList<double[]> traceResults2 = wt.GetTraceResultsFromOneTraceSourceElementForMultipleElementIdInPercent(2957, elementIds, out timeSteps);
+                IList<double[]> traceResults3 = wt.GetTraceResultsFromOneTraceSourceElementForMultipleElementIdInPercent(2961, elementIds, out timeSteps);
+                for (int i = 0; i < elementIds.Count; i++)
+                {
+                    var r = new WaterTraceResult();
+                    r.Id = elementIds[i];
+                    r.Source1Percentage = traceResults1[i];
+                    r.Source2Percentage = traceResults2[i];
+                    r.Source3Percentage = traceResults3[i];
+                    r.TimeStep = timeSteps;
+                    result.Add(r);
+                }
+                return result;
+
+            }
+            catch (EngineFatalErrorException ex)
+            {
+                throw new Exception("eps error");
+            }
+            finally
+            {
+                wm.CloseDataSource();
+            }
+        }
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LiaoDongBayTest.WengAn.Args
+namespace WengAn.Args
 {
     public class BreakPipeResult
     {

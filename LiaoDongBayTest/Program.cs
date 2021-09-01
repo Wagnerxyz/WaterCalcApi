@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using Haestad.Calculations.Shanghai.WaterGEMS;
 using Haestad.Domain;
 using Haestad.LicensingFacade;
-using LiaoDongBayTest.WengAn.Args;
 using Newtonsoft.Json;
+using WengAn.Args;
 
 namespace LiaoDongBayTest
 {
@@ -28,7 +28,8 @@ namespace LiaoDongBayTest
             //var contentData = new StringContent(input, Encoding.UTF8, "application/json");
             //client.Timeout = TimeSpan.FromMinutes(30);
             //var response = client.PostAsync("http://40.117.47.87/BentleyAPI/api/qingdao/FlushWater", contentData).Result;
-            var result = WengAnApi.RunEPS(wenganModel);
+            //var result = WengAnApi.RunEPS(wenganModel);
+            var result = WengAnApi.GetWaterTraceResultsForMultipleElementIds(wenganModel);
             //if (response.IsSuccessStatusCode)
             //{
             //    var stringData = response.Content.ReadAsStringAsync().Result;
