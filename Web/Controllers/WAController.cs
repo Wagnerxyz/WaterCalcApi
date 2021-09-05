@@ -3,7 +3,6 @@ using System.Configuration;
 using System.IO;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.Mvc;
 using LiaoDongBayTest;
 using Models;
 using WengAn.Args;
@@ -36,7 +35,7 @@ namespace LiaoDongBay.Controllers
         /// <param name="modelPath">模型路径</param>
         /// <returns></returns>
         [ResponseType(typeof(WengAnEpsResult))]
-
+        [HttpPost]
         public IHttpActionResult RunEps(string modelPath)
         {
             if (isRunnning)

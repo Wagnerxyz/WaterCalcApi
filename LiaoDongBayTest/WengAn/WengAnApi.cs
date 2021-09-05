@@ -23,7 +23,7 @@ namespace LiaoDongBayTest
             var result = new WengAnEpsResult();
             try
             {
-                wm.OpenDataSource(modelpath, false);
+                wm.OpenDataSource(modelpath, true);
                 //wm.SetActiveScenario(QingDaoConsts.FirstScenarioID);
                 //IDomainElementManager pipeManager = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager);
                 //ModelingElementCollection allPipes = pipeManager.Elements();
@@ -224,7 +224,7 @@ namespace LiaoDongBayTest
             var result = new List<WaterTraceResult>();
             try
             {
-                wm.OpenDataSource(modelpath, false);
+                wm.OpenDataSource(modelpath, true);
 
                 IDomainDataSet dataSet = wm.DomainDataSet;
                 License lc = wm.License;

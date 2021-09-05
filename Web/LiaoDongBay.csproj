@@ -293,7 +293,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>5469</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost/LiaoDongBay</IISUrl>
+          <IISUrl>http://localhost/apitest</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
