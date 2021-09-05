@@ -35,7 +35,6 @@ namespace LiaoDongBay.Controllers
         /// <param name="modelPath">模型路径</param>
         /// <returns></returns>
         [ResponseType(typeof(WengAnEpsResult))]
-        [HttpGet]
         [HttpPost]
         public IHttpActionResult RunEps(string modelPath)
         {

@@ -37,7 +37,7 @@ namespace LiaoDongBay.Controllers
                 return BadRequest("前一个请求正在运行，请稍后再试");
             }
             //override
-            arg.ModelPath = modelPath;
+            arg.ModelPath = @"D:\BentleyModels\LD\Model_20210730\LiaoDongBay_20210716.wtg.sqlite";
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
