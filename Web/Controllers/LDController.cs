@@ -6,21 +6,30 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
 using LiaoDongBayTest;
 
 namespace LiaoDongBay.Controllers
 {
-    public class WaterGemsController : ApiController
+    public class LDController : ApiController
     {
         object __lockObj = new object();
         private static bool isRunnning = false;
         private readonly string modelPath;
         private const string fileName = "LiaoDongBay_20210716.wtg.sqlite";
-        public WaterGemsController()
+        public LDController()
         {
             string path = ConfigurationManager.AppSettings["ModelsFolder"];
             modelPath = Path.Combine(path, fileName);
         }
+        /// <summary>
+        /// 泄漏检测
+        /// </summary>
+        /// <remarks></remarks>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        [ResponseType(typeof(LiaoDongResult))]
+
         public IHttpActionResult LeakDetect(LiaoDongArg arg)
         {
             if (isRunnning)

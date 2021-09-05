@@ -15,12 +15,6 @@ using WengAn.Args;
 namespace LiaoDongBayTest
 {
 
-    class shuiyuanarg
-    {
-        //public List<int> WaterSourceId { get; set; }// 写死
-        public Dictionary<int, double> allNode { get; set; }
-
-    }
     public class WengAnApi
     {
         public static WengAnEpsResult RunEPS(string modelpath)
@@ -136,18 +130,17 @@ namespace LiaoDongBayTest
 
 
                 result.ValvesToClose = valvesToClose.ToArray(); //important
-                result.PipesToClose = pipesToClose.ToArray();
+                //result.PipesToClose = pipesToClose.ToArray();
                 result.IsolationValvesToClose = isolationValvesToClose.ToArray(); //important
-                result.IsolatedPartialPipeIds = isolatedPartialPipeIds;
+                //result.IsolatedPartialPipeIds = isolatedPartialPipeIds;
                 result.IsolatedPipeIds = isolatedPipeIds.ToArray();
                 result.IsolatedNodeIds = isolatedNodeIds.ToArray();
                 result.IsolatedCustomerIds = isolatedCustomerIds.ToArray();
-                result.OutagePartialPipeIds = outagePartialPipeIds;
-                result.OutagePipeIds = outagePipeIds.ToArray();
-                result.OutageNodeIds = outageNodeIds.ToArray();
-                result.OutageCustomerIds = outageCustomerIds.ToArray();
-
-
+                //result.OutagePartialPipeIds = outagePartialPipeIds;
+                //result.OutagePipeIds = outagePipeIds.ToArray();
+                //result.OutageNodeIds = outageNodeIds.ToArray();
+                //result.OutageCustomerIds = outageCustomerIds.ToArray();
+                
                 #region Save Valve Status
 
                 //GetValveInitialStatus，GetIsolationValveInitialStatus
@@ -219,7 +212,11 @@ namespace LiaoDongBayTest
                 wm.CloseDataSource();
             }
         }
-
+        /// <summary>
+        /// 多水源供水分析
+        /// </summary>
+        /// <param name="modelpath">模型路径</param>
+        /// <returns></returns>
         public static List<WaterTraceResult> GetWaterTraceResultsForMultipleElementIds(string modelpath)
         {
 

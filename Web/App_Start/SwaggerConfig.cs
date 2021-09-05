@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Web.Http;
 using WebActivatorEx;
 using LiaoDongBay;
 using Swashbuckle.Application;
@@ -61,7 +62,7 @@ namespace LiaoDongBay
                         //c.BasicAuth("basic")
                         //    .Description("Basic HTTP Authentication");
                         //
-						// NOTE: You must also configure 'EnableApiKeySupport' below in the SwaggerUI section
+                        // NOTE: You must also configure 'EnableApiKeySupport' below in the SwaggerUI section
                         //c.ApiKey("apiKey")
                         //    .Description("API Key Authentication")
                         //    .Name("apiKey")
@@ -101,8 +102,8 @@ namespace LiaoDongBay
                         // those comments into the generated docs and UI. You can enable this by providing the path to one or
                         // more Xml comment files.
                         //
-                        //c.IncludeXmlComments(GetXmlCommentsPath());
-
+                        c.IncludeXmlComments(GetXmlCommentsPath());
+                        c.IncludeXmlComments(GetXmlCommentsPath2());
                         // Swashbuckle makes a best attempt at generating Swagger compliant JSON schemas for the various types
                         // exposed in your API. However, there may be occasions when more control of the output is needed.
                         // This is supported through the "MapType" and "SchemaFilter" options:
@@ -250,6 +251,20 @@ namespace LiaoDongBay
                         //
                         //c.EnableApiKeySupport("apiKey", "header");
                     });
+        }
+        private static string GetXmlCommentsPath()
+        {
+            //$"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
+            return String.Format(@"{0}\bin\LiaoDongBay.xml",
+                AppDomain.CurrentDomain.BaseDirectory);
+
+        }
+        private static string GetXmlCommentsPath2()
+        {
+
+            return String.Format(@"{0}\bin\LiaoDongBayTest.xml",
+                AppDomain.CurrentDomain.BaseDirectory);
+
         }
     }
 }

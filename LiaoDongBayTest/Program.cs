@@ -29,6 +29,8 @@ namespace LiaoDongBayTest
             //client.Timeout = TimeSpan.FromMinutes(30);
             //var response = client.PostAsync("http://40.117.47.87/BentleyAPI/api/qingdao/FlushWater", contentData).Result;
             //var result = WengAnApi.RunEPS(wenganModel);
+            //var arg = new BreakPipeArg(){ModelPath = wenganModel,PipeId = 2887,};
+            //WengAnApi.BreakPipe();
             var result = WengAnApi.GetWaterTraceResultsForMultipleElementIds(wenganModel);
             //if (response.IsSuccessStatusCode)
             //{
