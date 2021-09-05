@@ -16,6 +16,9 @@ namespace Models
 
      *
      */
+    /// <summary>
+    /// 水源追踪结果
+    /// </summary>
     public class WaterTraceResult
     {
         /// <summary>
@@ -23,25 +26,27 @@ namespace Models
         /// </summary>
         public int Id { get; set; }
         /// <summary>
-        /// 胜土水厂
+        /// 胜土水厂水源百分比
         /// </summary>
         public double[] Source1Percentage { get; set; }
         /// <summary>
-        /// 擦耳岩水厂
+        /// 擦耳岩水厂水源百分比
         /// </summary>
         public double[] Source2Percentage { get; set; }
         /// <summary>
-        /// 西坡水厂
+        /// 西坡水厂水源百分比
         /// </summary>
         public double[] Source3Percentage { get; set; }
-
+        /// <summary>
+        /// 时间步长
+        /// </summary>
         public double[] TimeStep { get; set; }
     }
 
     public class WengAnEpsArg
     {
         /// <summary>
-        /// 开始时间 必传
+        /// 开始时间
         /// </summary>
         [Required]
         public DateTime StartTime { get; set; }

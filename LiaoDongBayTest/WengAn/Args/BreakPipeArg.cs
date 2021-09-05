@@ -26,6 +26,9 @@ namespace WengAn.Args
         /// 要排除的阀门，不能关的阀门
         /// </summary>
         public int[] ValvesToExclude { get; set; }
+        /// <summary>
+        /// 爆管点距离开始节点距离
+        /// </summary>
         [Required]
         public double BreakPointDistanceToStartNode { get; set; }
     }
