@@ -124,5 +124,33 @@ namespace LiaoDongBay.Controllers
                 }
             }
         }
+        /// <summary>
+        /// 消防事件
+        /// </summary>
+        /// <param name="arg">输入参数</param>
+        /// <returns></returns>
+        [ResponseType(typeof(WengAnEpsResult))]
+        public IHttpActionResult FireDemand(FireDemandArg arg)
+        {
+            if (isRunnning)
+            {
+                return BadRequest(message);
+            }
+           
+            try
+            {
+                System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
+                WengAnEpsResult result = WengAnApi.FireDemandAtOneNode(arg);
+                return Ok(result);
+            }
+            finally
+            {
+                if (isRunnning)
+                {
+                    System.Threading.Monitor.Exit(__lockObj);
+                    isRunnning = false;
+                }
+            }
+        }
     }
 }

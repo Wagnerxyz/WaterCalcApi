@@ -96,10 +96,14 @@ namespace Models
         /// 时间步长
         /// </summary>
         public double[] TimeSteps { get; set; }
+        ///// <summary>
+        ///// 水头
+        ///// </summary>
+        //public double[] HGL { get; set; }
         /// <summary>
-        /// 水头
+        /// 压力
         /// </summary>
-        public double[] HGL { get; set; }
+        public double[] Pressures { get; set; }
     }
     public class EpsPipeResult
     {
@@ -126,4 +130,65 @@ namespace Models
         /// </summary>
         public double[] TimeSteps { get; set; }
     }
+
+    #region 消防事件
+    /// <summary>
+    /// 消防事件接口 输入参数
+    /// </summary>
+    public class FireDemandArg
+    {
+        /// <summary>
+        /// 模型Sqlite文件路径
+        /// </summary>
+        [Required]
+        public string ModelPath { get; set; }
+        /// <summary>
+        /// 着火节点Id
+        /// </summary>
+        [Required]
+        public int NodeId { get; set; }
+        /// <summary>
+        /// 开始时间
+        /// </summary>
+        [Required]
+        public DateTime StartTime { get; set; }
+        /// <summary>
+        /// 持续小时
+        /// </summary>
+        [Required]
+        public double DurationHours { get; set; }
+        /// <summary>
+        /// 消防流量 升/每秒
+        /// </summary>
+        [Required]
+        public double DemandInLitersPerSecond { get; set; }
+    }
+    /// <summary>
+    /// 消防事件接口 输入参数
+    /// </summary>
+    public class FireDemandResult
+    {
+        /// <summary>
+        /// 着火节点Id
+        /// </summary>
+        [Required]
+        public int NodeId { get; set; }
+        /// <summary>
+        /// 开始时间
+        /// </summary>
+        [Required]
+        public DateTime StartTime { get; set; }
+        /// <summary>
+        /// 持续小时
+        /// </summary>
+        [Required]
+        public double DurationHours { get; set; }
+        /// <summary>
+        /// 消防流量 升/每秒
+        /// </summary>
+        [Required]
+        public double DemandInLitersPerSecond { get; set; }
+    }
+
+    #endregion
 }

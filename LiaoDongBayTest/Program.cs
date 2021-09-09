@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Haestad.Calculations.Shanghai.WaterGEMS;
 using Haestad.Domain;
 using Haestad.LicensingFacade;
+using Models;
 using Newtonsoft.Json;
 using WengAn.Args;
 
@@ -31,6 +32,11 @@ namespace LiaoDongBayTest
             //var result = WengAnApi.RunEPS(wenganModel);
             //var arg = new BreakPipeArg(){ModelPath = wenganModel,PipeId = 2887,};
             //WengAnApi.BreakPipe();
+            var fireDemandArg = new FireDemandArg()
+                { ModelPath = wenganModel, DemandInLitersPerSecond = 50, DurationHours = 2, NodeId = 1329, StartTime = new DateTime(2021, 7, 5, 0, 0, 0) };
+            File.WriteAllText(@"firedemandarg.json", JsonConvert.SerializeObject(fireDemandArg));
+            var rrr = WengAnApi.FireDemandAtOneNode(fireDemandArg);
+
             var result = WengAnApi.GetWaterTraceResultsForMultipleElementIds(wenganModel);
             //if (response.IsSuccessStatusCode)
             //{

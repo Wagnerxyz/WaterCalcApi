@@ -36,13 +36,13 @@ namespace WengAn.Args
         /// 受影响水表Id
         /// </summary>
         public int[] IsolatedCustomerIds { get; set; }
-        public IList<HmiPartialPipe> IsolatedPartialPipeIds { get; set; }
-        public IList<HmiPartialPipe> OutagePartialPipeIds { get; set; }
-        public int[] OutagePipeIds { get; set; }
-        public int[] OutageNodeIds { get; set; }
-        public int[] OutageCustomerIds { get; set; }
+        //public IList<HmiPartialPipe> IsolatedPartialPipeIds { get; set; }
+        //public IList<HmiPartialPipe> OutagePartialPipeIds { get; set; }
+        //public int[] OutagePipeIds { get; set; }
+        //public int[] OutageNodeIds { get; set; }
+        //public int[] OutageCustomerIds { get; set; }
 
-        public int[] PipesToClose { get; set; }
+        //public int[] PipesToClose { get; set; }
         //public bool Result { get; set; }
 
     }

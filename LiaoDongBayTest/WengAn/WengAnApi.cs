@@ -20,10 +20,10 @@ namespace LiaoDongBayTest
         public static WengAnEpsResult RunEPS(string modelpath)
         {
             var wm = new WaterGEMSModel();
-            var result = new WengAnEpsResult();
             try
             {
-                wm.OpenDataSource(modelpath, true);
+
+                wm.OpenDataSource(modelpath);
                 //wm.SetActiveScenario(QingDaoConsts.FirstScenarioID);
                 //IDomainElementManager pipeManager = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager);
                 //ModelingElementCollection allPipes = pipeManager.Elements();
@@ -42,56 +42,63 @@ namespace LiaoDongBayTest
                 wm.PressureCalculationOption.SetPressureEngineSimulationStartTime(now);
 
                 IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
-                var epsError = pressureNotifs?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error)?.ToList();
+                List<IUserNotification> epsError = pressureNotifs?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error)?.ToList();
                 bool isCalculationFailure = true;
                 if (epsError != null)
                 {
-                    throw new Exception("eps error");
+                    throw new Exception("RunEPS IUserNotification error");
                 }
 
-                #region EPS TimePoint Result
-                var epsSteps = wm.PressureResult.GetPressureEngineCalculationTimeStepsInSeconds();//读取EPS报告点动态结果
-
-                var timePointNodeResults = new List<EpsNodeResult>();
-                HmIDCollection allNodesIds = wm.DomainDataSet.DomainElementManager((int)DomainElementType.BaseIdahoNodeElementManager).ElementIDs();
-                foreach (var id in allNodesIds)
-                {
-                    var epsResult = new EpsNodeResult();
-                    epsResult.Id = id;
-                    epsResult.Label = wm.GetDomainElementLabel(id);
-                    epsResult.TimeSteps = epsSteps;
-                    epsResult.HGL = wm.PressureResult.GetNodeHGLInMeters(id);
-                    timePointNodeResults.Add(epsResult);
-                }
-                result.EpsNodeResult = timePointNodeResults;
-
-                var timePointPipeResults = new List<EpsPipeResult>();
-                HmIDCollection allPipeIds = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager).ElementIDs();
-                foreach (var id in allPipeIds)
-                {
-                    var epsResult = new EpsPipeResult();
-                    epsResult.Id = id;
-                    epsResult.Label = wm.GetDomainElementLabel(id);
-                    epsResult.TimeSteps = epsSteps;
-                    epsResult.Flows = wm.PressureResult.GetPipeFlowInCubicMetersPerSecond(id);
-                    epsResult.Velocities = wm.PressureResult.GetPipeVelocityInMetersPerSecond(id);
-                    //epsResult.PipeHeadLoss = wm.PressureResult.GetPipeHeadlossInMeters(id);
-                    epsResult.PipeHeadlossGradient = wm.PressureResult.GetPipeUnitHeadlossInMeterPerKM(id);
-                    timePointPipeResults.Add(epsResult);
-                }
-                result.EpsPipeResult = timePointPipeResults;
-                #endregion
+                var result = GetEpsTimePointResult(wm);
                 return result;
 
             }
             catch (EngineFatalErrorException ex)
             {
-                throw new Exception("eps error");
+                throw new Exception("RunEPS EngineFatalErrorException error");
             }
             finally
             {
                 wm.CloseDataSource();
             }
+        }
+
+
+        public static WengAnEpsResult FireDemandAtOneNode(FireDemandArg arg)
+        {
+            WaterGEMSModel wm = new WaterGEMSModel();
+            wm.ProductId = ProductId.Bentley_WaterGEMS;
+
+            try
+            {
+                wm.OpenDataSource(arg.ModelPath);
+
+                wm.PressureCalculationOption.SetPressureEngineCalculationType(EpaNetEngine_CalculationTypeEnum.SCADAAnalaysisType);
+                wm.PressureCalculationOption.SetSCADACalculationType(SCADACalculationTypeEnum.HydraulicsOnly);
+
+                wm.PressureCalculationOption.ClearSCADAFireDemand();
+                wm.PressureCalculationOption.AddSCADAFireDemand(arg.NodeId, arg.DemandInLitersPerSecond, arg.StartTime, arg.DurationHours);
+
+                IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
+                List<IUserNotification> epsError = pressureNotifs?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error)?.ToList();
+                bool isCalculationFailure = true;
+                if (epsError != null)
+                {
+                    throw new Exception("RunEPS IUserNotification error");
+                }
+
+                var result = GetEpsTimePointResult(wm);
+                return result;
+            }
+            catch (EngineFatalErrorException ex)
+            {
+                throw new Exception("RunEPS EngineFatalErrorException error");
+            }
+            finally
+            {
+                wm.CloseDataSource();
+            }
+
         }
 
         /// <summary>
@@ -149,11 +156,11 @@ namespace LiaoDongBayTest
                 {
                     valveInitialDict.Add(id, wm.InitialSetting.GetValveInitialStatus(id));
                 }
-
-                foreach (var id in result.IsolationValvesToClose)
-                {
-                    isolationValveInitialDict.Add(id, wm.InitialSetting.GetIsolationValveInitialStatus(id));
-                }
+                //todo:重复定义枚举 IsolationValveInitialSettingEnum这枚举在Haestad.Domain.ModelingObjects.Water.dll和Haestad.Calculations.Shanghai.WaterGEMS.dll里重复定义
+                //foreach (var id in result.IsolationValvesToClose)
+                //{
+                //    isolationValveInitialDict.Add(id, wm.InitialSetting.GetIsolationValveInitialStatus(id));
+                //}
 
                 #endregion
 
@@ -163,11 +170,11 @@ namespace LiaoDongBayTest
                 {
                     wm.InitialSetting.SetValveInitialStatus(id, ValveInitialSettingEnum.ValveClosed);
                 }
-
-                foreach (var id in result.IsolationValvesToClose)
-                {
-                    wm.InitialSetting.SetIsolationValveInitialStatus(id, IsolationValveInitialSettingEnum.IsolationValveClosed);
-                }
+                //todo:重复定义枚举 IsolationValveInitialSettingEnum这枚举在Haestad.Domain.ModelingObjects.Water.dll和Haestad.Calculations.Shanghai.WaterGEMS.dll里重复定义
+                //foreach (var id in result.IsolationValvesToClose)
+                //{
+                //    wm.InitialSetting.SetIsolationValveInitialStatus(id, IsolationValveInitialSettingEnum.IsolationValveClosed);
+                //}
 
                 #endregion
                 //设置压力引擎开始时间
@@ -202,16 +209,18 @@ namespace LiaoDongBayTest
                         wm.InitialSetting.SetValveInitialStatus(item.Key, item.Value);
                     }
                 }
-                if (isolationValveInitialDict.Any())
-                {
-                    foreach (var item in isolationValveInitialDict)
-                    {
-                        wm.InitialSetting.SetIsolationValveInitialStatus(item.Key, item.Value);
-                    }
-                }
+                //todo:  重复枚举
+                //if (isolationValveInitialDict.Any())
+                //{
+                //    foreach (var item in isolationValveInitialDict)
+                //    {
+                //        wm.InitialSetting.SetIsolationValveInitialStatus(item.Key, item.Value);
+                //    }
+                //}
                 wm.CloseDataSource();
             }
         }
+
         /// <summary>
         /// 多水源供水分析
         /// </summary>
@@ -267,6 +276,52 @@ namespace LiaoDongBayTest
             {
                 wm.CloseDataSource();
             }
+        }
+
+        /// <summary>
+        /// 返回运行watergems的节点，管道结果
+        /// </summary>
+        /// <param name="wm"></param>
+        /// <returns></returns>
+        private static WengAnEpsResult GetEpsTimePointResult(WaterGEMSModel wm)
+        {
+            WengAnEpsResult result = new WengAnEpsResult();
+            double[] timeSteps = wm.PressureResult.GetPressureEngineCalculationTimeStepsInSeconds(); //读取EPS报告点动态结果
+
+            var timePointNodeResults = new List<EpsNodeResult>();
+            HmIDCollection allNodesIds = wm.DomainDataSet
+                .DomainElementManager((int)DomainElementType.BaseIdahoNodeElementManager).ElementIDs();
+            foreach (var id in allNodesIds)
+            {
+                var epsResult = new EpsNodeResult();
+                epsResult.Id = id;
+                epsResult.Label = wm.GetDomainElementLabel(id);
+                epsResult.TimeSteps = timeSteps;
+                epsResult.Pressures = wm.PressureResult.GetNodePressureInKiloPascals(id);
+                //epsResult.HGL = wm.PressureResult.GetNodeHGLInMeters(id);
+                timePointNodeResults.Add(epsResult);
+            }
+
+            result.EpsNodeResult = timePointNodeResults;
+
+            var timePointPipeResults = new List<EpsPipeResult>();
+            HmIDCollection allPipeIds = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager)
+                .ElementIDs();
+            foreach (var id in allPipeIds)
+            {
+                var epsResult = new EpsPipeResult();
+                epsResult.Id = id;
+                epsResult.Label = wm.GetDomainElementLabel(id);
+                epsResult.TimeSteps = timeSteps;
+                epsResult.Flows = wm.PressureResult.GetPipeFlowInCubicMetersPerSecond(id);
+                epsResult.Velocities = wm.PressureResult.GetPipeVelocityInMetersPerSecond(id);
+                //epsResult.PipeHeadLoss = wm.PressureResult.GetPipeHeadlossInMeters(id);
+                epsResult.PipeHeadlossGradient = wm.PressureResult.GetPipeUnitHeadlossInMeterPerKM(id);
+                timePointPipeResults.Add(epsResult);
+            }
+
+            result.EpsPipeResult = timePointPipeResults;
+            return result;
         }
     }
 }
