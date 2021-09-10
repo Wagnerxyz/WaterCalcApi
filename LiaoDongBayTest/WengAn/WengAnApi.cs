@@ -101,6 +101,43 @@ namespace LiaoDongBayTest
 
         }
 
+        public static WengAnEpsResult WaterAge(FireDemandArg arg)
+        {
+            WaterGEMSModel wm = new WaterGEMSModel();
+            wm.ProductId = ProductId.Bentley_WaterGEMS;
+
+            try
+            {
+                wm.OpenDataSource(arg.ModelPath);
+
+                wm.RunWTmodel();     //run the wtrg model that includes WQ calculations 
+                WaterQualityCalculation wqc = new WaterQualityCalculation(wm);
+                double[] ages = wqc.GetAgeInHours(95);       //age at J-26
+
+                IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
+                List<IUserNotification> epsError = pressureNotifs?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error)?.ToList();
+                bool isCalculationFailure = true;
+                if (epsError != null)
+                {
+                    throw new Exception("RunEPS IUserNotification error");
+                }
+
+                var result = GetEpsTimePointResult(wm);
+                return result;
+            }
+            catch (EngineFatalErrorException ex)
+            {
+                throw new Exception("RunEPS EngineFatalErrorException error");
+            }
+            finally
+            {
+                wm.CloseDataSource();
+            }
+
+        }
+     
+
+
         /// <summary>
         ///     瓮安爆管影响分析
         /// </summary>
@@ -110,7 +147,7 @@ namespace LiaoDongBayTest
         {
             WaterGEMSModel wm = new WaterGEMSModel();
             var result = new BreakPipeResult();
-            var valveInitialDict = new Dictionary<int, ValveInitialSettingEnum>();
+            var valveInitialDict = new Dictionary<int, ValveSettingEnum>();
             var isolationValveInitialDict = new Dictionary<int, IsolationValveInitialSettingEnum>();
             try
             {
@@ -156,11 +193,10 @@ namespace LiaoDongBayTest
                 {
                     valveInitialDict.Add(id, wm.InitialSetting.GetValveInitialStatus(id));
                 }
-                //todo:重复定义枚举 IsolationValveInitialSettingEnum这枚举在Haestad.Domain.ModelingObjects.Water.dll和Haestad.Calculations.Shanghai.WaterGEMS.dll里重复定义
-                //foreach (var id in result.IsolationValvesToClose)
-                //{
-                //    isolationValveInitialDict.Add(id, wm.InitialSetting.GetIsolationValveInitialStatus(id));
-                //}
+                foreach (var id in result.IsolationValvesToClose)
+                {
+                    isolationValveInitialDict.Add(id, wm.InitialSetting.GetIsolationValveInitialStatus(id));
+                }
 
                 #endregion
 
@@ -168,13 +204,12 @@ namespace LiaoDongBayTest
 
                 foreach (var id in result.ValvesToClose)
                 {
-                    wm.InitialSetting.SetValveInitialStatus(id, ValveInitialSettingEnum.ValveClosed);
+                    wm.InitialSetting.SetValveInitialStatus(id, ValveSettingEnum.ValveClosedType);
                 }
-                //todo:重复定义枚举 IsolationValveInitialSettingEnum这枚举在Haestad.Domain.ModelingObjects.Water.dll和Haestad.Calculations.Shanghai.WaterGEMS.dll里重复定义
-                //foreach (var id in result.IsolationValvesToClose)
-                //{
-                //    wm.InitialSetting.SetIsolationValveInitialStatus(id, IsolationValveInitialSettingEnum.IsolationValveClosed);
-                //}
+                foreach (var id in result.IsolationValvesToClose)
+                {
+                    wm.InitialSetting.SetIsolationValveInitialStatus(id, IsolationValveInitialSettingEnum.IsolationValveClosedType);
+                }
 
                 #endregion
                 //设置压力引擎开始时间
@@ -209,14 +244,13 @@ namespace LiaoDongBayTest
                         wm.InitialSetting.SetValveInitialStatus(item.Key, item.Value);
                     }
                 }
-                //todo:  重复枚举
-                //if (isolationValveInitialDict.Any())
-                //{
-                //    foreach (var item in isolationValveInitialDict)
-                //    {
-                //        wm.InitialSetting.SetIsolationValveInitialStatus(item.Key, item.Value);
-                //    }
-                //}
+                if (isolationValveInitialDict.Any())
+                {
+                    foreach (var item in isolationValveInitialDict)
+                    {
+                        wm.InitialSetting.SetIsolationValveInitialStatus(item.Key, item.Value);
+                    }
+                }
                 wm.CloseDataSource();
             }
         }
