@@ -14,9 +14,16 @@ using WengAn.Args;
 
 namespace LiaoDongBayTest
 {
-
     public class WengAnApi
     {
+        /// <summary>
+        /// 运行水力模型
+        /// </summary>
+        /// <remarks>
+        /// POST /ApiTest/api/WA/WaterTrace?modelpath=555
+        /// </remarks>
+        /// <param name="modelPath">模型路径</param>
+        /// <returns></returns>
         public static WengAnEpsResult RunEPS(string modelpath)
         {
             var wm = new WaterGEMSModel();
@@ -62,8 +69,11 @@ namespace LiaoDongBayTest
                 wm.CloseDataSource();
             }
         }
-
-
+        /// <summary>
+        /// 消防事件
+        /// </summary>
+        /// <param name="arg">输入参数</param>
+        /// <returns></returns>
         public static WengAnEpsResult FireDemandAtOneNode(FireDemandArg arg)
         {
             WaterGEMSModel wm = new WaterGEMSModel();
@@ -135,7 +145,7 @@ namespace LiaoDongBayTest
             }
 
         }
-     
+
 
 
         /// <summary>
@@ -256,7 +266,7 @@ namespace LiaoDongBayTest
         }
 
         /// <summary>
-        /// 多水源供水分析
+        /// 多水源供水分析 水源追踪
         /// </summary>
         /// <param name="modelpath">模型路径</param>
         /// <returns></returns>

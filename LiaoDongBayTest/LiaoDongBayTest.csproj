@@ -79,14 +79,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DummyData.cs" />
-    <Compile Include="LiaoDongArg.cs" />
-    <Compile Include="LiaoDongResult.cs" />
+    <Compile Include="LiaoDong\LiaoDongArg.cs" />
+    <Compile Include="LiaoDong\LiaoDongResult.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LiaoDongApi.cs" />
+    <Compile Include="LiaoDong\LiaoDongApi.cs" />
     <Compile Include="WengAn\Args\BreakPipeArg.cs" />
     <Compile Include="WengAn\Args\BreakPipeResult.cs" />
+    <Compile Include="WengAn\Args\WengAnBaseArg.cs" />
     <Compile Include="WengAn\WengAnApi.cs" />
   </ItemGroup>
   <ItemGroup>

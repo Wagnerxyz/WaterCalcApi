@@ -5,16 +5,15 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using LiaoDongBayTest.WengAn.Args;
 
 namespace WengAn.Args
 {
-    public class BreakPipeArg
+    /// <summary>
+    /// 爆管接口输入参数
+    /// </summary>
+    public class BreakPipeArg: WengAnBaseArg
     {
-        /// <summary>
-        ///     模型Sqlite文件路径
-        /// </summary>
-        [Required]
-        public string ModelPath { get; set; }
 
         /// <summary>
         ///     要爆的管道id

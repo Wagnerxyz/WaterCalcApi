@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using LiaoDongBayTest.WengAn.Args;
 
 namespace Models
 {
@@ -43,32 +44,13 @@ namespace Models
         public double[] TimeStep { get; set; }
     }
 
-    public class WengAnEpsArg
+    public class WengAnEpsArg : WengAnBaseArg
     {
         /// <summary>
         /// 开始时间
         /// </summary>
         [Required]
         public DateTime StartTime { get; set; }
-
-        /// <summary>
-        /// 模型Sqlite文件路径
-        /// </summary>
-        [Required]
-        public string ModelPath { get; set; }
-
-        /// <summary>
-        /// 当前水泵相对速度
-        /// </summary>
-        public IDictionary<int, double> CurrentPumpSpeed { get; set; }
-        /// <summary>
-        /// 当前阀门关度 独立TCV阀
-        /// </summary>
-        public IDictionary<int, double> CurrentPCVValveClosure { get; set; }
-        /// <summary>
-        /// 当前液位
-        /// </summary>
-        public IDictionary<int, double> CurrentTankElevations { get; set; }
     }
     /// <summary>
     /// EPS计算结果
@@ -135,13 +117,9 @@ namespace Models
     /// <summary>
     /// 消防事件接口 输入参数
     /// </summary>
-    public class FireDemandArg
+    public class FireDemandArg : WengAnBaseArg
     {
-        /// <summary>
-        /// 模型Sqlite文件路径
-        /// </summary>
-        [Required]
-        public string ModelPath { get; set; }
+    
         /// <summary>
         /// 着火节点Id
         /// </summary>

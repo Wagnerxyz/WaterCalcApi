@@ -21,7 +21,7 @@ namespace LiaoDongBay.Controllers
 
         public WAController()
         {
-            modelPath = @"D:\BentleyModels\WengAn\WengAn20210813\WengAn20210813.wtg.sqlite";
+            modelPath = @"D:\BentleyModels\WengAn\WengAn20210909\WengAn0909.wtg.sqlite";
             //string path = ConfigurationManager.AppSettings["WengAnModelsFolder"];
             //modelPath = Path.Combine(path, fileName);
 
@@ -96,7 +96,7 @@ namespace LiaoDongBay.Controllers
             }
         }
         /// <summary>
-        /// 水源追踪
+        /// 多水源供水分析 水源追踪
         /// </summary>
         /// <param name="modelPath">模型路径</param>
         /// <returns></returns>
