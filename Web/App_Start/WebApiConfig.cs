@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
 
 namespace LiaoDongBay
 {
@@ -10,7 +11,7 @@ namespace LiaoDongBay
         public static void Register(HttpConfiguration config)
         {
             // Web API 配置和服务
-
+            config.Services.Add(typeof(IExceptionLogger), new GlobalExceptionLogger());
             // Web API 路由
             config.MapHttpAttributeRoutes();
 

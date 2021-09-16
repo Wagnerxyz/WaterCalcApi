@@ -14,7 +14,7 @@ namespace LiaoDongBayTest
     public class LiaoDongArg
     {
         /// <summary>
-        /// 模型Sqlite文件路径
+        /// 模型Sqlite文件路径 不确定暂时可任意填写 
         /// </summary>
         [Required]
         public string ModelPath { get; set; }

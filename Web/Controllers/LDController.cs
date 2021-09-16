@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using LiaoDongBayTest;
+using Serilog;
 
 namespace LiaoDongBay.Controllers
 {
@@ -16,11 +17,12 @@ namespace LiaoDongBay.Controllers
         object __lockObj = new object();
         private static bool isRunnning = false;
         private readonly string modelPath;
-        private const string fileName = "LiaoDongBay_20210716.wtg.sqlite";
+        //private const string fileName = "LiaoDongBay_20210716.wtg.sqlite"; 
+        private static ILogger _logger = Serilog.Log.ForContext<LDController>();
         public LDController()
         {
-            string path = ConfigurationManager.AppSettings["ModelsFolder"];
-            modelPath = Path.Combine(path, fileName);
+            //string path = ConfigurationManager.AppSettings["ModelsFolder"];
+            //modelPath = Path.Combine(path, fileName);
         }
         /// <summary>
         /// 泄漏检测
@@ -37,7 +39,7 @@ namespace LiaoDongBay.Controllers
                 return BadRequest("前一个请求正在运行，请稍后再试");
             }
             //override
-            arg.ModelPath = @"D:\BentleyModels\LD\Model_20210730\LiaoDongBay_20210716.wtg.sqlite";
+            arg.ModelPath = @"D:\BentleyModels\LiaoDong\LiaoDongBay_20210716.wtg.sqlite";
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);

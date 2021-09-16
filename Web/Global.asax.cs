@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using LiaoDongBay.App_Start;
 
 namespace LiaoDongBay
 {
@@ -13,6 +14,7 @@ namespace LiaoDongBay
     {
         protected void Application_Start()
         {
+            SerilogConfig.RegisterComponents();
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
