@@ -3,6 +3,7 @@ using System.Web.Http;
 using WebActivatorEx;
 using LiaoDongBay;
 using Swashbuckle.Application;
+using Swashbuckle.Examples;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -34,7 +35,8 @@ namespace LiaoDongBay
                         // additional fields by chaining methods off SingleApiVersion.
                         //
                         c.SingleApiVersion("v1", "测试API");
-
+                        // Enable Swagger examples
+                        c.OperationFilter<ExamplesOperationFilter>();
                         // If you want the output Swagger docs to be indented properly, enable the "PrettyPrint" option.
                         //
                         //c.PrettyPrint();

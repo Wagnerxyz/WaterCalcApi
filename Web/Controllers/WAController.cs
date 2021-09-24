@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using LiaoDongBayTest;
 using Models;
 using Serilog;
 using WengAn.Args;
+using WaterQualityResult = Models.WaterQualityResult;
 
 namespace LiaoDongBay.Controllers
 {
@@ -18,12 +20,13 @@ namespace LiaoDongBay.Controllers
         private object __lockObj = new object();
         private static bool isRunnning = false;
         private readonly string modelPath;
-        const string message = "前一个请求正在运行，请稍后再试";
+        const string runningMsg = "前一个请求正在运行，请稍后再试";
+        const string argMsg = "请求参数错误";
         private static ILogger _logger = Serilog.Log.ForContext<WAController>();
 
         public WAController()
         {
-            modelPath = @"D:\BentleyModels\WengAn\WengAn0909.wtg.sqlite";
+            modelPath = @"D:\BentleyModels\WengAn\WengAn0916.wtg.sqlite";
             //string path = ConfigurationManager.AppSettings["WengAnModelsFolder"];
             //modelPath = Path.Combine(path, fileName);
 
@@ -42,21 +45,25 @@ namespace LiaoDongBay.Controllers
         {
             if (isRunnning)
             {
-                return BadRequest(message);
+                return BadRequest(argMsg);
             }
+            var result = new WengAnEpsResult();
+
             //override
             modelPath = this.modelPath;
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
-                _logger.Information($"{Consts.ProjectName}, {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-
-                var result = new WengAnEpsResult();
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 result = WengAnApi.RunEPS(modelPath);
                 return Ok(result);
             }
             finally
             {
+                if (result != null && result.IsCalculationFailure)
+                {
+                    LogCalcError(result);
+                }
                 if (isRunnning)
                 {
                     System.Threading.Monitor.Exit(__lockObj);
@@ -75,16 +82,20 @@ namespace LiaoDongBay.Controllers
         [ResponseType(typeof(BreakPipeResult))]
         public IHttpActionResult BreakPipe(BreakPipeArg arg)
         {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(argMsg);
+            }
             if (isRunnning)
             {
-                return BadRequest(message);
+                return BadRequest(runningMsg);
             }
             //override
             arg.ModelPath = this.modelPath;
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
-                _logger.Information($"{Consts.ProjectName}, {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 var result = new BreakPipeResult();
                 result = WengAnApi.BreakPipe(arg);
                 return Ok(result);
@@ -103,20 +114,20 @@ namespace LiaoDongBay.Controllers
         /// </summary>
         /// <param name="modelPath">模型路径(暂时任意填写)</param>
         /// <returns></returns>
-        [ResponseType(typeof(List<WaterTraceResult>))]
+        [ResponseType(typeof(WaterTraceResult))]
         public IHttpActionResult WaterTrace(string modelPath)
         {
             if (isRunnning)
             {
-                return BadRequest(message);
+                return BadRequest(runningMsg);
             }
             //override
             modelPath = this.modelPath;
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
-                _logger.Information($"{Consts.ProjectName}, {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                List<WaterTraceResult> result = WengAnApi.GetWaterTraceResultsForMultipleElementIds(modelPath);
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                WaterTraceResult result = WengAnApi.GetWaterTraceResultsForMultipleElementIds(modelPath);
                 return Ok(result);
             }
             finally
@@ -132,19 +143,25 @@ namespace LiaoDongBay.Controllers
         /// 消防事件
         /// </summary>
         /// <param name="arg">输入参数</param>
+        /// <remarks>暂不可用</remarks>
         /// <returns></returns>
         [ResponseType(typeof(WengAnEpsResult))]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IHttpActionResult FireDemand(FireDemandArg arg)
         {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(argMsg);
+            }
             if (isRunnning)
             {
-                return BadRequest(message);
+                return BadRequest(runningMsg);
             }
-           
+
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
-                _logger.Information($"{Consts.ProjectName}, {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 WengAnEpsResult result = WengAnApi.FireDemandAtOneNode(arg);
                 return Ok(result);
             }
@@ -157,15 +174,84 @@ namespace LiaoDongBay.Controllers
                 }
             }
         }
-        //private void LogCalcError(QingdaoResultBase result)
-        //{
-        //    _logger.Error("{0}: 总计错误数:{1}  @{2}", Consts.ProjectName, result.ErrorNotifs.Count, result.ErrorNotifs.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error).Select(x => new
-        //    {
-        //        Id = x.ElementId,
-        //        Message = x.MessageKey,
-        //        SourceKey = x.SourceKey,
-        //        Label = x.Label
-        //    }));
-        //}
+
+        /// <summary>
+        /// 水质余氯预测
+        /// </summary>
+        /// <param name="arg">输入参数</param>
+        /// <returns></returns>
+        [ResponseType(typeof(WaterQualityResult))]
+        public IHttpActionResult Concentration(WaterConcentrationArg arg)
+        {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(argMsg);
+            }
+            if (isRunnning)
+            {
+                return BadRequest(runningMsg);
+            }
+
+            try
+            {
+                System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                WaterQualityResult result = WengAnApi.Concentration(arg);
+                return Ok(result);
+            }
+            finally
+            {
+                if (isRunnning)
+                {
+                    System.Threading.Monitor.Exit(__lockObj);
+                    isRunnning = false;
+                }
+            }
+        }
+        /// <summary>
+        /// 水龄预测
+        /// </summary>
+        /// <param name="arg">输入参数</param>
+        /// <returns></returns>
+        [ResponseType(typeof(WaterQualityResult))]
+        public IHttpActionResult WaterAge(string modelPath)
+        {
+            if (isRunnning)
+            {
+                return BadRequest(runningMsg);
+            }
+            //override
+            modelPath = this.modelPath;
+            try
+            {
+                System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                WaterQualityResult result = WengAnApi.WaterAge(modelPath);
+                return Ok(result);
+            }
+            finally
+            {
+                if (isRunnning)
+                {
+                    System.Threading.Monitor.Exit(__lockObj);
+                    isRunnning = false;
+                }
+            }
+        }
+        private void LogCalcError(WaterEngineResultBase result)
+        {
+            if (result != null && result.IsCalculationFailure)
+            {
+                _logger.Error("{0}: 计算错误总数:{1}  @{2}", new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name, result.ErrorNotifs.Count,
+                    result.ErrorNotifs
+                        .Select(x => new
+                        {
+                            Id = x.ElementId,
+                            Message = x.MessageKey,
+                            SourceKey = x.SourceKey,
+                            Label = x.Label
+                        }));
+            }
+        }
     }
 }

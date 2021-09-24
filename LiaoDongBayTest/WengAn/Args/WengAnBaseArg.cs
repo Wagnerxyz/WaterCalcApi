@@ -28,7 +28,7 @@ namespace LiaoDongBayTest.WengAn.Args
         /// <summary>
         /// 当前阀门关度 泵后阀(仅Hammer计算时才传这个，EPS方案里没泵后阀设备，不传)
         /// </summary>
-        public IDictionary<int, double> CurrentAfterPumpValveClosure { get; set; }
+        //public IDictionary<int, double> CurrentAfterPumpValveClosure { get; set; }
         /// <summary>
         /// 当前PRV阀压力
         /// </summary>

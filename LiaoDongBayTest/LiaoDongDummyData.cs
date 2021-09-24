@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace LiaoDongBayTest
 {
-    class DummyData
+   public class LiaoDongDummyData
     {
-        internal static IDictionary<int, double> GetLiaoDongNodePressure()
+        public static IDictionary<int, double> GetLiaoDongNodePressure()
         {
             var dict = new Dictionary<int, double>();
             dict.Add(81, 30);
@@ -21,7 +21,7 @@ namespace LiaoDongBayTest
             dict.Add(294, 30.43);
             return dict;
         }
-        internal static IDictionary<int, double> GetLiaoDongPipeFlow()
+        public static IDictionary<int, double> GetLiaoDongPipeFlow()
         {
             var dict = new Dictionary<int, double>();
             dict.Add(317, 100);

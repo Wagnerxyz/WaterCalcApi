@@ -6,10 +6,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LiaoDongBayTest
+namespace LiaoDongBay
 {
     /// <summary>
-    /// 输入参数
+    /// 辽东湾输入参数
     /// </summary>
     public class LiaoDongArg
     {

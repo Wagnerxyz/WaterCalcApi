@@ -12,11 +12,11 @@ namespace WengAn.Args
     /// <summary>
     /// 爆管接口输入参数
     /// </summary>
-    public class BreakPipeArg: WengAnBaseArg
+    public class BreakPipeArg : WengAnBaseArg
     {
 
         /// <summary>
-        ///     要爆的管道id
+        /// 要爆的管道id
         /// </summary>
         [Required]
         public int PipeId { get; set; }

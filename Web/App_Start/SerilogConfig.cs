@@ -13,21 +13,21 @@ namespace LiaoDongBay.App_Start
     {
         public static void RegisterComponents()
         {
-            string filePath;
+            string filePath = String.Empty;
             //Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["BentleyApiLogFilePath"]));
+
             string logFullPath = ConfigurationManager.AppSettings["BentleyApiLogFilePath"];
-            if (HostingEnvironment.IsDevelopmentEnvironment)
+            string logDestination = ConfigurationManager.AppSettings["LogFileDestination"];
+            if (logDestination == "Azure")
             {
-                const string localLogFolder = "Logs";
-                filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, localLogFolder, "Log.txt");
+                //write to remote azure share folder 按机器名区分文件夹
+                filePath = HostingEnvironment.MapPath($"~/{Environment.MachineName}/Log.txt");
             }
             else
-            {//write to remote azure share folder 按机器名区分文件夹
-                //filePath = Path.Combine(logFullPath, Environment.MachineName, "Log.txt");
-                var asda = HostingEnvironment.MapPath("~/Logs");
-                filePath = Path.Combine(asda, "Log.txt");
+            {
+                filePath = HostingEnvironment.MapPath($"~/Logs/Log.txt");
             }
-            
+
             //The {Message:lj} format options cause data embedded in the message to be output in JSON (j) except for string literals, which are output as-is.
             string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj} {Properties}{NewLine}{Exception}";
             Log.Logger = new LoggerConfiguration()

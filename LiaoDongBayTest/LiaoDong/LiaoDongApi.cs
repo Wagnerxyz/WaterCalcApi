@@ -14,136 +14,17 @@ using Haestad.Support.Library;
 using Haestad.Support.Support;
 using Haestad.Support.Units;
 using Haestad.Support.User;
+using LiaoDongBay;
 
 namespace LiaoDongBayTest
 {
-    public class WaterQualityArgs
-    {
-        /// <summary>
-        ///     模型Sqlite文件路径
-        /// </summary>
-        public string ModelPath { get; set; }
-
-        /// <summary>
-        ///     传入初始Node,Reservior,Tank 水龄
-        /// </summary>
-        public Dictionary<int, double> InitialValues { get; set; }
-
-        /// <summary>
-        ///     要返回水龄的Id
-        /// </summary>
-        public int[] AgeIds { get; set; }
-
-        /// <summary>
-        ///     要返回水质的Id
-        /// </summary>
-        public int[] ConcentrationIds { get; set; }
-    }
-
-    public class WaterQualityResult
-    {
-        public Dictionary<int, double[]> AgesValues { get; set; } = new Dictionary<int, double[]>();
-        public Dictionary<int, double[]> ConcentrationValues { get; set; } = new Dictionary<int, double[]>();
-    }
-
     public class LiaoDongApi
     {
-     
-        //public void GetAllNodesAndPipesEpsResult(WaterGEMSModel wm)
-        //{
-        //    double[] epsSteps = wm.ResultDataConnection.TimeStepsInSeconds(wm.DomainDataSet.ScenarioManager.ActiveScenarioID); ;//读取EPS报告点动态结果
-
-        //    var timePointNodeResults = new List<Models.DemoNodeResult>();
-        //    HmIDCollection allNodesIds = DomainDataSet
-        //        .DomainElementManager((int)DomainElementType.BaseIdahoNodeElementManager).ElementIDs();
-        //    foreach (var id in allNodesIds)
-        //    {
-        //        for (var index = 0; index < epsSteps.Length; index++)
-        //        {
-        //            var epsResult = new Models.DemoNodeResult();
-        //            epsResult.Id = id;
-        //            epsResult.Label = GetDomainElementLabel(id);
-        //            epsResult.TimeSteps = epsSteps[index];
-        //            epsResult.HGL = GetNodeHGLInMeters(id)[index];
-        //            timePointNodeResults.Add(epsResult);
-        //        }
-        //    }
-
-        //    var timePointFlowResults = new List<Models.DemoPipeResult>();
-        //    HmIDCollection allPipeIds = DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager)
-        //        .ElementIDs();
-        //    foreach (var id in allPipeIds)
-        //    {
-        //        for (var index = 0; index < epsSteps.Length; index++)
-        //        {
-        //            var epsResult = new Models.DemoPipeResult();
-        //            epsResult.Id = id;
-        //            epsResult.Label = GetDomainElementLabel(id);
-        //            epsResult.TimeSteps = epsSteps[index];
-        //            epsResult.Flows = GetPipeFlowInCubicMetersPerSecond(id)[index];
-        //            epsResult.Velocities = GetPipeVelocityInMetersPerSecond(id)[index];
-        //            epsResult.PipeHeadLoss = GetPipeHeadLossMetersOfH2O(id)[index];
-        //            timePointFlowResults.Add(epsResult);
-        //        }
-        //    }
-        //}
-
         /// <summary>
-        ///     瓮安水龄水质
+        /// 流量计位置不确定，和管道位置不对应，更新也没用
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public static WaterQualityResult WaterAgeQuality(WaterQualityArgs arg)
-        {
-            WaterGEMSModel wm = new WaterGEMSModel();
-            wm.ProductId = ProductId.Bentley_WaterGEMS;
-            var result = new WaterQualityResult();
-
-            try
-            {
-                wm.OpenDataSource(arg.ModelPath);
-                //IDomainDataSet dataSet = wm.DomainDataSet;
-                //License lc = wm.License;
-
-                wm.RunWTmodel(); //run the wtrg model that includes WQ calculations 
-                WaterQualityCalculation wqc = new WaterQualityCalculation(wm);
-              
-
-                foreach (var id in arg.AgeIds)
-                {
-                    result.AgesValues.Add(id, wqc.GetAgeInHours(id));
-                }
-
-                foreach (var id in arg.ConcentrationIds)
-                {
-                    result.ConcentrationValues.Add(id, wqc.GetConcentrationInMGL(id));
-                }
-
-                //result.Add(95, wqc.GetAgeInHours(95));       //age at J-26
-                //result.Add(138, wqc.GetAgeInHours(138));       //age at P-66
-                //result.Add(90, wqc.GetConcentrationInMGL(90));        //concentration at J-10
-                //double[] cons = wqc.GetConcentrationInMGL(90);       //concentration at J-10
-                //double[] ages = wqc.GetAgeInHours(138);       //age at P-66
-
-
-                //Assert.IsTrue(ages.Length == 280);
-                //Assert.AreEqual(0.7337, ages[1], 0.001);
-                //Assert.AreEqual(0.8241, ages[2], 0.001);
-                //Assert.AreEqual(0.8259, ages[3], 0.001);
-
-                //Assert.AreEqual(0.5170, ages[143], 0.001);
-                //Assert.AreEqual(0.6325, ages[144], 0.001);
-            }
-            finally
-            {
-                wm.CloseDataSource();
-            }
-
-            return result;
-        }
-
- 
-
         public static bool CheckBalance(LiaoDongArg arg)
         {
             var flows = arg.CurrentPipeFlows;
@@ -260,11 +141,7 @@ namespace LiaoDongBayTest
 
                 return dict;
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-                throw;
-            }
+         
             finally
             {
                 wm.CloseDataSource();

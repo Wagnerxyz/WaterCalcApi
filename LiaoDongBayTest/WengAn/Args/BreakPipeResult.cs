@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Models;
 
 namespace WengAn.Args
 {
     /// <summary>
     /// 爆管影响结果对象
     /// </summary>
-    public class BreakPipeResult
+    public class BreakPipeResult : WaterEngineResultBase
     {
         /// <summary>
         /// 各节点压力
