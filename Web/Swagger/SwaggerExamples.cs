@@ -20,4 +20,32 @@ namespace LiaoDongBay.Swagger
             };
         }
     }
+    public class WA_RunEPSArg_Example : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return DummyTestData.DummyBaseArg();
+        }
+    }
+    public class WA_WaterConcentration_Example : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return DummyTestData.DummyWaterConcentrationArg();
+        }
+    }
+    public class WA_Fire_Example : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return DummyTestData.DummyFireArg();
+        }
+    }
+    public class WA_BreakPipe_Example : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return DummyTestData.DummyBreakPipeArg();
+        }
+    }
 }

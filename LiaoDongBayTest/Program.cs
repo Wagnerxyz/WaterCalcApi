@@ -31,6 +31,12 @@ namespace LiaoDongBayTest
                 //cfg.AddProfile();
             });
             WengAnApi.mapper = mapConfig.CreateMapper();
+            var aaa = DummyTestData.DummyFireArg();
+            var aqweq = WengAnApi.FireDemandAtOneNode(aaa);
+          var qwqeq=  aqweq.EpsNodeResult.Where(x => x.Id == 1338);
+            File.WriteAllText(@"fire result.json", JsonConvert.SerializeObject(qwqeq));
+            WengAnBreakPipe();
+
             //string input = File.ReadAllText(@"d:\dhi.json");
             //var client = new HttpClient();
             //var contentData = new StringContent(input, Encoding.UTF8, "application/json");
@@ -81,15 +87,18 @@ namespace LiaoDongBayTest
             LiaoDongApi.SettingObservedDataAndRunWaterLeakCalibration(arg);
         }
 
-
+        private static void Fire()
+        {
+            var arg = DummyTestData.DummyBreakPipeArg();
+            var result = WengAnApi.BreakPipe(arg);
+        }
 
         private static void WengAnBreakPipe()
         {
-            var modelPath = @"D:\P4V\Aspen\Components\Haestad.Calculations.Shanghai\Development\Haestad.Calculations.Shanghai.WaterGEMS.Test\MDBs\PipeBreakIsolationModel.wtg.sqlite";
-            var arg = new BreakPipeArg() { ModelPath = modelPath, PipeId = 44, ValvesToExclude = new[] { 48 }, BreakPointDistanceToStartNode = 1 };
-
+            var arg = DummyTestData.DummyBreakPipeArg();
             var result = WengAnApi.BreakPipe(arg);
         }
+
 
     }
 }

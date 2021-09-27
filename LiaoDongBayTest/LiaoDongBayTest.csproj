@@ -81,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DummyTestData.cs" />
     <Compile Include="LiaoDongDummyData.cs" />
     <Compile Include="LiaoDong\LiaoDongArg.cs" />
     <Compile Include="LiaoDong\LiaoDongResult.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="WengAn\Args\BreakPipeArg.cs" />
     <Compile Include="WengAn\Args\BreakPipeResult.cs" />
     <Compile Include="WengAn\Args\WengAnBaseArg.cs" />
+    <Compile Include="WengAn\SetWengAnOnlineData.cs" />
     <Compile Include="WengAn\WengAnApi.cs" />
   </ItemGroup>
   <ItemGroup>

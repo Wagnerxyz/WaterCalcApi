@@ -10,6 +10,8 @@ using Haestad.Calculations.Shanghai.WaterGEMS;
 using Haestad.Calculations.Support;
 using Haestad.LicensingFacade;
 using Haestad.Support.User;
+using LiaoDongBayTest.WengAn;
+using LiaoDongBayTest.WengAn.Args;
 using Models;
 using WengAn.Args;
 
@@ -17,25 +19,19 @@ namespace LiaoDongBayTest
 {
     public class WengAnApi
     {
-
-
         public static IMapper mapper;
+
         /// <summary>
         /// 运行水力模型
         /// </summary>
-        /// <remarks>
-        /// POST /ApiTest/api/WA/WaterTrace?modelpath=555
-        /// </remarks>
-        /// <param name="modelPath">模型路径</param>
-        /// <returns></returns>
-        public static WengAnEpsResult RunEPS(string modelpath)
+        public static WengAnEpsResult RunEPS(WengAnBaseArg arg)
         {
             var wm = new WaterGEMSModel();
             var result = new WengAnEpsResult();
 
             try
             {
-                wm.OpenDataSource(modelpath);
+                wm.OpenDataSource(arg.ModelPath);
                 wm.SetActiveScenario(1);
                 //IDomainElementManager pipeManager = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager);
                 //ModelingElementCollection allPipes = pipeManager.Elements();
@@ -45,7 +41,7 @@ namespace LiaoDongBayTest
                 //ModelingElementCollection allAirValves = airManager.Elements();
 
                 #region set current value
-                //Utils.SetCurrentPumpValveTank(wm, args);
+                Utils.SetCurrentPumpValveTank(wm, arg); ;
                 #endregion
 
                 //设置压力引擎开始时间
@@ -86,6 +82,7 @@ namespace LiaoDongBayTest
             {
                 wm.OpenDataSource(arg.ModelPath);
                 wm.SetActiveScenario(3973);
+                Utils.SetCurrentPumpValveTank(wm, arg);
 
                 wm.PressureCalculationOption.SetPressureEngineCalculationType(EpaNetEngine_CalculationTypeEnum.SCADAAnalaysisType);
                 wm.PressureCalculationOption.SetSCADACalculationType(SCADACalculationTypeEnum.HydraulicsOnly);
@@ -166,7 +163,7 @@ namespace LiaoDongBayTest
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public static Models.WaterQualityResult Concentration(WaterConcentrationArg arg)
+        public static WaterQualityResult Concentration(WaterConcentrationArg arg)
         {
             WaterGEMSModel wm = new WaterGEMSModel();
             wm.ProductId = ProductId.Bentley_WaterGEMS;
@@ -175,6 +172,7 @@ namespace LiaoDongBayTest
             {
                 wm.OpenDataSource(arg.ModelPath);
                 wm.SetActiveScenario(4016);
+                Utils.SetCurrentPumpValveTank(wm, arg);
                 wm.RunWTmodel();     //run the wtrg model that includes WQ calculations 
                 WaterQualityCalculation wqc = new WaterQualityCalculation(wm);
 
@@ -223,6 +221,7 @@ namespace LiaoDongBayTest
         /// <returns></returns>
         public static BreakPipeResult BreakPipe(BreakPipeArg arg)
         {
+           
             WaterGEMSModel wm = new WaterGEMSModel();
             var result = new BreakPipeResult();
             var valveInitialDict = new Dictionary<int, ValveSettingEnum>();
@@ -232,6 +231,8 @@ namespace LiaoDongBayTest
                 wm.OpenDataSource(arg.ModelPath);
                 IDomainDataSet dataSet = wm.DomainDataSet;
                 wm.SetActiveScenario(3973);
+                Utils.SetCurrentPumpValveTank(wm, arg);
+
                 //var valvesToClose = new HmIDCollection();
                 //var pipesToClose = new HmIDCollection();
                 //var isolationValvesToClose = new HmIDCollection();
@@ -348,7 +349,7 @@ namespace LiaoDongBayTest
             var result = new WaterTraceResult();
             try
             {
-                wm.OpenDataSource(modelpath, false);
+                wm.OpenDataSource(modelpath, true);
                 wm.SetActiveScenario(4017);
 
                 IDomainDataSet dataSet = wm.DomainDataSet;

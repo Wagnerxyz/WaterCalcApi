@@ -4,16 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
+using LiaoDongBay.Swagger;
 using LiaoDongBayTest;
+using LiaoDongBayTest.WengAn.Args;
 using Models;
 using Serilog;
+using Swashbuckle.Examples;
 using WengAn.Args;
 using WaterQualityResult = Models.WaterQualityResult;
 
 namespace LiaoDongBay.Controllers
 {
     /// <summary>
-    /// 
+    /// 并发执行控制，同时只能执行一个
     /// </summary>
     public class WAController : ApiController
     {
@@ -35,13 +38,14 @@ namespace LiaoDongBay.Controllers
         /// 运行水力模型
         /// </summary>
         /// <remarks>
-        /// POST /ApiTest/api/WA/WaterTrace?modelpath=555
+        /// POST /ApiTest/api/WA/RunEps
         /// </remarks>
-        /// <param name="modelPath">模型路径(暂时任意填写)</param>
+        /// <param name="arg">在线数据参数</param>
         /// <returns></returns>
         [ResponseType(typeof(WengAnEpsResult))]
         [HttpPost]
-        public IHttpActionResult RunEps(string modelPath)
+        [SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_RunEPSArg_Example))]
+        public IHttpActionResult RunEps(WengAnBaseArg arg)
         {
             if (isRunnning)
             {
@@ -50,12 +54,12 @@ namespace LiaoDongBay.Controllers
             var result = new WengAnEpsResult();
 
             //override
-            modelPath = this.modelPath;
+            arg.ModelPath = this.modelPath;
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                result = WengAnApi.RunEPS(modelPath);
+                result = WengAnApi.RunEPS(arg);
                 return Ok(result);
             }
             finally
@@ -74,12 +78,10 @@ namespace LiaoDongBay.Controllers
         /// <summary>
         /// 爆管影响分析
         /// </summary>
-        /// <remarks>
-        /// 模型缺少阀门，无法计算
-        /// </remarks>
         /// <param name="arg">输入参数</param>
         /// <returns></returns>
         [ResponseType(typeof(BreakPipeResult))]
+        [SwaggerRequestExample(typeof(BreakPipeArg), typeof(WA_BreakPipe_Example))]
         public IHttpActionResult BreakPipe(BreakPipeArg arg)
         {
             if (arg == null || !ModelState.IsValid)
@@ -147,6 +149,7 @@ namespace LiaoDongBay.Controllers
         /// <returns></returns>
         [ResponseType(typeof(WengAnEpsResult))]
         //[ApiExplorerSettings(IgnoreApi = true)]
+        [SwaggerRequestExample(typeof(FireDemandArg), typeof(WA_Fire_Example))]
         public IHttpActionResult FireDemand(FireDemandArg arg)
         {
             if (arg == null || !ModelState.IsValid)
@@ -181,6 +184,7 @@ namespace LiaoDongBay.Controllers
         /// <param name="arg">输入参数</param>
         /// <returns></returns>
         [ResponseType(typeof(WaterQualityResult))]
+        [SwaggerRequestExample(typeof(WaterConcentrationArg), typeof(WA_WaterConcentration_Example))]
         public IHttpActionResult Concentration(WaterConcentrationArg arg)
         {
             if (arg == null || !ModelState.IsValid)
@@ -211,6 +215,7 @@ namespace LiaoDongBay.Controllers
         /// <summary>
         /// 水龄预测
         /// </summary>
+        /// <remarks>无需在线数据接入</remarks>
         /// <param name="modelPath">模型路径(暂时任意填写)</param>
         /// <returns></returns>
         [ResponseType(typeof(WaterQualityResult))]

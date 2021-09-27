@@ -211,7 +211,6 @@
     <Compile Include="Swagger\SwaggerExamples.cs" />
     <Compile Include="Swagger\SwaggerExcludeAttribute.cs" />
     <Compile Include="Swagger\SwaggerExcludeFilter.cs" />
-    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />

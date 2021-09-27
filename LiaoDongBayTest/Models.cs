@@ -17,7 +17,7 @@ namespace Models
     public class WaterEngineResultBase
     {
         /// <summary>
-        /// 先检查这个，若true，则读ErrorNotifs详细信息
+        /// 内部水力计算引擎出错。先检查这个，若true，则读ErrorNotifs详细信息
         /// </summary>
         public bool IsCalculationFailure { get; set; }
         /// <summary>
@@ -199,6 +199,11 @@ namespace Models
     {
         public int Id { get; set; }
         public string Label { get; set; }
+
+        /// <summary>
+        /// 时间步长
+        /// </summary>
+        public double[] TimeSteps { get; set; }
         /// <summary>
         /// 管道流量
         /// </summary>
@@ -215,10 +220,6 @@ namespace Models
         /// 管道水头损失梯度
         /// </summary>
         public double[] PipeHeadlossGradient { get; set; }
-        /// <summary>
-        /// 时间步长
-        /// </summary>
-        public double[] TimeSteps { get; set; }
     }
 
     #region 消防事件
@@ -284,27 +285,23 @@ namespace Models
     public class WaterQualityResult : WaterEngineResultBase
     {
         /// <summary>
-        /// 节点水龄或水质结果,按小时
+        /// 节点水龄或水质结果,按小时 数据类型：IDictionary(int, double[])
         /// </summary>
         public IDictionary<int, double[]> NodeResult { get; set; }
         /// <summary>
-        /// 管道水龄或水质结果,按小时
+        /// 管道水龄或水质结果,按小时 数据类型：IDictionary(int, double[])
         /// </summary>
         public IDictionary<int, double[]> PipeResult { get; set; }
     }
     /// <summary>
     /// 水质余氯预测 输入参数
     /// </summary>
-    public class WaterConcentrationArg
+    public class WaterConcentrationArg : WengAnBaseArg
     {
         /// <summary>
-        /// 三个水厂reservior的id及 当前出厂余氯浓度
+        /// 三个水厂reservior的id及 当前出厂余氯浓度 数据类型：IDictionary(int, double[])
         /// </summary>
         public IDictionary<int, double> CurrentConcentration { get; set; }
-        /// <summary>
-        /// 模型Sqlite文件路径
-        /// </summary>
-        [Required]
-        public string ModelPath { get; set; }
+     
     }
 }
