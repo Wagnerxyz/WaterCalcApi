@@ -124,7 +124,7 @@ namespace Models
     /// </summary>
     public class WaterTraceResult : WaterEngineResultBase
     {
-        public List<WaterTracePercentage> Result { get; set; }
+        public List<WaterTracePercentage> TracePercentageResults { get; set; }
     }
 
     public class WaterTracePercentage

@@ -143,10 +143,10 @@ namespace LiaoDongBay.Controllers
         /// 消防事件
         /// </summary>
         /// <param name="arg">输入参数</param>
-        /// <remarks>暂不可用</remarks>
+        /// <remarks></remarks>
         /// <returns></returns>
         [ResponseType(typeof(WengAnEpsResult))]
-        [ApiExplorerSettings(IgnoreApi = true)]
+        //[ApiExplorerSettings(IgnoreApi = true)]
         public IHttpActionResult FireDemand(FireDemandArg arg)
         {
             if (arg == null || !ModelState.IsValid)
@@ -211,7 +211,7 @@ namespace LiaoDongBay.Controllers
         /// <summary>
         /// 水龄预测
         /// </summary>
-        /// <param name="arg">输入参数</param>
+        /// <param name="modelPath">模型路径(暂时任意填写)</param>
         /// <returns></returns>
         [ResponseType(typeof(WaterQualityResult))]
         public IHttpActionResult WaterAge(string modelPath)

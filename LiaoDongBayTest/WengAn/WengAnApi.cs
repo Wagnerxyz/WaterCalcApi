@@ -384,7 +384,7 @@ namespace LiaoDongBayTest
                     list.Add(r);
                 }
 
-                result.Result = list;
+                result.TracePercentageResults = list;
                 return result;
 
             }

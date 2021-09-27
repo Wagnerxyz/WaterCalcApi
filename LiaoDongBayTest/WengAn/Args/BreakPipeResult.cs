@@ -44,7 +44,7 @@ namespace WengAn.Args
         //public int[] OutageCustomerIds { get; set; }
 
         //public int[] PipesToClose { get; set; }
-        //public bool Result { get; set; }
+        //public bool TracePercentageResults { get; set; }
 
     }
 }

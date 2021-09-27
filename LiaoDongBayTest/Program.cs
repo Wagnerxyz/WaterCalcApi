@@ -35,7 +35,7 @@ namespace LiaoDongBayTest
             //var client = new HttpClient();
             //var contentData = new StringContent(input, Encoding.UTF8, "application/json");
             //client.Timeout = TimeSpan.FromMinutes(30);
-            //var response = client.PostAsync("http://40.117.47.87/BentleyAPI/api/qingdao/FlushWater", contentData).Result;
+            //var response = client.PostAsync("http://40.117.47.87/BentleyAPI/api/qingdao/FlushWater", contentData).TracePercentageResults;
             //var result = WengAnApi.RunEPS(wenganModel);
             //var arg = new BreakPipeArg(){ModelPath = wenganModel,PipeId = 2887,};
             //WengAnApi.BreakPipe();
@@ -48,7 +48,7 @@ namespace LiaoDongBayTest
 
             //if (response.IsSuccessStatusCode)
             //{
-            //    var stringData = response.Content.ReadAsStringAsync().Result;
+            //    var stringData = response.Content.ReadAsStringAsync().TracePercentageResults;
             //    var result = JsonConvert.DeserializeObject<LiaoDongResult>(stringData);
             //}
 
