@@ -41,7 +41,7 @@ namespace LiaoDongBayTest
                 //ModelingElementCollection allAirValves = airManager.Elements();
 
                 #region set current value
-                Utils.SetCurrentPumpValveTank(wm, arg); ;
+                Utils.SetCurrentPumpValveReservoir(wm, arg); ;
                 #endregion
 
                 //设置压力引擎开始时间
@@ -82,7 +82,7 @@ namespace LiaoDongBayTest
             {
                 wm.OpenDataSource(arg.ModelPath);
                 wm.SetActiveScenario(3973);
-                Utils.SetCurrentPumpValveTank(wm, arg);
+                Utils.SetCurrentPumpValveReservoir(wm, arg);
 
                 wm.PressureCalculationOption.SetPressureEngineCalculationType(EpaNetEngine_CalculationTypeEnum.SCADAAnalaysisType);
                 wm.PressureCalculationOption.SetSCADACalculationType(SCADACalculationTypeEnum.HydraulicsOnly);
@@ -172,7 +172,7 @@ namespace LiaoDongBayTest
             {
                 wm.OpenDataSource(arg.ModelPath);
                 wm.SetActiveScenario(4016);
-                Utils.SetCurrentPumpValveTank(wm, arg);
+                Utils.SetCurrentPumpValveReservoir(wm, arg);
                 wm.RunWTmodel();     //run the wtrg model that includes WQ calculations 
                 WaterQualityCalculation wqc = new WaterQualityCalculation(wm);
 
@@ -231,7 +231,9 @@ namespace LiaoDongBayTest
                 wm.OpenDataSource(arg.ModelPath);
                 IDomainDataSet dataSet = wm.DomainDataSet;
                 wm.SetActiveScenario(3973);
-                Utils.SetCurrentPumpValveTank(wm, arg);
+                wm.PressureCalculationOption.SetPressureEngineCalculationType(EpaNetEngine_CalculationTypeEnum.SCADAAnalaysisType);
+                wm.PressureCalculationOption.SetSCADACalculationType(SCADACalculationTypeEnum.HydraulicsOnly);
+                Utils.SetCurrentPumpValveReservoir(wm, arg);
 
                 //var valvesToClose = new HmIDCollection();
                 //var pipesToClose = new HmIDCollection();
@@ -338,6 +340,135 @@ namespace LiaoDongBayTest
             }
         }
 
+        public static BreakPipeResult BreakPipe2(BreakPipeArg arg)
+        {
+
+            WaterGEMSModel wm = new WaterGEMSModel();
+            var result = new BreakPipeResult();
+            var valveInitialDict = new Dictionary<int, ValveSettingEnum>();
+            var isolationValveInitialDict = new Dictionary<int, IsolationValveInitialSettingEnum>();
+            try
+            {
+                wm.OpenDataSource(arg.ModelPath);
+                IDomainDataSet dataSet = wm.DomainDataSet;
+                wm.SetActiveScenario(3973);
+                wm.PressureCalculationOption.SetPressureEngineCalculationType(EpaNetEngine_CalculationTypeEnum.SCADAAnalaysisType);
+                wm.PressureCalculationOption.SetSCADACalculationType(SCADACalculationTypeEnum.HydraulicsOnly);
+                Utils.SetCurrentPumpValveReservoir(wm, arg);
+                
+                new NetworkIsolation(dataSet).GetElementsOfIsolatingPipeBreak(arg.PipeId, arg.BreakPointDistanceToStartNode,
+                    new HmIDCollection(arg.ValvesToExclude), out var valvesToClose, out var pipesToClose,
+                    out var isolationValvesToClose, out var isolatedPartialPipeIds, out var isolatedPipeIds,
+                    out var isolatedNodeIds, out var isolatedCustomerIds, out var outagePartialPipeIds,
+                    out var outagePipeIds, out var outageNodeIds, out var outageCustomerIds);
+
+
+                result.ValvesToClose = valvesToClose.ToArray(); //important
+                //result.PipesToClose = pipesToClose.ToArray();
+                result.IsolationValvesToClose = isolationValvesToClose.ToArray(); //important
+                //result.IsolatedPartialPipeIds = isolatedPartialPipeIds;
+                result.IsolatedPipeIds = isolatedPipeIds.ToArray();
+                result.IsolatedNodeIds = isolatedNodeIds.ToArray();
+                result.IsolatedCustomerIds = isolatedCustomerIds.ToArray();
+                //result.OutagePartialPipeIds = outagePartialPipeIds;
+                //result.OutagePipeIds = outagePipeIds.ToArray();
+                //result.OutageNodeIds = outageNodeIds.ToArray();
+                //result.OutageCustomerIds = outageCustomerIds.ToArray();
+
+                #region Save Valve Status
+
+                //GetValveInitialStatus，GetIsolationValveInitialStatus
+
+                //foreach (var id in result.ValvesToClose)
+                //{
+                //    valveInitialDict.Add(id, wm.InitialSetting.GetValveInitialStatus(id));
+                //}
+                //foreach (var id in result.IsolationValvesToClose)
+                //{
+                //    isolationValveInitialDict.Add(id, wm.InitialSetting.GetIsolationValveInitialStatus(id));
+                //}
+
+                //#endregion
+
+                //#region 关阀
+
+                //foreach (var id in result.ValvesToClose)
+                //{
+                //    wm.InitialSetting.SetValveInitialStatus(id, ValveSettingEnum.ValveClosedType);
+                //}
+                //foreach (var id in result.IsolationValvesToClose)
+                //{
+                //    wm.InitialSetting.SetIsolationValveInitialStatus(id, IsolationValveInitialSettingEnum.IsolationValveClosedType);
+                //}
+
+                #endregion
+
+                wm.PressureCalculationOption.SetSCADASimulationMode(SCADASimulationModeEnum.BaseInitialCondition);
+
+                wm.PressureCalculationOption.ClearPumpAndOtherControlOverride();
+
+                //foreach (var id in result.ValvesToClose)
+                //{
+                //    wm.InitialSetting.SetValveInitialStatus(id, ValveSettingEnum.ValveClosedType);
+                //}
+                //foreach (var id in result.IsolationValvesToClose)
+                //{
+                //    wm.InitialSetting.SetIsolationValveInitialStatus(id, IsolationValveInitialSettingEnum.IsolationValveClosedType);
+                //}
+
+
+
+                //设置压力引擎开始时间
+                var now = DateTime.Now;
+                wm.PressureCalculationOption.SetPressureEngineSimulationStartDate(now);
+                wm.PressureCalculationOption.SetPressureEngineSimulationStartTime(now);
+                //wm.PressureCalculationOption.
+                wm.PressureCalculationOption.AddValveSettingControlOverride(7597, ValveSettingEnum.ValveClosedType, now, 2);
+
+
+                IUserNotification[] notif = wm.RunPressureCalculation();
+                List<IUserNotification> error = notif?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error).ToList();
+                if (error != null && error.Any())
+                {
+                    result.IsCalculationFailure = true;
+                    result.ErrorNotifs = mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
+                }
+                #region 比较节点水压
+
+                IDomainElementManager junctionManager =
+                    wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoJunctionElementManager);
+                ModelingElementCollection allJunctions = junctionManager.Elements();
+                var pressureDict = new Dictionary<int, double[]>();
+                foreach (var junction in allJunctions)
+                {
+                    pressureDict.Add(junction.Id, wm.PressureResult.GetNodePressureInKiloPascals(junction.Id));
+                }
+
+                result.NodePressures = pressureDict;
+                #endregion
+
+                return result;
+            }
+            finally
+            {
+                ////把前面保存的值设回去
+                //if (valveInitialDict.Any())
+                //{
+                //    foreach (var item in valveInitialDict)
+                //    {
+                //        wm.InitialSetting.SetValveInitialStatus(item.Key, item.Value);
+                //    }
+                //}
+                //if (isolationValveInitialDict.Any())
+                //{
+                //    foreach (var item in isolationValveInitialDict)
+                //    {
+                //        wm.InitialSetting.SetIsolationValveInitialStatus(item.Key, item.Value);
+                //    }
+                //}
+                wm.CloseDataSource();
+            }
+        }
         /// <summary>
         /// 多水源供水分析 水源追踪
         /// </summary>

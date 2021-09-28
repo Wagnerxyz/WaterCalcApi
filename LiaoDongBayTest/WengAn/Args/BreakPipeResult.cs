@@ -14,7 +14,7 @@ namespace WengAn.Args
     public class BreakPipeResult : WaterEngineResultBase
     {
         /// <summary>
-        /// 各节点压力
+        /// 各节点压力 数据类型： Dictionary<int, double[]>
         /// </summary>
         public Dictionary<int, double[]> NodePressures { get; set; }
         /// <summary>

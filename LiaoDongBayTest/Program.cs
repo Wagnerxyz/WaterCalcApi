@@ -31,10 +31,18 @@ namespace LiaoDongBayTest
                 //cfg.AddProfile();
             });
             WengAnApi.mapper = mapConfig.CreateMapper();
+
             var aaa = DummyTestData.DummyFireArg();
             var aqweq = WengAnApi.FireDemandAtOneNode(aaa);
-          var qwqeq=  aqweq.EpsNodeResult.Where(x => x.Id == 1338);
+            var qwqeq = aqweq.EpsNodeResult.Where(x => x.Id == 1338);
             File.WriteAllText(@"fire result.json", JsonConvert.SerializeObject(qwqeq));
+
+
+
+
+
+
+
             WengAnBreakPipe();
 
             //string input = File.ReadAllText(@"d:\dhi.json");

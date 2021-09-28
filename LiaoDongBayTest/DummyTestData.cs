@@ -64,7 +64,7 @@ namespace LiaoDongBayTest
             arg.ModelPath = wenganModel;
             arg.CurrentPrvPressure = GetCurrentPRVPressure();
             arg.CurrentPumpSpeed = GetCurrentPumpRelativeSpeed();
-            arg.CurrentTankElevations = GetCurrentTankElevation();
+            arg.CurrentReservoirElevation = GetCurrentTankElevation();
             return arg;
         }
         public static WengAnBaseArg DummyBaseArg()
@@ -84,7 +84,7 @@ namespace LiaoDongBayTest
         public static FireDemandArg DummyFireArg()
         {
             var arg = new FireDemandArg()
-            { ModelPath = wenganModel, NodeId = 1339, StartTime = DateTime.Parse("2021-09-26 17:00:00Z"), DurationHours = 3, DemandInLitersPerSecond = 50 };
+            { ModelPath = wenganModel, NodeId = 1339, StartTime = DateTime.Parse("2021-07-04 17:00:00Z"), DurationHours = 3, DemandInLitersPerSecond = 50 };
 
             arg = (FireDemandArg)FillDummyBaseArg(arg);
             return arg;

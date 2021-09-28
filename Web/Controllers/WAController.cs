@@ -23,7 +23,7 @@ namespace LiaoDongBay.Controllers
         private object __lockObj = new object();
         private static bool isRunnning = false;
         private readonly string modelPath;
-        const string runningMsg = "前一个请求正在运行，请稍后再试";
+        const string runningMsg = "有请求正在运行，请稍后再试";
         const string argMsg = "请求参数错误";
         private static ILogger _logger = Serilog.Log.ForContext<WAController>();
 
@@ -60,14 +60,11 @@ namespace LiaoDongBay.Controllers
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 result = WengAnApi.RunEPS(arg);
+                LogCalcError(result);
                 return Ok(result);
             }
             finally
             {
-                if (result != null && result.IsCalculationFailure)
-                {
-                    LogCalcError(result);
-                }
                 if (isRunnning)
                 {
                     System.Threading.Monitor.Exit(__lockObj);
@@ -100,6 +97,7 @@ namespace LiaoDongBay.Controllers
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 var result = new BreakPipeResult();
                 result = WengAnApi.BreakPipe(arg);
+                LogCalcError(result);
                 return Ok(result);
             }
             finally
@@ -130,6 +128,7 @@ namespace LiaoDongBay.Controllers
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 WaterTraceResult result = WengAnApi.GetWaterTraceResultsForMultipleElementIds(modelPath);
+                LogCalcError(result);
                 return Ok(result);
             }
             finally
@@ -166,6 +165,7 @@ namespace LiaoDongBay.Controllers
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 WengAnEpsResult result = WengAnApi.FireDemandAtOneNode(arg);
+                LogCalcError(result);
                 return Ok(result);
             }
             finally
@@ -201,6 +201,7 @@ namespace LiaoDongBay.Controllers
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 WaterQualityResult result = WengAnApi.Concentration(arg);
+                LogCalcError(result);
                 return Ok(result);
             }
             finally
@@ -232,6 +233,7 @@ namespace LiaoDongBay.Controllers
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 WaterQualityResult result = WengAnApi.WaterAge(modelPath);
+                LogCalcError(result);
                 return Ok(result);
             }
             finally
@@ -245,7 +247,7 @@ namespace LiaoDongBay.Controllers
         }
         private void LogCalcError(WaterEngineResultBase result)
         {
-            if (result != null && result.IsCalculationFailure)
+            if (result != null && result.IsCalculationFailure && result.ErrorNotifs.Any())
             {
                 _logger.Error("{0}: 计算错误总数:{1}  @{2}", new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name, result.ErrorNotifs.Count,
                     result.ErrorNotifs

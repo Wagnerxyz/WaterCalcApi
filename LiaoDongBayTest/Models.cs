@@ -285,11 +285,11 @@ namespace Models
     public class WaterQualityResult : WaterEngineResultBase
     {
         /// <summary>
-        /// 节点水龄或水质结果,按小时 数据类型：IDictionary(int, double[])
+        /// 节点结果,按小时 数据类型：IDictionary(设备id, double[]值)
         /// </summary>
         public IDictionary<int, double[]> NodeResult { get; set; }
         /// <summary>
-        /// 管道水龄或水质结果,按小时 数据类型：IDictionary(int, double[])
+        /// 管道结果,按小时 数据类型：IDictionary(设备id, double[]值)
         /// </summary>
         public IDictionary<int, double[]> PipeResult { get; set; }
     }
@@ -299,9 +299,9 @@ namespace Models
     public class WaterConcentrationArg : WengAnBaseArg
     {
         /// <summary>
-        /// 三个水厂reservior的id及 当前出厂余氯浓度 数据类型：IDictionary(int, double[])
+        /// 三个水厂reservior的id及 当前出厂余氯浓度 数据类型：IDictionary(设备id, 值)
         /// </summary>
         public IDictionary<int, double> CurrentConcentration { get; set; }
-     
+
     }
 }
