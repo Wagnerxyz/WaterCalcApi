@@ -48,4 +48,18 @@ namespace LiaoDongBay.Swagger
             return DummyTestData.DummyBreakPipeArg();
         }
     }
+    public class WA_WaterAge_Example : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return DummyTestData.DummyWaterAgeArg();
+        }
+    }
+    public class WA_WaterTrace_Example : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return DummyTestData.DummyWaterTraceArg();
+        }
+    }
 }

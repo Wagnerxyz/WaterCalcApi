@@ -35,12 +35,9 @@ namespace LiaoDongBay.Controllers
 
         }
         /// <summary>
-        /// 运行水力模型
+        /// 运行水力模型返回结果(所有节点压力，所有管道流量，流速，水头损失梯度)
         /// </summary>
-        /// <remarks>
-        /// POST /ApiTest/api/WA/RunEps
-        /// </remarks>
-        /// <param name="arg">在线数据参数</param>
+        /// <param name="arg">请求</param>
         /// <returns></returns>
         [ResponseType(typeof(WengAnEpsResult))]
         [HttpPost]
@@ -110,24 +107,26 @@ namespace LiaoDongBay.Controllers
             }
         }
         /// <summary>
-        /// 多水源供水分析 水源追踪
+        /// 水源追踪(多水源供水分析)
         /// </summary>
-        /// <param name="modelPath">模型路径(暂时任意填写)</param>
+        /// <param name="arg">无需在线数据接入，仅需传modelpath一个属性(暂时可任意填写)</param>
+        /// <remarks>无需在线数据接入</remarks>
         /// <returns></returns>
+        [SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_WaterTrace_Example))]
         [ResponseType(typeof(WaterTraceResult))]
-        public IHttpActionResult WaterTrace(string modelPath)
+        public IHttpActionResult WaterTrace(WengAnBaseArg arg)
         {
             if (isRunnning)
             {
                 return BadRequest(runningMsg);
             }
             //override
-            modelPath = this.modelPath;
+            arg.ModelPath = this.modelPath;
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WaterTraceResult result = WengAnApi.GetWaterTraceResultsForMultipleElementIds(modelPath);
+                WaterTraceResult result = WengAnApi.GetWaterTraceResultsForMultipleElementIds(arg.ModelPath);
                 LogCalcError(result);
                 return Ok(result);
             }
@@ -143,8 +142,7 @@ namespace LiaoDongBay.Controllers
         /// <summary>
         /// 消防事件
         /// </summary>
-        /// <param name="arg">输入参数</param>
-        /// <remarks></remarks>
+        /// <param name="arg">请求参数</param>
         /// <returns></returns>
         [ResponseType(typeof(WengAnEpsResult))]
         //[ApiExplorerSettings(IgnoreApi = true)]
@@ -216,23 +214,24 @@ namespace LiaoDongBay.Controllers
         /// <summary>
         /// 水龄预测
         /// </summary>
+        /// <param name="arg">无需在线数据接入，仅需传modelpath一个属性(暂时可任意填写)</param>
         /// <remarks>无需在线数据接入</remarks>
-        /// <param name="modelPath">模型路径(暂时任意填写)</param>
         /// <returns></returns>
+        [SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_WaterAge_Example))]
         [ResponseType(typeof(WaterQualityResult))]
-        public IHttpActionResult WaterAge(string modelPath)
+        public IHttpActionResult WaterAge(WengAnBaseArg arg)
         {
             if (isRunnning)
             {
                 return BadRequest(runningMsg);
             }
             //override
-            modelPath = this.modelPath;
+            arg.ModelPath = this.modelPath;
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WaterQualityResult result = WengAnApi.WaterAge(modelPath);
+                WaterQualityResult result = WengAnApi.WaterAge(arg.ModelPath);
                 LogCalcError(result);
                 return Ok(result);
             }

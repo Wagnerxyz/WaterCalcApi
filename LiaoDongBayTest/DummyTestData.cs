@@ -100,6 +100,19 @@ namespace LiaoDongBayTest
             arg = (BreakPipeArg)FillDummyBaseArg(arg);
             return arg;
         }
-
+        public static WengAnBaseArg DummyWaterTraceArg()
+        {
+            var arg = new WengAnBaseArg();
+            arg.ModelPath = wenganModel;
+          
+            return arg;
+        }
+        public static WengAnBaseArg DummyWaterAgeArg()
+        {
+            var arg = new WengAnBaseArg();
+            arg.ModelPath = wenganModel;
+          
+            return arg;
+        }
     }
 }
