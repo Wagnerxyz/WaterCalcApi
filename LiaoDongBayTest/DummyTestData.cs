@@ -11,8 +11,8 @@ namespace LiaoDongBayTest
 {
     public class DummyTestData
     {
-        const string wenganModel = @"D:\BentleyModels\WengAn\WengAn0916.wtg.sqlite";
-        public static Dictionary<int, double> GetCurrentTankElevation()
+        public const string wenganModel = @"D:\BentleyModels\WengAn\WengAn0916.wtg.sqlite";
+        public static Dictionary<int, double> GetCurrentReservoirElevation()
         {
             var dictTank = new Dictionary<int, double>();
             dictTank.Add(2949, 1128.65);
@@ -46,7 +46,7 @@ namespace LiaoDongBayTest
         /// 当前 独立的 非泵后 TCV阀门的假数据
         /// </summary>
         /// <returns></returns>
-        internal static Dictionary<int, double> GetCurrentPRVPressure()
+        public static Dictionary<int, double> GetCurrentPRVPressure()
         {
             var dict = new Dictionary<int, double>
             {
@@ -64,19 +64,18 @@ namespace LiaoDongBayTest
             arg.ModelPath = wenganModel;
             arg.CurrentPrvPressure = GetCurrentPRVPressure();
             arg.CurrentPumpSpeed = GetCurrentPumpRelativeSpeed();
-            arg.CurrentReservoirElevation = GetCurrentTankElevation();
+            arg.CurrentReservoirElevation = GetCurrentReservoirElevation();
             return arg;
         }
-        public static WengAnBaseArg DummyBaseArg()
+        public static RunEPSArg DummyRunEPSArg()
         {
-            var arg = new WengAnBaseArg();
-            arg = FillDummyBaseArg(arg);
+            var arg = new RunEPSArg();
+            arg = (RunEPSArg)FillDummyBaseArg(arg);
             return arg;
         }
         public static WaterConcentrationArg DummyWaterConcentrationArg()
         {
             var arg = new WaterConcentrationArg();
-            arg.ModelPath = wenganModel;
             arg.CurrentConcentration = new Dictionary<int, double>() { { 2949, 0.57 }, { 2957, 0.79 }, { 2961, 0.52 } };
             arg = (WaterConcentrationArg)FillDummyBaseArg(arg);
             return arg;
@@ -85,7 +84,6 @@ namespace LiaoDongBayTest
         {
             var arg = new FireDemandArg()
             { ModelPath = wenganModel, NodeId = 1339, StartTime = DateTime.Parse("2021-07-04 17:00:00Z"), DurationHours = 3, DemandInLitersPerSecond = 50 };
-
             arg = (FireDemandArg)FillDummyBaseArg(arg);
             return arg;
         }
@@ -104,14 +102,12 @@ namespace LiaoDongBayTest
         {
             var arg = new WengAnBaseArg();
             arg.ModelPath = wenganModel;
-          
             return arg;
         }
         public static WengAnBaseArg DummyWaterAgeArg()
         {
             var arg = new WengAnBaseArg();
             arg.ModelPath = wenganModel;
-          
             return arg;
         }
     }

@@ -40,9 +40,8 @@ namespace LiaoDongBay.Controllers
         /// <param name="arg">请求</param>
         /// <returns></returns>
         [ResponseType(typeof(WengAnEpsResult))]
-        [HttpPost]
-        [SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_RunEPSArg_Example))]
-        public IHttpActionResult RunEps(WengAnBaseArg arg)
+        [SwaggerRequestExample(typeof(RunEPSArg), typeof(WA_RunEPS1_Example))]
+        public IHttpActionResult RunEps(RunEPSArg arg)
         {
             if (isRunnning)
             {
@@ -51,7 +50,7 @@ namespace LiaoDongBay.Controllers
             var result = new WengAnEpsResult();
 
             //override
-            arg.ModelPath = this.modelPath;
+            //arg.ModelPath = this.modelPath;
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);

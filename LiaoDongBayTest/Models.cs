@@ -304,4 +304,11 @@ namespace Models
         public IDictionary<int, double> CurrentConcentration { get; set; }
 
     }
+    /// <summary>
+    /// 运行水力计算参数
+    /// </summary>
+    public class RunEPSArg : WengAnBaseArg
+    {
+
+    }
 }

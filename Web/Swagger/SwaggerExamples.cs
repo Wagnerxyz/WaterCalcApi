@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using LiaoDongBay.Controllers;
 using LiaoDongBayTest;
+using LiaoDongBayTest.WengAn.Args;
 using Swashbuckle.Examples;
 
 namespace LiaoDongBay.Swagger
@@ -20,11 +21,12 @@ namespace LiaoDongBay.Swagger
             };
         }
     }
-    public class WA_RunEPSArg_Example : IExamplesProvider
+    public class WA_RunEPS1_Example : IExamplesProvider
     {
         public object GetExamples()
         {
-            return DummyTestData.DummyBaseArg();
+            return   DummyTestData.DummyRunEPSArg();
+            
         }
     }
     public class WA_WaterConcentration_Example : IExamplesProvider
