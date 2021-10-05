@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,6 +11,8 @@ using Haestad.Support.User;
 using LiaoDongBay.App_Start;
 using LiaoDongBayTest;
 using Models;
+using NSwag.AspNet.Owin;
+using Serilog;
 
 namespace LiaoDongBay
 {
@@ -18,6 +20,16 @@ namespace LiaoDongBay
     {
         protected void Application_Start()
         {
+            //RouteTable.Routes.MapOwinPath("swagger", app =>
+            //{
+            //    app.UseSwaggerUi3(typeof(WebApiApplication).Assembly, settings =>
+            //    {
+            //        settings.MiddlewareBasePath = "/swagger";
+            //        //settings.GeneratorSettings.DefaultUrlTemplate = "api/{controller}/{id}";  //this is the default one
+            //        settings.GeneratorSettings.DefaultUrlTemplate = "api/{controller}/{action}/{id}";
+            //        settings.DocumentTitle = "Bentley API";
+            //    });
+            //});
             SerilogConfig.RegisterComponents();
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
@@ -26,12 +38,20 @@ namespace LiaoDongBay
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             RegisterAutoMapper();
         }
-
+        protected void Application_End(object sender, EventArgs e)
+        {
+            Log.Debug("In Application_End");
+            ApplicationShutdownReason shutdownReason = System.Web.Hosting.HostingEnvironment.ShutdownReason;
+            Log.Information("App is shutting down (reason = {@shutdownReason})", shutdownReason);
+            // Finally, once just before the application exits...
+            Log.CloseAndFlush();
+            // WARNING : Some code runs AFTER Application_End ... see AppPostShutDown
+        }
         private void RegisterAutoMapper()
         {
             MapperConfiguration mapConfig = new MapperConfiguration(cfg =>
             {
-             
+
                 cfg.CreateMap<IUserNotification, UserNotification>();
                 //cfg.AddProfile();
             });

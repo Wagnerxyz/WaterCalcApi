@@ -38,7 +38,5 @@ namespace LiaoDongBayTest.WengAn.Args
         /// 水厂当前液位 目前只用到三个 其他两个不传 数据类型：IDictionary(设备id, 值)
         /// </summary>
         public IDictionary<int, double> CurrentReservoirElevation { get; set; } = new Dictionary<int, double>();
-
-        public string  GoodType { get; set; }
     }
 }
