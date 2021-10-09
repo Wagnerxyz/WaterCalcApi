@@ -50,11 +50,9 @@ namespace LiaoDongBayTest
                 wm.PressureCalculationOption.SetPressureEngineSimulationStartTime(now);
 
                 IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
-                List<IUserNotification> error = pressureNotifs?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error).ToList();
-                if (error != null && error.Any())
+                if (HasEngineFatalError(pressureNotifs, result))
                 {
-                    result.IsCalculationFailure = true;
-                    result.ErrorNotifs = mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
+                    return result;
                 }
 
                 result.EpsNodeResult = GetEpsTimeNodePointResult(wm);
@@ -91,11 +89,9 @@ namespace LiaoDongBayTest
                 wm.PressureCalculationOption.AddSCADAFireDemand(arg.NodeId, arg.DemandInLitersPerSecond, arg.StartTime, arg.DurationHours);
 
                 IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
-                List<IUserNotification> error = pressureNotifs?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error).ToList();
-                if (error != null && error.Any())
+                if (HasEngineFatalError(pressureNotifs, result))
                 {
-                    result.IsCalculationFailure = true;
-                    result.ErrorNotifs = mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
+                    return result;
                 }
 
                 result.EpsNodeResult = GetEpsTimeNodePointResult(wm);
@@ -122,11 +118,9 @@ namespace LiaoDongBayTest
                 WaterQualityCalculation wqc = new WaterQualityCalculation(wm);
 
                 IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
-                List<IUserNotification> error = pressureNotifs?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error).ToList();
-                if (error != null && error.Any())
+                if (HasEngineFatalError(pressureNotifs, result))
                 {
-                    result.IsCalculationFailure = true;
-                    result.ErrorNotifs = mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
+                    return result;
                 }
 
                 HmIDCollection allNodesIds = wm.DomainDataSet
@@ -177,11 +171,9 @@ namespace LiaoDongBayTest
                 WaterQualityCalculation wqc = new WaterQualityCalculation(wm);
 
                 IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
-                List<IUserNotification> error = pressureNotifs?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error).ToList();
-                if (error != null && error.Any())
+                if (HasEngineFatalError(pressureNotifs, result))
                 {
-                    result.IsCalculationFailure = true;
-                    result.ErrorNotifs = mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
+                    return result;
                 }
 
                 HmIDCollection allNodesIds = wm.DomainDataSet
@@ -221,7 +213,7 @@ namespace LiaoDongBayTest
         /// <returns></returns>
         public static BreakPipeResult BreakPipe(BreakPipeArg arg)
         {
-           
+
             WaterGEMSModel wm = new WaterGEMSModel();
             var result = new BreakPipeResult();
             var valveInitialDict = new Dictionary<int, ValveSettingEnum>();
@@ -296,12 +288,10 @@ namespace LiaoDongBayTest
                 var now = DateTime.Now;
                 wm.PressureCalculationOption.SetPressureEngineSimulationStartDate(now);
                 wm.PressureCalculationOption.SetPressureEngineSimulationStartTime(now);
-                IUserNotification[] notif = wm.RunPressureCalculation();
-                List<IUserNotification> error = notif?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error).ToList();
-                if (error != null && error.Any())
+                IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
+                if (HasEngineFatalError(pressureNotifs, result))
                 {
-                    result.IsCalculationFailure = true;
-                    result.ErrorNotifs = mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
+                    return result;
                 }
                 #region 比较节点水压
 
@@ -355,7 +345,7 @@ namespace LiaoDongBayTest
                 wm.PressureCalculationOption.SetPressureEngineCalculationType(EpaNetEngine_CalculationTypeEnum.SCADAAnalaysisType);
                 wm.PressureCalculationOption.SetSCADACalculationType(SCADACalculationTypeEnum.HydraulicsOnly);
                 Utils.SetCurrentPumpValveReservoir(wm, arg);
-                
+
                 new NetworkIsolation(dataSet).GetElementsOfIsolatingPipeBreak(arg.PipeId, arg.BreakPointDistanceToStartNode,
                     new HmIDCollection(arg.ValvesToExclude), out var valvesToClose, out var pipesToClose,
                     out var isolationValvesToClose, out var isolatedPartialPipeIds, out var isolatedPipeIds,
@@ -492,7 +482,10 @@ namespace LiaoDongBayTest
                 traceElementIds.Add(2957);
                 traceElementIds.Add(2961);
                 IUserNotification[] notif = wt.RunTraceCalculationForMultipleTraceElements(traceElementIds);    // reservoir
-                GetEngineFatalErrorException(notif, result);
+                if (HasEngineFatalError(notif, result))
+                {
+                    return result;
+                }
                 IDomainElementManager junctionManager = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoJunctionElementManager);
                 ModelingElementCollection allJunctions = junctionManager.Elements();
                 IList<int> elementIds = new List<int>();
@@ -526,7 +519,7 @@ namespace LiaoDongBayTest
             }
         }
 
-        private static void GetEngineFatalErrorException(IUserNotification[] notif, WaterEngineResultBase result)
+        private static bool HasEngineFatalError(IUserNotification[] notif, WaterEngineResultBase result)
         {
             List<IUserNotification> error = notif?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error).ToList();
             if (error != null && error.Any())
@@ -534,6 +527,7 @@ namespace LiaoDongBayTest
                 result.IsCalculationFailure = true;
                 result.ErrorNotifs = mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
             }
+            return result.IsCalculationFailure;
         }
 
         /// <summary>

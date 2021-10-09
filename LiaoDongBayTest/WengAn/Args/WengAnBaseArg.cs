@@ -19,7 +19,7 @@ namespace LiaoDongBayTest.WengAn.Args
         public string ModelPath { get; set; }
 
         /// <summary>
-        /// 当前水泵相对系数(由当前值除以最大值得出。例如 40hz/50hz = 0.8) ，为0则代表关闭  数据类型：IDictionary(设备id, 值)
+        /// 当前水泵速度相对系数(由当前值除以最大值得出。例:当前速度40hz/最大速度50hz = 0.8) ，为0代表关闭  数据类型：Dictionary(设备id, 值)
         /// </summary>
         public IDictionary<int, double> CurrentPumpSpeed { get; set; } = new Dictionary<int, double>();
         ///// <summary>
@@ -31,11 +31,11 @@ namespace LiaoDongBayTest.WengAn.Args
         /// </summary>
         //public IDictionary<int, double> CurrentAfterPumpValveClosure { get; set; }
         /// <summary>
-        /// 当前PRV阀压力 数据类型：IDictionary(int, double[])
+        /// 当前PRV阀压力 数据类型：Dictionary(设备id, double值)
         /// </summary>
         public IDictionary<int, double> CurrentPrvPressure { get; set; } = new Dictionary<int, double>();
         /// <summary>
-        /// 水厂当前液位 目前只用到三个 其他两个不传 数据类型：IDictionary(设备id, 值)
+        /// 水厂当前液位 模型里5个水厂，目前只用到三个 其他两个水厂的可不传 数据类型：Dictionary(设备id, double值)
         /// </summary>
         public IDictionary<int, double> CurrentReservoirElevation { get; set; } = new Dictionary<int, double>();
     }
