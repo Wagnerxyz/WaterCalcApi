@@ -30,5 +30,9 @@ namespace WengAn.Args
         /// </summary>
         [Required]
         public double BreakPointDistanceToStartNode { get; set; }
+        /// <summary>
+        /// 想要获取结果的节点id  数组
+        /// </summary>
+        public int[] ResultNodeIds { get; set; }
     }
 }

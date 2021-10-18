@@ -24,7 +24,7 @@ namespace LiaoDongBayTest
         /// <summary>
         /// 运行水力模型
         /// </summary>
-        public static WengAnEpsResult RunEPS(WengAnBaseArg arg)
+        public static WengAnEpsResult RunEPS(RunEPSArg arg)
         {
             var wm = new WaterGEMSModel();
             var result = new WengAnEpsResult();
@@ -55,10 +55,33 @@ namespace LiaoDongBayTest
                     return result;
                 }
 
-                result.EpsNodeResult = GetEpsTimeNodePointResult(wm);
-                result.EpsPipeResult = GetEpsTimePointPipeResult(wm);
-                return result;
+                #region Get EPS Result
+                
+                if (arg.ResultNodeIds == null || arg.ResultNodeIds.Length < 1)
+                {
+                    HmIDCollection allJunctionIds =
+                        wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoJunctionElementManager).ElementIDs();
 
+                    result.EpsNodeResult = GetEpsTimeNodePointResult(wm, allJunctionIds.ToArray());
+                }
+                else
+                {
+                    result.EpsNodeResult = GetEpsTimeNodePointResult(wm,arg.ResultNodeIds);
+                }
+                if (arg.ResultPipeIds == null || arg.ResultPipeIds.Length < 1)
+                {
+                    HmIDCollection allPipeIds =
+                        wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager).ElementIDs();
+
+                    result.EpsPipeResult = GetEpsTimePointPipeResult(wm, allPipeIds.ToArray());
+                }
+                else
+                {
+                    result.EpsPipeResult = GetEpsTimePointPipeResult(wm,arg.ResultPipeIds);
+                }
+                #endregion
+
+                return result;
             }
             finally
             {
@@ -94,8 +117,30 @@ namespace LiaoDongBayTest
                     return result;
                 }
 
-                result.EpsNodeResult = GetEpsTimeNodePointResult(wm);
-                result.EpsPipeResult = GetEpsTimePointPipeResult(wm);
+                #region Get EPS Result
+
+                if (arg.ResultNodeIds == null || arg.ResultNodeIds.Length < 1)
+                {
+                    HmIDCollection allJunctionIds =
+                        wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoJunctionElementManager).ElementIDs();
+                    result.EpsNodeResult = GetEpsTimeNodePointResult(wm, allJunctionIds.ToArray());
+                }
+                else
+                {
+                    result.EpsNodeResult = GetEpsTimeNodePointResult(wm,arg.ResultNodeIds);
+                }
+                if (arg.ResultPipeIds == null || arg.ResultPipeIds.Length < 1)
+                {
+                    HmIDCollection allPipeIds =
+                        wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager).ElementIDs();
+
+                    result.EpsPipeResult = GetEpsTimePointPipeResult(wm, allPipeIds.ToArray());
+                }
+                else
+                {
+                    result.EpsPipeResult = GetEpsTimePointPipeResult(wm,arg.ResultPipeIds);
+                }
+                #endregion
                 return result;
             }
             finally
@@ -105,14 +150,14 @@ namespace LiaoDongBayTest
 
         }
         //水龄不用传参数
-        public static WaterQualityResult WaterAge(string modelPath)
+        public static WaterQualityResult WaterAge(WengAnBaseArg arg)
         {
             WaterGEMSModel wm = new WaterGEMSModel();
             wm.ProductId = ProductId.Bentley_WaterGEMS;
             var result = new Models.WaterQualityResult();
             try
             {
-                wm.OpenDataSource(modelPath);
+                wm.OpenDataSource(arg.ModelPath);
                 wm.SetActiveScenario(4015);
                 wm.RunWTmodel();     //run the wtrg model that includes WQ calculations 
                 WaterQualityCalculation wqc = new WaterQualityCalculation(wm);
@@ -123,27 +168,53 @@ namespace LiaoDongBayTest
                     return result;
                 }
 
-                HmIDCollection allNodesIds = wm.DomainDataSet
-                    .DomainElementManager((int)DomainElementType.BaseIdahoNodeElementManager).ElementIDs();
+                #region Get Result
                 Dictionary<int, double[]> nodeResult = new Dictionary<int, double[]>();
-                foreach (var id in allNodesIds)
-                {
-                    double[] ages = wqc.GetAgeInHours(id);
-                    nodeResult.Add(id, ages);
-                }
 
-                result.NodeResult = nodeResult;
+                if (arg.ResultNodeIds == null || arg.ResultNodeIds.Length < 1)
+                {
+                    HmIDCollection allNodesIds = wm.DomainDataSet
+                        .DomainElementManager((int)DomainElementType.IdahoJunctionElementManager).ElementIDs();
+                    foreach (var id in allNodesIds)
+                    {
+                        double[] ages = wqc.GetAgeInHours(id);
+                        nodeResult.Add(id, ages);
+                    }
+                    result.NodeResult = nodeResult;
+                }
+                else
+                {
+                    foreach (var id in arg.ResultNodeIds)
+                    {
+                        double[] ages = wqc.GetAgeInHours(id);
+                        nodeResult.Add(id, ages);
+                    }
+                    result.NodeResult = nodeResult;
+                }
 
                 Dictionary<int, double[]> pipeResult = new Dictionary<int, double[]>();
-
-                HmIDCollection allPipeIds = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager)
-                    .ElementIDs();
-                foreach (var id in allPipeIds)
+                if (arg.ResultPipeIds == null || arg.ResultPipeIds.Length < 1)
                 {
-                    double[] ages = wqc.GetAgeInHours(id);
-                    pipeResult.Add(id, ages);
+                    HmIDCollection allPipeIds =
+                        wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager).ElementIDs();
+
+                    foreach (var id in allPipeIds)
+                    {
+                        double[] ages = wqc.GetAgeInHours(id);
+                        pipeResult.Add(id, ages);
+                    }
+                    result.PipeResult = pipeResult;
                 }
-                result.PipeResult = pipeResult;
+                else
+                {
+                    foreach (var id in arg.ResultPipeIds)
+                    {
+                        double[] ages = wqc.GetAgeInHours(id);
+                        pipeResult.Add(id, ages);
+                    }
+                    result.PipeResult = pipeResult;
+                }
+                #endregion
                 return result;
             }
             finally
@@ -175,28 +246,53 @@ namespace LiaoDongBayTest
                 {
                     return result;
                 }
-
-                HmIDCollection allNodesIds = wm.DomainDataSet
-                    .DomainElementManager((int)DomainElementType.BaseIdahoNodeElementManager).ElementIDs();
+                #region Get Result
                 Dictionary<int, double[]> nodeResult = new Dictionary<int, double[]>();
-                foreach (var id in allNodesIds)
-                {
-                    double[] ages = wqc.GetConcentrationInMGL(id);
-                    nodeResult.Add(id, ages);
-                }
 
-                result.NodeResult = nodeResult;
+                if (arg.ResultNodeIds == null || arg.ResultNodeIds.Length < 1)
+                {
+                    HmIDCollection allNodesIds = wm.DomainDataSet
+                        .DomainElementManager((int)DomainElementType.IdahoJunctionElementManager).ElementIDs();
+                    foreach (var id in allNodesIds)
+                    {
+                        double[] ages = wqc.GetConcentrationInMGL(id);
+                        nodeResult.Add(id, ages);
+                    }
+                    result.NodeResult = nodeResult;
+                }
+                else
+                {
+                    foreach (var id in arg.ResultNodeIds)
+                    {
+                        double[] ages = wqc.GetConcentrationInMGL(id);
+                        nodeResult.Add(id, ages);
+                    }
+                    result.NodeResult = nodeResult;
+                }
 
                 Dictionary<int, double[]> pipeResult = new Dictionary<int, double[]>();
-
-                HmIDCollection allPipeIds = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager)
-                    .ElementIDs();
-                foreach (var id in allPipeIds)
+                if (arg.ResultPipeIds == null || arg.ResultPipeIds.Length < 1)
                 {
-                    double[] ages = wqc.GetConcentrationInMGL(id);
-                    pipeResult.Add(id, ages);
+                    HmIDCollection allPipeIds =
+                        wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager).ElementIDs();
+
+                    foreach (var id in allPipeIds)
+                    {
+                        double[] ages = wqc.GetConcentrationInMGL(id);
+                        pipeResult.Add(id, ages);
+                    }
+                    result.PipeResult = pipeResult;
                 }
-                result.PipeResult = pipeResult;
+                else
+                {
+                    foreach (var id in arg.ResultPipeIds)
+                    {
+                        double[] ages = wqc.GetConcentrationInMGL(id);
+                        pipeResult.Add(id, ages);
+                    }
+                    result.PipeResult = pipeResult;
+                }
+                #endregion
                 return result;
             }
             finally
@@ -295,13 +391,25 @@ namespace LiaoDongBayTest
                 }
                 #region 比较节点水压
 
-                IDomainElementManager junctionManager =
-                    wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoJunctionElementManager);
-                ModelingElementCollection allJunctions = junctionManager.Elements();
                 var pressureDict = new Dictionary<int, double[]>();
-                foreach (var junction in allJunctions)
+                if (arg.ResultNodeIds == null || arg.ResultNodeIds.Length < 1)
                 {
-                    pressureDict.Add(junction.Id, wm.PressureResult.GetNodePressureInKiloPascals(junction.Id));
+                    IDomainElementManager junctionManager =
+                        wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoJunctionElementManager);
+                    ModelingElementCollection allJunctions = junctionManager.Elements();
+
+
+                    foreach (var junction in allJunctions)
+                    {
+                        pressureDict.Add(junction.Id, wm.PressureResult.GetNodePressureInKiloPascals(junction.Id));
+                    }
+                }
+                else
+                {
+                    foreach (var id in arg.ResultNodeIds)
+                    {
+                        pressureDict.Add(id, wm.PressureResult.GetNodePressureInKiloPascals(id));
+                    }
                 }
 
                 result.NodePressures = pressureDict;
@@ -533,16 +641,12 @@ namespace LiaoDongBayTest
         /// <summary>
         /// 返回运行watergems的节点，管道结果
         /// </summary>
-        /// <param name="wm"></param>
-        /// <returns></returns>
-        private static List<EpsNodeResult> GetEpsTimeNodePointResult(WaterGEMSModel wm)
+        private static List<EpsNodeResult> GetEpsTimeNodePointResult(WaterGEMSModel wm, int[] nodesIds)
         {
             double[] timeSteps = wm.PressureResult.GetPressureEngineCalculationTimeStepsInSeconds(); //读取EPS报告点动态结果
-
             var timePointNodeResults = new List<EpsNodeResult>();
-            HmIDCollection allNodesIds = wm.DomainDataSet
-                .DomainElementManager((int)DomainElementType.BaseIdahoNodeElementManager).ElementIDs();
-            foreach (var id in allNodesIds)
+
+            foreach (var id in nodesIds)
             {
                 var epsResult = new EpsNodeResult();
                 epsResult.Id = id;
@@ -556,13 +660,13 @@ namespace LiaoDongBayTest
             return timePointNodeResults;
         }
 
-        private static List<EpsPipeResult> GetEpsTimePointPipeResult(WaterGEMSModel wm)
+        private static List<EpsPipeResult> GetEpsTimePointPipeResult(WaterGEMSModel wm, int[] pipeIds )
         {
             double[] timeSteps = wm.PressureResult.GetPressureEngineCalculationTimeStepsInSeconds(); //读取EPS报告点动态结果
             var timePointPipeResults = new List<EpsPipeResult>();
-            HmIDCollection allPipeIds = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager)
-                .ElementIDs();
-            foreach (var id in allPipeIds)
+            //HmIDCollection pipeIds = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager)
+            //    .ElementIDs();
+            foreach (var id in pipeIds)
             {
                 var epsResult = new EpsPipeResult();
                 epsResult.Id = id;

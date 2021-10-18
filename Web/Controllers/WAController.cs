@@ -230,7 +230,7 @@ namespace LiaoDongBay.Controllers
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WaterQualityResult result = WengAnApi.WaterAge(arg.ModelPath);
+                WaterQualityResult result = WengAnApi.WaterAge(arg);
                 LogCalcError(result);
                 return Ok(result);
             }

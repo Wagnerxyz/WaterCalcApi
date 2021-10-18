@@ -38,5 +38,19 @@ namespace LiaoDongBayTest.WengAn.Args
         /// 水厂当前液位 模型里5个水厂，目前只用到三个 其他两个水厂的可不传 数据类型：Dictionary(设备id, double值)
         /// </summary>
         public IDictionary<int, double> CurrentReservoirElevation { get; set; } = new Dictionary<int, double>();
+
+        #region 影响返回结果
+
+        /// <summary>
+        /// 想要获取结果的节点id  数组
+        /// </summary>
+        public int[] ResultNodeIds { get; set; }
+        /// <summary>
+        /// 想要获取结果的节点id  数组
+        /// </summary>
+        public int[] ResultPipeIds { get; set; }
+
+        #endregion
+
     }
 }

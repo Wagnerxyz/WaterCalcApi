@@ -32,17 +32,15 @@ namespace LiaoDongBayTest
             });
             WengAnApi.mapper = mapConfig.CreateMapper();
 
+            var epsArg = DummyTestData.DummyRunEPSArg();
+
+            WengAnApi.RunEPS(epsArg);
+
             var aaa = DummyTestData.DummyFireArg();
             var aqweq = WengAnApi.FireDemandAtOneNode(aaa);
             var qwqeq = aqweq.EpsNodeResult.Where(x => x.Id == 1338);
             File.WriteAllText(@"fire result.json", JsonConvert.SerializeObject(qwqeq));
-
-
-
-
-
-
-
+            
             WengAnBreakPipe();
 
             //string input = File.ReadAllText(@"d:\dhi.json");
@@ -50,10 +48,7 @@ namespace LiaoDongBayTest
             //var contentData = new StringContent(input, Encoding.UTF8, "application/json");
             //client.Timeout = TimeSpan.FromMinutes(30);
             //var response = client.PostAsync("http://40.117.47.87/BentleyAPI/api/qingdao/FlushWater", contentData).TracePercentageResults;
-            //var result = WengAnApi.RunEPS(wenganModel);
-            //var arg = new BreakPipeArg(){ModelPath = wenganModel,PipeId = 2887,};
-            //WengAnApi.BreakPipe();
-
+        
             var fireDemandArg = new FireDemandArg()
             { ModelPath = wenganModel, DemandInLitersPerSecond = 50, DurationHours = 2, NodeId = 1329, StartTime = new DateTime(2021, 7, 5, 0, 0, 0) };
             File.WriteAllText(@"firedemandarg.json", JsonConvert.SerializeObject(fireDemandArg));
@@ -104,6 +99,7 @@ namespace LiaoDongBayTest
         private static void WengAnBreakPipe()
         {
             var arg = DummyTestData.DummyBreakPipeArg();
+            var xxx = JsonConvert.SerializeObject(arg);
             var result = WengAnApi.BreakPipe(arg);
         }
 
