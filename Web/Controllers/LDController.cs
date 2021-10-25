@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using LiaoDongBay.Models;
 using LiaoDongBay.Swagger;
 using LiaoDongBayTest;
 using Serilog;
@@ -18,12 +19,11 @@ namespace LiaoDongBay.Controllers
     {
         object __lockObj = new object();
         private static bool isRunnning = false;
-        public const string modelPath= @"D:\BentleyModels\LiaoDong\LiaoDongBay_20210716.wtg.sqlite";
+        public readonly string modelPath;
         private static ILogger _logger = Serilog.Log.ForContext<LDController>();
         public LDController()
         {
-            //string path = ConfigurationManager.AppSettings["ModelsFolder"];
-            //modelPath = Path.Combine(path, fileName);
+            modelPath = ConfigurationManager.AppSettings["LiaoDongModel"];
         }
 
         /// <summary>
@@ -33,22 +33,23 @@ namespace LiaoDongBay.Controllers
         /// <param name="arg"></param>
         /// <returns></returns>
         [ResponseType(typeof(LiaoDongResult))]
-        [SwaggerRequestExample(typeof(LiaoDongArg), typeof(LD_LeakDetect_Example))]
+        [SwaggerRequestExample(typeof(NodeEmitterCoefficientArg), typeof(LD_LeakDetect_Example))]
         public IHttpActionResult LeakDetect(LiaoDongArg arg)
         {
             if (isRunnning)
             {
                 return BadRequest("前一个请求正在运行，请稍后再试");
             }
+            var innerArg = Consts.Mapper.Map<NodeEmitterCoefficientArg>(arg);
             //override
-            arg.ModelPath = modelPath;
+            innerArg.ModelPath = modelPath;
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 var result = new LiaoDongResult();
-                result.IsBalanced = LiaoDongApi.CheckBalance(arg);
-                result.NodeEmitterCoefficientsInAscendingOrderInLitersPerSecondPerMetersH2O = LiaoDongApi.SettingObservedDataAndRunWaterLeakCalibration(arg);
+                result.IsBalanced = LiaoDongApi.CheckBalance(innerArg);
+                result.NodeEmitterCoefficientsInAscendingOrderInLitersPerSecondPerMetersH2O = LiaoDongApi.SettingObservedDataAndRunWaterLeakCalibration(innerArg);
                 return Ok(result);
             }
             finally

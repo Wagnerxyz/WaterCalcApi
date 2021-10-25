@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Haestad.Calculations.Shanghai.QingDaoWT;
 using Haestad.Support.Units;
 using Haestad.Support.User;
 using LiaoDongBayTest.WengAn.Args;
@@ -14,7 +15,7 @@ namespace Models
     /// <summary>
     /// Bentley水力计算引擎信息基类
     /// </summary>
-    public class WaterEngineResultBase
+    public class WaterEngineBaseResult
     {
         /// <summary>
         /// 内部水力计算引擎出错。先检查这个，若true，则读ErrorNotifs详细信息
@@ -25,6 +26,7 @@ namespace Models
         /// </summary>
         public IList<UserNotification> ErrorNotifs { get; set; }
     }
+
     /// <summary>
     /// Haestad.Support.User.IUserNotification的DTO，减少外部程序对Haestad.Support.dll的依赖
     /// </summary>
@@ -119,10 +121,14 @@ namespace Models
 
      *
      */
+
+    #region 水源追踪
+
+
     /// <summary>
     /// 水源追踪结果
     /// </summary>
-    public class WaterTraceResult : WaterEngineResultBase
+    public class WaterTraceBaseResult : WaterEngineBaseResult
     {
         public List<WaterTracePercentage> TracePercentageResults { get; set; }
     }
@@ -151,6 +157,10 @@ namespace Models
         public double[] TimeStep { get; set; }
     }
 
+    #endregion
+
+
+
     public class WengAnEpsArg : WengAnBaseArg
     {
         /// <summary>
@@ -163,7 +173,7 @@ namespace Models
     /// <summary>
     /// EPS计算结果
     /// </summary>
-    public class WengAnEpsResult : WaterEngineResultBase
+    public class WengAnEpsBaseResult : WaterEngineBaseResult
     {
         /// <summary>
         /// 所有节点结果
@@ -228,7 +238,6 @@ namespace Models
     /// </summary>
     public class FireDemandArg : WengAnBaseArg
     {
-
         /// <summary>
         /// 着火节点Id
         /// </summary>
@@ -253,7 +262,7 @@ namespace Models
     /// <summary>
     /// 消防事件接口 输入参数
     /// </summary>
-    public class FireDemandResult : WaterEngineResultBase
+    public class FireDemandBaseResult : WaterEngineBaseResult
     {
         /// <summary>
         /// 着火节点Id
@@ -279,20 +288,8 @@ namespace Models
 
     #endregion
 
-    /// <summary>
-    /// 水龄或水质结果
-    /// </summary>
-    public class WaterQualityResult : WaterEngineResultBase
-    {
-        /// <summary>
-        /// 节点结果,按小时 数据类型：IDictionary(设备id, double[]值)
-        /// </summary>
-        public IDictionary<int, double[]> NodeResult { get; set; }
-        /// <summary>
-        /// 管道结果,按小时 数据类型：IDictionary(设备id, double[]值)
-        /// </summary>
-        public IDictionary<int, double[]> PipeResult { get; set; }
-    }
+    #region 水龄水质余氯
+
     /// <summary>
     /// 水质余氯预测 输入参数
     /// </summary>
@@ -305,10 +302,58 @@ namespace Models
 
     }
     /// <summary>
+    /// 水龄或水质结果
+    /// </summary>
+    public class WaterQualityResult : WaterEngineBaseResult
+    {
+        /// <summary>
+        /// 节点结果,按小时 数据类型：IDictionary(设备id, double[]值)
+        /// </summary>
+        public IDictionary<int, double[]> NodeResult { get; set; }
+        /// <summary>
+        /// 管道结果,按小时 数据类型：IDictionary(设备id, double[]值)
+        /// </summary>
+        public IDictionary<int, double[]> PipeResult { get; set; }
+    }
+
+    #endregion
+
+
+    /// <summary>
     /// 运行水力计算参数
     /// </summary>
     public class RunEPSArg : WengAnBaseArg
     {
+
+    }
+
+    public class ForecastDemandArg
+    {
+        /// <summary>
+        /// 模型Sqlite文件路径
+        /// </summary>
+        [Required]
+        public string ModelPath { get; set; }
+        /// <summary>
+        /// 预报时间
+        /// </summary>
+        [Required]
+        public DateTime DateTime { get; set; }
+        /// <summary>
+        /// 查尔岩水厂的流量观察数据，是当前时间前面24小时的数据
+        /// </summary>
+        [Required]
+        public List<ObsDate> cryData { get; set; }
+        /// <summary>
+        /// 西坡水厂的流量观察数据，是当前时间前面24小时的数据
+        /// </summary>
+        [Required]
+        public List<ObsDate> xipoData { get; set; }
+        /// <summary>
+        /// 剩土三个水厂的流量观察数据，是当前时间前面24小时的数据
+        /// </summary>
+        [Required]
+        public List<ObsDate> shengtuData { get; set; }
 
     }
 }

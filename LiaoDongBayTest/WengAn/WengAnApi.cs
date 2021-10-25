@@ -24,10 +24,10 @@ namespace LiaoDongBayTest
         /// <summary>
         /// 运行水力模型
         /// </summary>
-        public static WengAnEpsResult RunEPS(RunEPSArg arg)
+        public static WengAnEpsBaseResult RunEPS(RunEPSArg arg)
         {
             var wm = new WaterGEMSModel();
-            var result = new WengAnEpsResult();
+            var result = new WengAnEpsBaseResult();
 
             try
             {
@@ -56,7 +56,7 @@ namespace LiaoDongBayTest
                 }
 
                 #region Get EPS Result
-                
+
                 if (arg.ResultNodeIds == null || arg.ResultNodeIds.Length < 1)
                 {
                     HmIDCollection allJunctionIds =
@@ -66,7 +66,7 @@ namespace LiaoDongBayTest
                 }
                 else
                 {
-                    result.EpsNodeResult = GetEpsTimeNodePointResult(wm,arg.ResultNodeIds);
+                    result.EpsNodeResult = GetEpsTimeNodePointResult(wm, arg.ResultNodeIds);
                 }
                 if (arg.ResultPipeIds == null || arg.ResultPipeIds.Length < 1)
                 {
@@ -77,7 +77,7 @@ namespace LiaoDongBayTest
                 }
                 else
                 {
-                    result.EpsPipeResult = GetEpsTimePointPipeResult(wm,arg.ResultPipeIds);
+                    result.EpsPipeResult = GetEpsTimePointPipeResult(wm, arg.ResultPipeIds);
                 }
                 #endregion
 
@@ -93,11 +93,11 @@ namespace LiaoDongBayTest
         /// </summary>
         /// <param name="arg">输入参数</param>
         /// <returns></returns>
-        public static WengAnEpsResult FireDemandAtOneNode(FireDemandArg arg)
+        public static WengAnEpsBaseResult FireDemandAtOneNode(FireDemandArg arg)
         {
             WaterGEMSModel wm = new WaterGEMSModel();
             wm.ProductId = ProductId.Bentley_WaterGEMS;
-            var result = new WengAnEpsResult();
+            var result = new WengAnEpsBaseResult();
 
             try
             {
@@ -127,7 +127,7 @@ namespace LiaoDongBayTest
                 }
                 else
                 {
-                    result.EpsNodeResult = GetEpsTimeNodePointResult(wm,arg.ResultNodeIds);
+                    result.EpsNodeResult = GetEpsTimeNodePointResult(wm, arg.ResultNodeIds);
                 }
                 if (arg.ResultPipeIds == null || arg.ResultPipeIds.Length < 1)
                 {
@@ -138,7 +138,7 @@ namespace LiaoDongBayTest
                 }
                 else
                 {
-                    result.EpsPipeResult = GetEpsTimePointPipeResult(wm,arg.ResultPipeIds);
+                    result.EpsPipeResult = GetEpsTimePointPipeResult(wm, arg.ResultPipeIds);
                 }
                 #endregion
                 return result;
@@ -342,16 +342,16 @@ namespace LiaoDongBayTest
 
 
                 result.ValvesToClose = valvesToClose.ToArray(); //important
-                //result.PipesToClose = pipesToClose.ToArray();
+                //baseResult.PipesToClose = pipesToClose.ToArray();
                 result.IsolationValvesToClose = isolationValvesToClose.ToArray(); //important
-                //result.IsolatedPartialPipeIds = isolatedPartialPipeIds;
+                //baseResult.IsolatedPartialPipeIds = isolatedPartialPipeIds;
                 result.IsolatedPipeIds = isolatedPipeIds.ToArray();
                 result.IsolatedNodeIds = isolatedNodeIds.ToArray();
                 result.IsolatedCustomerIds = isolatedCustomerIds.ToArray();
-                //result.OutagePartialPipeIds = outagePartialPipeIds;
-                //result.OutagePipeIds = outagePipeIds.ToArray();
-                //result.OutageNodeIds = outageNodeIds.ToArray();
-                //result.OutageCustomerIds = outageCustomerIds.ToArray();
+                //baseResult.OutagePartialPipeIds = outagePartialPipeIds;
+                //baseResult.OutagePipeIds = outagePipeIds.ToArray();
+                //baseResult.OutageNodeIds = outageNodeIds.ToArray();
+                //baseResult.OutageCustomerIds = outageCustomerIds.ToArray();
 
                 #region Save Valve Status
 
@@ -462,26 +462,26 @@ namespace LiaoDongBayTest
 
 
                 result.ValvesToClose = valvesToClose.ToArray(); //important
-                //result.PipesToClose = pipesToClose.ToArray();
+                //baseResult.PipesToClose = pipesToClose.ToArray();
                 result.IsolationValvesToClose = isolationValvesToClose.ToArray(); //important
-                //result.IsolatedPartialPipeIds = isolatedPartialPipeIds;
+                //baseResult.IsolatedPartialPipeIds = isolatedPartialPipeIds;
                 result.IsolatedPipeIds = isolatedPipeIds.ToArray();
                 result.IsolatedNodeIds = isolatedNodeIds.ToArray();
                 result.IsolatedCustomerIds = isolatedCustomerIds.ToArray();
-                //result.OutagePartialPipeIds = outagePartialPipeIds;
-                //result.OutagePipeIds = outagePipeIds.ToArray();
-                //result.OutageNodeIds = outageNodeIds.ToArray();
-                //result.OutageCustomerIds = outageCustomerIds.ToArray();
+                //baseResult.OutagePartialPipeIds = outagePartialPipeIds;
+                //baseResult.OutagePipeIds = outagePipeIds.ToArray();
+                //baseResult.OutageNodeIds = outageNodeIds.ToArray();
+                //baseResult.OutageCustomerIds = outageCustomerIds.ToArray();
 
                 #region Save Valve Status
 
                 //GetValveInitialStatus，GetIsolationValveInitialStatus
 
-                //foreach (var id in result.ValvesToClose)
+                //foreach (var id in baseResult.ValvesToClose)
                 //{
                 //    valveInitialDict.Add(id, wm.InitialSetting.GetValveInitialStatus(id));
                 //}
-                //foreach (var id in result.IsolationValvesToClose)
+                //foreach (var id in baseResult.IsolationValvesToClose)
                 //{
                 //    isolationValveInitialDict.Add(id, wm.InitialSetting.GetIsolationValveInitialStatus(id));
                 //}
@@ -490,11 +490,11 @@ namespace LiaoDongBayTest
 
                 //#region 关阀
 
-                //foreach (var id in result.ValvesToClose)
+                //foreach (var id in baseResult.ValvesToClose)
                 //{
                 //    wm.InitialSetting.SetValveInitialStatus(id, ValveSettingEnum.ValveClosedType);
                 //}
-                //foreach (var id in result.IsolationValvesToClose)
+                //foreach (var id in baseResult.IsolationValvesToClose)
                 //{
                 //    wm.InitialSetting.SetIsolationValveInitialStatus(id, IsolationValveInitialSettingEnum.IsolationValveClosedType);
                 //}
@@ -505,11 +505,11 @@ namespace LiaoDongBayTest
 
                 wm.PressureCalculationOption.ClearPumpAndOtherControlOverride();
 
-                //foreach (var id in result.ValvesToClose)
+                //foreach (var id in baseResult.ValvesToClose)
                 //{
                 //    wm.InitialSetting.SetValveInitialStatus(id, ValveSettingEnum.ValveClosedType);
                 //}
-                //foreach (var id in result.IsolationValvesToClose)
+                //foreach (var id in baseResult.IsolationValvesToClose)
                 //{
                 //    wm.InitialSetting.SetIsolationValveInitialStatus(id, IsolationValveInitialSettingEnum.IsolationValveClosedType);
                 //}
@@ -572,10 +572,10 @@ namespace LiaoDongBayTest
         /// </summary>
         /// <param name="modelpath">模型路径</param>
         /// <returns></returns>
-        public static WaterTraceResult GetWaterTraceResultsForMultipleElementIds(string modelpath)
+        public static WaterTraceBaseResult GetWaterTraceResultsForMultipleElementIds(string modelpath)
         {
             var wm = new WaterGEMSModel();
-            var result = new WaterTraceResult();
+            var result = new WaterTraceBaseResult();
             try
             {
                 wm.OpenDataSource(modelpath, true);
@@ -627,15 +627,15 @@ namespace LiaoDongBayTest
             }
         }
 
-        private static bool HasEngineFatalError(IUserNotification[] notif, WaterEngineResultBase result)
+        private static bool HasEngineFatalError(IUserNotification[] notif, WaterEngineBaseResult baseResult)
         {
             List<IUserNotification> error = notif?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error).ToList();
             if (error != null && error.Any())
             {
-                result.IsCalculationFailure = true;
-                result.ErrorNotifs = mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
+                baseResult.IsCalculationFailure = true;
+                baseResult.ErrorNotifs = mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
             }
-            return result.IsCalculationFailure;
+            return baseResult.IsCalculationFailure;
         }
 
         /// <summary>
@@ -660,7 +660,7 @@ namespace LiaoDongBayTest
             return timePointNodeResults;
         }
 
-        private static List<EpsPipeResult> GetEpsTimePointPipeResult(WaterGEMSModel wm, int[] pipeIds )
+        private static List<EpsPipeResult> GetEpsTimePointPipeResult(WaterGEMSModel wm, int[] pipeIds)
         {
             double[] timeSteps = wm.PressureResult.GetPressureEngineCalculationTimeStepsInSeconds(); //读取EPS报告点动态结果
             var timePointPipeResults = new List<EpsPipeResult>();

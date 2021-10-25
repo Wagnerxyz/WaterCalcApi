@@ -2,6 +2,7 @@
 using System.Web.Http;
 using WebActivatorEx;
 using LiaoDongBay;
+using LiaoDongBay.Swagger;
 using Swashbuckle.Application;
 using Swashbuckle.Examples;
 
@@ -37,6 +38,7 @@ namespace LiaoDongBay
                         c.SingleApiVersion("v1", "测试API");
                         // Enable Swagger examples
                         c.OperationFilter<ExamplesOperationFilter>();
+                        c.SchemaFilter<SwaggerExcludeFilter>();
                         // If you want the output Swagger docs to be indented properly, enable the "PrettyPrint" option.
                         //
                         //c.PrettyPrint();
@@ -169,7 +171,7 @@ namespace LiaoDongBay
                         //c.DocumentFilter<ApplyDocumentVendorExtensions>();
 
                         // In contrast to WebApi, Swagger 2.0 does not include the query string component when mapping a URL
-                        // to an action. As a result, Swashbuckle will raise an exception if it encounters multiple actions
+                        // to an action. As a baseResult, Swashbuckle will raise an exception if it encounters multiple actions
                         // with the same path (sans query string) and HTTP method. You can workaround this by providing a
                         // custom strategy to pick a winner or merge the descriptions for the purposes of the Swagger docs
                         //
@@ -205,7 +207,7 @@ namespace LiaoDongBay
                         //
                         //c.BooleanValues(new[] { "0", "1" });
 
-                        // By default, swagger-ui will validate specs against swagger.io's online validator and display the result
+                        // By default, swagger-ui will validate specs against swagger.io's online validator and display the baseResult
                         // in a badge at the bottom of the page. Use these options to set a different validator URL or to disable the
                         // feature entirely.
                         //c.SetValidatorUrl("http://localhost/validator");

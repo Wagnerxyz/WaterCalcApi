@@ -39,7 +39,7 @@ namespace LiaoDongBayTest
             var aaa = DummyTestData.DummyFireArg();
             var aqweq = WengAnApi.FireDemandAtOneNode(aaa);
             var qwqeq = aqweq.EpsNodeResult.Where(x => x.Id == 1338);
-            File.WriteAllText(@"fire result.json", JsonConvert.SerializeObject(qwqeq));
+            File.WriteAllText(@"fire baseResult.json", JsonConvert.SerializeObject(qwqeq));
             
             WengAnBreakPipe();
 
@@ -58,7 +58,7 @@ namespace LiaoDongBayTest
             //if (response.IsSuccessStatusCode)
             //{
             //    var stringData = response.Content.ReadAsStringAsync().TracePercentageResults;
-            //    var result = JsonConvert.DeserializeObject<LiaoDongResult>(stringData);
+            //    var baseResult = JsonConvert.DeserializeObject<LiaoDongResult>(stringData);
             //}
 
             TestLiaoDong();
@@ -68,16 +68,16 @@ namespace LiaoDongBayTest
             WengAnBreakPipe();
 
             Debugger.Break();
-            //result.Add(95, wqc.GetAgeInHours(95));       //age at J-26
-            //result.Add(138, wqc.GetAgeInHours(138));       //age at P-66
-            //result.Add(90, wqc.GetConcentrationInMGL(90));        //concentration at J-10
+            //baseResult.Add(95, wqc.GetAgeInHours(95));       //age at J-26
+            //baseResult.Add(138, wqc.GetAgeInHours(138));       //age at P-66
+            //baseResult.Add(90, wqc.GetConcentrationInMGL(90));        //concentration at J-10
             //double[] cons = wqc.GetConcentrationInMGL(90);       //concentration at J-10
             //double[] ages = wqc.GetAgeInHours(138);       //age at P-66
         }
 
         private static void TestLiaoDong()
         {
-            var arg = new LiaoDongArg()
+            var arg = new NodeEmitterCoefficientArg()
             {
                 ModelPath = ldModel,
                 CurrentNodePressures = LiaoDongDummyData.GetLiaoDongNodePressure(),

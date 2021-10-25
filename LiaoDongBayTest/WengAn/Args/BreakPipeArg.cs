@@ -20,7 +20,7 @@ namespace WengAn.Args
         /// </summary>
         [Required]
         public int PipeId { get; set; }
-
+        [Required]
         /// <summary>
         /// 要排除的阀门，不能关的阀门
         /// </summary>

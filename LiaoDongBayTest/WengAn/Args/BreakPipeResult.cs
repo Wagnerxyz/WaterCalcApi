@@ -11,7 +11,7 @@ namespace WengAn.Args
     /// <summary>
     /// 爆管影响结果对象
     /// </summary>
-    public class BreakPipeResult : WaterEngineResultBase
+    public class BreakPipeResult : WaterEngineBaseResult
     {
         /// <summary>
         /// 各节点压力 数据类型： Dictionary<设备id, double[]>

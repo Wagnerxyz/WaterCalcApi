@@ -11,7 +11,6 @@ using Models;
 using Serilog;
 using Swashbuckle.Examples;
 using WengAn.Args;
-using WaterQualityResult = Models.WaterQualityResult;
 
 namespace LiaoDongBay.Controllers
 {
@@ -39,7 +38,7 @@ namespace LiaoDongBay.Controllers
         /// </summary>
         /// <param name="arg">请求</param>
         /// <returns></returns>
-        [ResponseType(typeof(WengAnEpsResult))]
+        [ResponseType(typeof(WengAnEpsBaseResult))]
         [SwaggerRequestExample(typeof(RunEPSArg), typeof(WA_RunEPS1_Example))]
         public IHttpActionResult RunEps(RunEPSArg arg)
         {
@@ -47,7 +46,7 @@ namespace LiaoDongBay.Controllers
             {
                 return BadRequest(argMsg);
             }
-            var result = new WengAnEpsResult();
+            var result = new WengAnEpsBaseResult();
 
             //override
             //arg.ModelPath = this.modelPath;
@@ -112,7 +111,7 @@ namespace LiaoDongBay.Controllers
         /// <remarks>无需在线数据接入</remarks>
         /// <returns></returns>
         [SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_WaterTrace_Example))]
-        [ResponseType(typeof(WaterTraceResult))]
+        [ResponseType(typeof(WaterTraceBaseResult))]
         public IHttpActionResult WaterTrace(WengAnBaseArg arg)
         {
             if (isRunnning)
@@ -125,9 +124,9 @@ namespace LiaoDongBay.Controllers
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WaterTraceResult result = WengAnApi.GetWaterTraceResultsForMultipleElementIds(arg.ModelPath);
-                LogCalcError(result);
-                return Ok(result);
+                WaterTraceBaseResult baseResult = WengAnApi.GetWaterTraceResultsForMultipleElementIds(arg.ModelPath);
+                LogCalcError(baseResult);
+                return Ok(baseResult);
             }
             finally
             {
@@ -143,7 +142,7 @@ namespace LiaoDongBay.Controllers
         /// </summary>
         /// <param name="arg">请求参数</param>
         /// <returns></returns>
-        [ResponseType(typeof(WengAnEpsResult))]
+        [ResponseType(typeof(WengAnEpsBaseResult))]
         //[ApiExplorerSettings(IgnoreApi = true)]
         [SwaggerRequestExample(typeof(FireDemandArg), typeof(WA_Fire_Example))]
         public IHttpActionResult FireDemand(FireDemandArg arg)
@@ -161,9 +160,9 @@ namespace LiaoDongBay.Controllers
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WengAnEpsResult result = WengAnApi.FireDemandAtOneNode(arg);
-                LogCalcError(result);
-                return Ok(result);
+                WengAnEpsBaseResult baseResult = WengAnApi.FireDemandAtOneNode(arg);
+                LogCalcError(baseResult);
+                return Ok(baseResult);
             }
             finally
             {
@@ -243,12 +242,12 @@ namespace LiaoDongBay.Controllers
                 }
             }
         }
-        private void LogCalcError(WaterEngineResultBase result)
+        private void LogCalcError(WaterEngineBaseResult baseResult)
         {
-            if (result != null && result.IsCalculationFailure && result.ErrorNotifs.Any())
+            if (baseResult != null && baseResult.IsCalculationFailure && baseResult.ErrorNotifs.Any())
             {
-                _logger.Error("{0}: 计算错误总数:{1}  @{2}", new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name, result.ErrorNotifs.Count,
-                    result.ErrorNotifs
+                _logger.Error("{0}: 计算错误总数:{1}  @{2}", new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name, baseResult.ErrorNotifs.Count,
+                    baseResult.ErrorNotifs
                         .Select(x => new
                         {
                             Id = x.ElementId,

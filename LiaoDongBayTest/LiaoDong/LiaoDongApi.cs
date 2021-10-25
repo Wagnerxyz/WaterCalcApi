@@ -25,7 +25,7 @@ namespace LiaoDongBayTest
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public static bool CheckBalance(LiaoDongArg arg)
+        public static bool CheckBalance(NodeEmitterCoefficientArg arg)
         {
             var flows = arg.CurrentPipeFlows;
             var sum1 = flows[317] + flows[305] + flows[253] + flows[157] + flows[539] + flows[337] + flows[531];
@@ -36,7 +36,7 @@ namespace LiaoDongBayTest
             return (result1 && result2);
 
         }
-        public static Dictionary<int, double> SettingObservedDataAndRunWaterLeakCalibration(LiaoDongArg arg)
+        public static Dictionary<int, double> SettingObservedDataAndRunWaterLeakCalibration(NodeEmitterCoefficientArg arg)
         {
             //m_fileName = "Leak-DarwinEmptyObservedData.wtg.sqlite";
 

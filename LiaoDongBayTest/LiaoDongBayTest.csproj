@@ -70,6 +70,9 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\LiaoDongBay\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="QingDaoWT">
+      <HintPath>..\..\HaestadLibsMain\QingDaoWT.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -83,7 +86,7 @@
   <ItemGroup>
     <Compile Include="DummyTestData.cs" />
     <Compile Include="LiaoDongDummyData.cs" />
-    <Compile Include="LiaoDong\LiaoDongArg.cs" />
+    <Compile Include="LiaoDong\NodeEmitterCoefficientArg.cs" />
     <Compile Include="LiaoDong\LiaoDongResult.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Program.cs" />
@@ -94,6 +97,7 @@
     <Compile Include="WengAn\Args\WengAnBaseArg.cs" />
     <Compile Include="WengAn\SetWengAnOnlineData.cs" />
     <Compile Include="WengAn\WengAnApi.cs" />
+    <Compile Include="WengAn\WengAnDemandForecast.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -9,6 +9,7 @@ using System.Web.Routing;
 using AutoMapper;
 using Haestad.Support.User;
 using LiaoDongBay.App_Start;
+using LiaoDongBay.Models;
 using LiaoDongBayTest;
 using Models;
 using NSwag.AspNet.Owin;
@@ -53,6 +54,7 @@ namespace LiaoDongBay
             {
 
                 cfg.CreateMap<IUserNotification, UserNotification>();
+                cfg.CreateMap<LiaoDongArg, NodeEmitterCoefficientArg>();
                 //cfg.AddProfile();
             });
             var mapper = mapConfig.CreateMapper();

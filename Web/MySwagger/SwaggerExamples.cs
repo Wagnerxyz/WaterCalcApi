@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using LiaoDongBay.Controllers;
@@ -13,9 +14,9 @@ namespace LiaoDongBay.Swagger
     {
         public object GetExamples()
         {
-            return new LiaoDongArg()
+            return new NodeEmitterCoefficientArg()
             {
-                ModelPath = LDController.modelPath,
+                ModelPath = ConfigurationManager.AppSettings["LiaoDongModel"],
                 CurrentNodePressures = LiaoDongDummyData.GetLiaoDongNodePressure(),
                 CurrentPipeFlows = LiaoDongDummyData.GetLiaoDongPipeFlow()
             };
