@@ -136,7 +136,7 @@ namespace Models
     public class WaterTracePercentage
     {
         /// <summary>
-        /// Junction Id
+        /// Junction(节点) Id 
         /// </summary>
         public int Id { get; set; }
         /// <summary>
@@ -152,7 +152,7 @@ namespace Models
         /// </summary>
         public double[] Source3Percentage { get; set; }
         /// <summary>
-        /// 时间步长
+        /// 时间步长 单位是秒
         /// </summary>
         public double[] TimeStep { get; set; }
     }
@@ -193,7 +193,7 @@ namespace Models
         /// </summary>
         public string Label { get; set; }
         /// <summary>
-        /// 时间步长
+        /// 时间步长 TimeStep
         /// </summary>
         public double[] TimeSteps { get; set; }
         ///// <summary>
@@ -302,16 +302,16 @@ namespace Models
 
     }
     /// <summary>
-    /// 水龄或水质结果
+    /// 水龄或水质结果 返回最后24小时的48个结果
     /// </summary>
     public class WaterQualityResult : WaterEngineBaseResult
     {
         /// <summary>
-        /// 节点结果,按小时 数据类型：IDictionary(设备id, double[]值)
+        /// 节点结果,按小时  数据类型：IDictionary(设备id, double[]值单位小时)
         /// </summary>
         public IDictionary<int, double[]> NodeResult { get; set; }
         /// <summary>
-        /// 管道结果,按小时 数据类型：IDictionary(设备id, double[]值)
+        /// 管道结果,按小时  数据类型：IDictionary(设备id, double[]值单位MGL)
         /// </summary>
         public IDictionary<int, double[]> PipeResult { get; set; }
     }
@@ -335,7 +335,7 @@ namespace Models
         [Required]
         public string ModelPath { get; set; }
         /// <summary>
-        /// 预报时间
+        /// 预报开始时间
         /// </summary>
         [Required]
         public DateTime DateTime { get; set; }

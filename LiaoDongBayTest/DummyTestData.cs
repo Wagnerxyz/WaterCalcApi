@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Haestad.Calculations.Shanghai.QingDaoWT;
 using LiaoDongBayTest.WengAn.Args;
 using Models;
 using WengAn.Args;
@@ -108,6 +109,52 @@ namespace LiaoDongBayTest
         {
             var arg = new WengAnBaseArg();
             arg.ModelPath = wenganModel;
+            return arg;
+        }
+        public static ForecastDemandArg UpdateDemandArg()
+        {
+            var arg = new ForecastDemandArg();
+            arg.ModelPath = wenganModel;
+            arg.DateTime = new DateTime(2021, 07, 20, 0, 0, 0);
+
+            //这个是查尔岩，西坡，剩土三个水厂的流量观察数据，是当前时间前面24小时的数据
+            List<ObsDate> cryData = new List<ObsDate>();
+            List<ObsDate> xipoData = new List<ObsDate>();
+            List<ObsDate> shengtuData = new List<ObsDate>();
+            var aData = new ObsDate(DateTime.Now, 0.123);
+
+            //数据案例
+
+            //     7/19/2021 10:31 419
+            //     7/19/2021 10:41 523
+            //     7/19/2021 10:52 443
+            //     7/19/2021 11:02 445
+            //     7/19/2021 11:13 438
+
+            aData = new ObsDate(new DateTime(2021, 07, 19, 10, 31, 0), 419.0);
+            cryData.Add(aData);
+            xipoData.Add(aData);         // 这个根据西坡的实际数据来加
+            shengtuData.Add(aData);      // 这个根据剩土实际数据来加
+            aData = new ObsDate(new DateTime(2021, 07, 19, 10, 41, 0), 523.0);
+            cryData.Add(aData);
+            xipoData.Add(aData);
+            shengtuData.Add(aData);
+            aData = new ObsDate(new DateTime(2021, 07, 19, 10, 52, 0), 443.0);
+            cryData.Add(aData);
+            xipoData.Add(aData);
+            shengtuData.Add(aData);
+            aData = new ObsDate(new DateTime(2021, 07, 19, 11, 02, 0), 445.0);
+            cryData.Add(aData);
+            xipoData.Add(aData);
+            shengtuData.Add(aData);
+            aData = new ObsDate(new DateTime(2021, 07, 19, 11, 13, 0), 438.0);
+            cryData.Add(aData);
+            xipoData.Add(aData);
+            shengtuData.Add(aData);
+            arg.cryData = cryData;
+            arg.shengtuData = shengtuData;
+            arg.xipoData = xipoData;
+
             return arg;
         }
     }

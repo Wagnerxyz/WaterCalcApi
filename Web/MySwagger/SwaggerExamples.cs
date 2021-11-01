@@ -65,4 +65,11 @@ namespace LiaoDongBay.Swagger
             return DummyTestData.DummyWaterTraceArg();
         }
     }
+    public class WA_UpDateDemand_Example : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return DummyTestData.UpdateDemandArg();
+        }
+    }
 }

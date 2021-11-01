@@ -7,11 +7,13 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Haestad.Calculations.Shanghai.QingDaoWT;
 using Haestad.Calculations.Shanghai.WaterGEMS;
 using Haestad.Domain;
 using Haestad.LicensingFacade;
 using Haestad.Support.User;
 using LiaoDongBay;
+using LiaoDongBayTest.WengAn;
 using Models;
 using Newtonsoft.Json;
 using WengAn.Args;
@@ -32,8 +34,10 @@ namespace LiaoDongBayTest
             });
             WengAnApi.mapper = mapConfig.CreateMapper();
 
-            var epsArg = DummyTestData.DummyRunEPSArg();
+            DemandForecast();
+            
 
+            var epsArg = DummyTestData.DummyRunEPSArg();
             WengAnApi.RunEPS(epsArg);
 
             var aaa = DummyTestData.DummyFireArg();
@@ -73,6 +77,59 @@ namespace LiaoDongBayTest
             //baseResult.Add(90, wqc.GetConcentrationInMGL(90));        //concentration at J-10
             //double[] cons = wqc.GetConcentrationInMGL(90);       //concentration at J-10
             //double[] ages = wqc.GetAgeInHours(138);       //age at P-66
+        }
+
+        private static void DemandForecast()
+        {
+            //每半个小时 CALL 预报更新 API, 这个是 CALL 的日期与时间：
+            DateTime runStartDT = new DateTime(2021, 10, 12, 14, 0, 0);
+
+            //这个是 DATA OBJECT
+            ObsDate aData;
+
+
+            //这个是查尔岩，西坡，剩土三个水厂的流量观察数据，是当前时间前面24小时的数据
+            List<ObsDate> cryData = new List<ObsDate>();
+            List<ObsDate> xipoData = new List<ObsDate>();
+            List<ObsDate> shengtuData = new List<ObsDate>();
+
+            //数据案例
+
+            //     7/19/2021 10:31 419
+            //     7/19/2021 10:41 523
+            //     7/19/2021 10:52 443
+            //     7/19/2021 11:02 445
+            //     7/19/2021 11:13 438
+
+            aData = new ObsDate(new DateTime(2021, 07, 19, 10, 31, 0), 419.0);
+            cryData.Add(aData);
+            xipoData.Add(aData); // 这个根据西坡的实际数据来加
+            shengtuData.Add(aData); // 这个根据剩土实际数据来加
+            aData = new ObsDate(new DateTime(2021, 07, 19, 10, 41, 0), 523.0);
+            cryData.Add(aData);
+            xipoData.Add(aData);
+            shengtuData.Add(aData);
+            aData = new ObsDate(new DateTime(2021, 07, 19, 10, 52, 0), 443.0);
+            cryData.Add(aData);
+            xipoData.Add(aData);
+            shengtuData.Add(aData);
+            aData = new ObsDate(new DateTime(2021, 07, 19, 11, 02, 0), 445.0);
+            cryData.Add(aData);
+            xipoData.Add(aData);
+            shengtuData.Add(aData);
+            aData = new ObsDate(new DateTime(2021, 07, 19, 11, 13, 0), 438.0);
+            cryData.Add(aData);
+            xipoData.Add(aData);
+            shengtuData.Add(aData);
+
+            var arg1 = new ForecastDemandArg()
+            {
+                ModelPath = wenganModel, shengtuData = shengtuData, cryData = cryData, xipoData = xipoData,
+                DateTime = runStartDT
+            };
+            string s = JsonConvert.SerializeObject(arg1);
+            WengAnDemandForecast.Run(arg1);
+
         }
 
         private static void TestLiaoDong()

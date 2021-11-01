@@ -1,11 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
 using LiaoDongBay.Swagger;
 using LiaoDongBayTest;
+using LiaoDongBayTest.WengAn;
 using LiaoDongBayTest.WengAn.Args;
 using Models;
 using Serilog;
@@ -46,7 +53,6 @@ namespace LiaoDongBay.Controllers
             {
                 return BadRequest(argMsg);
             }
-            var result = new WengAnEpsBaseResult();
 
             //override
             //arg.ModelPath = this.modelPath;
@@ -54,7 +60,7 @@ namespace LiaoDongBay.Controllers
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                result = WengAnApi.RunEPS(arg);
+                var result = WengAnApi.RunEPS(arg);
                 LogCalcError(result);
                 return Ok(result);
             }
@@ -241,6 +247,85 @@ namespace LiaoDongBay.Controllers
                     isRunnning = false;
                 }
             }
+        }
+        /// <summary>
+        /// 更新需水量
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <remarks>每半个小时， 平台 CALL 我们这个 API, 计算未来 24 小时的预报</remarks>
+        /// <returns></returns>
+        [SwaggerRequestExample(typeof(ForecastDemandArg), typeof(WA_UpDateDemand_Example))]
+        [ResponseType(typeof(IHttpActionResult))]
+        public IHttpActionResult UpdateDemand(ForecastDemandArg arg)
+        {
+            if (isRunnning)
+            {
+                return BadRequest(runningMsg);
+            }
+            //override
+            arg.ModelPath = this.modelPath;
+            try
+            {
+                System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                WengAnDemandForecast.Run(arg);
+                //string archiveFileName = $"NewModel_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}.zip";
+                string archiveFileName = HostingEnvironment.MapPath($"~/NewModel.zip"); ;
+                if (File.Exists(archiveFileName))
+                {
+                    File.Delete(archiveFileName);
+                }
+                string newModel = Path.Combine(Path.GetDirectoryName(arg.ModelPath), "working", "workingmodel.sqlite");
+                using (ZipArchive zip = ZipFile.Open(archiveFileName, ZipArchiveMode.Create))
+                {
+                    zip.CreateEntryFromFile(newModel, Path.GetFileName(arg.ModelPath));
+                }
+
+                return Ok("更新需水量成功");
+                //LogCalcError(result);
+                //return Ok(result);
+            }
+            finally
+            {
+                if (isRunnning)
+                {
+                    System.Threading.Monitor.Exit(__lockObj);
+                    isRunnning = false;
+                }
+            }
+        }
+        /// <summary>
+        /// 下载最新模型文件（定时更新完需水量后的模型）供后续使用
+        /// </summary>
+        /// <remarks></remarks>
+        /// <returns></returns>
+        //[SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_WaterAge_Example))]
+        //[ResponseType(typeof(WaterQualityResult))]
+        public HttpResponseMessage GetLatestModel()
+        {
+            //try
+            //{
+            //    System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
+            //    _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+
+            string archiveFileName = HostingEnvironment.MapPath($"~/NewModel.zip");
+            if (!File.Exists(archiveFileName))
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound, "未找到最新模型文件");
+            }
+
+            var time = File.GetLastWriteTime(archiveFileName).ToString("yyyyMMdd_HHmmss");
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            var stream = new FileStream(archiveFileName, FileMode.Open, FileAccess.Read);
+            response.Content = new StreamContent(stream);
+            response.Content.Headers.ContentType =
+                new MediaTypeHeaderValue("application/zip");
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = $"NewModel_{time}.zip"
+            };
+            return response;
+
         }
         private void LogCalcError(WaterEngineBaseResult baseResult)
         {

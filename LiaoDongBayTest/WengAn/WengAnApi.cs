@@ -161,6 +161,10 @@ namespace LiaoDongBayTest
                 wm.SetActiveScenario(4015);
                 wm.RunWTmodel();     //run the wtrg model that includes WQ calculations 
                 WaterQualityCalculation wqc = new WaterQualityCalculation(wm);
+                //设置压力引擎开始时间
+                var now = DateTime.Now;
+                wm.PressureCalculationOption.SetPressureEngineSimulationStartDate(now);
+                wm.PressureCalculationOption.SetPressureEngineSimulationStartTime(now);
 
                 IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
                 if (HasEngineFatalError(pressureNotifs, result))
@@ -177,7 +181,7 @@ namespace LiaoDongBayTest
                         .DomainElementManager((int)DomainElementType.IdahoJunctionElementManager).ElementIDs();
                     foreach (var id in allNodesIds)
                     {
-                        double[] ages = wqc.GetAgeInHours(id);
+                        double[] ages = wqc.GetAgeInHours(id).TakeLast(48).ToArray();
                         nodeResult.Add(id, ages);
                     }
                     result.NodeResult = nodeResult;
@@ -186,7 +190,7 @@ namespace LiaoDongBayTest
                 {
                     foreach (var id in arg.ResultNodeIds)
                     {
-                        double[] ages = wqc.GetAgeInHours(id);
+                        double[] ages = wqc.GetAgeInHours(id).TakeLast(48).ToArray();
                         nodeResult.Add(id, ages);
                     }
                     result.NodeResult = nodeResult;
@@ -200,7 +204,7 @@ namespace LiaoDongBayTest
 
                     foreach (var id in allPipeIds)
                     {
-                        double[] ages = wqc.GetAgeInHours(id);
+                        double[] ages = wqc.GetAgeInHours(id).TakeLast(48).ToArray();
                         pipeResult.Add(id, ages);
                     }
                     result.PipeResult = pipeResult;
@@ -209,7 +213,7 @@ namespace LiaoDongBayTest
                 {
                     foreach (var id in arg.ResultPipeIds)
                     {
-                        double[] ages = wqc.GetAgeInHours(id);
+                        double[] ages = wqc.GetAgeInHours(id).TakeLast(48).ToArray();
                         pipeResult.Add(id, ages);
                     }
                     result.PipeResult = pipeResult;
@@ -240,6 +244,10 @@ namespace LiaoDongBayTest
                 Utils.SetCurrentPumpValveReservoir(wm, arg);
                 wm.RunWTmodel();     //run the wtrg model that includes WQ calculations 
                 WaterQualityCalculation wqc = new WaterQualityCalculation(wm);
+                //设置压力引擎开始时间
+                var now = DateTime.Now;
+                wm.PressureCalculationOption.SetPressureEngineSimulationStartDate(now);
+                wm.PressureCalculationOption.SetPressureEngineSimulationStartTime(now);
 
                 IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
                 if (HasEngineFatalError(pressureNotifs, result))
@@ -255,7 +263,7 @@ namespace LiaoDongBayTest
                         .DomainElementManager((int)DomainElementType.IdahoJunctionElementManager).ElementIDs();
                     foreach (var id in allNodesIds)
                     {
-                        double[] ages = wqc.GetConcentrationInMGL(id);
+                        double[] ages = wqc.GetConcentrationInMGL(id).TakeLast(48).ToArray();
                         nodeResult.Add(id, ages);
                     }
                     result.NodeResult = nodeResult;
@@ -264,7 +272,7 @@ namespace LiaoDongBayTest
                 {
                     foreach (var id in arg.ResultNodeIds)
                     {
-                        double[] ages = wqc.GetConcentrationInMGL(id);
+                        double[] ages = wqc.GetConcentrationInMGL(id).TakeLast(48).ToArray();
                         nodeResult.Add(id, ages);
                     }
                     result.NodeResult = nodeResult;
@@ -278,7 +286,7 @@ namespace LiaoDongBayTest
 
                     foreach (var id in allPipeIds)
                     {
-                        double[] ages = wqc.GetConcentrationInMGL(id);
+                        double[] ages = wqc.GetConcentrationInMGL(id).TakeLast(48).ToArray();
                         pipeResult.Add(id, ages);
                     }
                     result.PipeResult = pipeResult;
@@ -287,7 +295,7 @@ namespace LiaoDongBayTest
                 {
                     foreach (var id in arg.ResultPipeIds)
                     {
-                        double[] ages = wqc.GetConcentrationInMGL(id);
+                        double[] ages = wqc.GetConcentrationInMGL(id).TakeLast(48).ToArray();
                         pipeResult.Add(id, ages);
                     }
                     result.PipeResult = pipeResult;
@@ -683,5 +691,12 @@ namespace LiaoDongBayTest
         }
     }
 
-
+    public static class MiscExtensions
+    {
+        // Ex: collection.TakeLast(5);
+        public static IEnumerable<T> TakeLast<T>(this IEnumerable<T> source, int N)
+        {
+            return source.Skip(Math.Max(0, source.Count() - N));
+        }
+    }
 }

@@ -5,6 +5,9 @@ using System.Web;
 
 namespace LiaoDongBay.Models
 {
+    /// <summary>
+    /// 请求参数，无需传ModelPath，接口里自动设置
+    /// </summary>
     public class LiaoDongArg
     {
         /// <summary>
