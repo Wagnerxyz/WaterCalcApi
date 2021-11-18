@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Haestad.Support.Library;
 using LiaoDongBay.Swagger;
 using LiaoDongBayTest;
 using LiaoDongBayTest.WengAn;
@@ -28,16 +29,18 @@ namespace LiaoDongBay.Controllers
     {
         private object __lockObj = new object();
         private static bool isRunnning = false;
-        private readonly string modelPath;
+        private readonly string originalModelPath;
+        private readonly string runDirectory = @"D:\BentleyModels\WengAn\RunDirectory";
+        private readonly string modelName = @"WengAn0916.wtg.sqlite";
         const string runningMsg = "有请求正在运行，请稍后再试";
         const string argMsg = "请求参数错误";
         private static ILogger _logger = Serilog.Log.ForContext<WAController>();
 
         public WAController()
         {
-            modelPath = @"D:\BentleyModels\WengAn\WengAn0916.wtg.sqlite";
+            originalModelPath = @"D:\BentleyModels\WengAn\WengAn0916.wtg.sqlite";;
             //string path = ConfigurationManager.AppSettings["WengAnModelsFolder"];
-            //modelPath = Path.Combine(path, fileName);
+            //originalModelPath = Path.Combine(path, fileName);
 
         }
         /// <summary>
@@ -51,27 +54,29 @@ namespace LiaoDongBay.Controllers
         {
             if (isRunnning)
             {
-                return BadRequest(argMsg);
+                LogRacingError();
+                return BadRequest(runningMsg);
             }
 
             //override
-            //arg.ModelPath = this.modelPath;
-            try
-            {
-                System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                var result = WengAnApi.RunEPS(arg);
-                LogCalcError(result);
-                return Ok(result);
-            }
-            finally
-            {
-                if (isRunnning)
-                {
-                    System.Threading.Monitor.Exit(__lockObj);
-                    isRunnning = false;
-                }
-            }
+            //arg.ModelPath = this.originalModelPath;
+            arg.ModelPath = CopyNewModel();
+            //try
+            //{
+            //   System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
+            _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+            var result = WengAnApi.RunEPS(arg);
+            LogCalcError(result);
+            return Ok(result);
+            //}
+            //finally
+            //{
+            //    if (isRunnning)
+            //    {
+            //        System.Threading.Monitor.Exit(__lockObj);
+            //        isRunnning = false;
+            //    }
+            //}
         }
         /// <summary>
         /// 爆管影响分析
@@ -88,27 +93,29 @@ namespace LiaoDongBay.Controllers
             }
             if (isRunnning)
             {
+                LogRacingError();
                 return BadRequest(runningMsg);
             }
             //override
-            arg.ModelPath = this.modelPath;
-            try
-            {
-                System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                var result = new BreakPipeResult();
-                result = WengAnApi.BreakPipe(arg);
-                LogCalcError(result);
-                return Ok(result);
-            }
-            finally
-            {
-                if (isRunnning)
-                {
-                    System.Threading.Monitor.Exit(__lockObj);
-                    isRunnning = false;
-                }
-            }
+            //arg.ModelPath = this.originalModelPath;
+            arg.ModelPath = CopyNewModel();
+            //  try
+            //  {
+            //      System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
+            _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+            var result = new BreakPipeResult();
+            result = WengAnApi.BreakPipe(arg);
+            LogCalcError(result);
+            return Ok(result);
+            //   }
+            //finally
+            //{
+            //    if (isRunnning)
+            //    {
+            //        System.Threading.Monitor.Exit(__lockObj);
+            //        isRunnning = false;
+            //    }
+            //}
         }
         /// <summary>
         /// 水源追踪(多水源供水分析)
@@ -122,26 +129,28 @@ namespace LiaoDongBay.Controllers
         {
             if (isRunnning)
             {
+                LogRacingError();
                 return BadRequest(runningMsg);
             }
             //override
-            arg.ModelPath = this.modelPath;
-            try
-            {
-                System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WaterTraceBaseResult baseResult = WengAnApi.GetWaterTraceResultsForMultipleElementIds(arg.ModelPath);
-                LogCalcError(baseResult);
-                return Ok(baseResult);
-            }
-            finally
-            {
-                if (isRunnning)
-                {
-                    System.Threading.Monitor.Exit(__lockObj);
-                    isRunnning = false;
-                }
-            }
+            //arg.ModelPath = this.originalModelPath;
+            arg.ModelPath = CopyNewModel();
+            //try
+            //{
+            //    System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
+            _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+            WaterTraceBaseResult baseResult = WengAnApi.GetWaterTraceResultsForMultipleElementIds(arg.ModelPath);
+            LogCalcError(baseResult);
+            return Ok(baseResult);
+            //}
+            //finally
+            //{
+            //    if (isRunnning)
+            //    {
+            //        System.Threading.Monitor.Exit(__lockObj);
+            //        isRunnning = false;
+            //    }
+            //}
         }
         /// <summary>
         /// 消防事件
@@ -159,25 +168,28 @@ namespace LiaoDongBay.Controllers
             }
             if (isRunnning)
             {
+                LogRacingError();
                 return BadRequest(runningMsg);
             }
-
-            try
-            {
-                System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WengAnEpsBaseResult baseResult = WengAnApi.FireDemandAtOneNode(arg);
-                LogCalcError(baseResult);
-                return Ok(baseResult);
-            }
-            finally
-            {
-                if (isRunnning)
-                {
-                    System.Threading.Monitor.Exit(__lockObj);
-                    isRunnning = false;
-                }
-            }
+            //override
+            //arg.ModelPath = this.originalModelPath;
+            arg.ModelPath = CopyNewModel();
+            //try
+            //{
+            //    System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
+            _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+            WengAnEpsBaseResult baseResult = WengAnApi.FireDemandAtOneNode(arg);
+            LogCalcError(baseResult);
+            return Ok(baseResult);
+            //}
+            //finally
+            //{
+            //    if (isRunnning)
+            //    {
+            //        System.Threading.Monitor.Exit(__lockObj);
+            //        isRunnning = false;
+            //    }
+            //}
         }
 
         /// <summary>
@@ -195,25 +207,28 @@ namespace LiaoDongBay.Controllers
             }
             if (isRunnning)
             {
+                LogRacingError();
                 return BadRequest(runningMsg);
             }
-
-            try
-            {
-                System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WaterQualityResult result = WengAnApi.Concentration(arg);
-                LogCalcError(result);
-                return Ok(result);
-            }
-            finally
-            {
-                if (isRunnning)
-                {
-                    System.Threading.Monitor.Exit(__lockObj);
-                    isRunnning = false;
-                }
-            }
+            //override
+            //arg.ModelPath = this.originalModelPath;
+            arg.ModelPath = CopyNewModel();
+            //try
+            //{
+            //    System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
+            _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+            WaterQualityResult result = WengAnApi.Concentration(arg);
+            LogCalcError(result);
+            return Ok(result);
+            //}
+            //finally
+            //{
+            //    if (isRunnning)
+            //    {
+            //        System.Threading.Monitor.Exit(__lockObj);
+            //        isRunnning = false;
+            //    }
+            //}
         }
         /// <summary>
         /// 水龄预测
@@ -227,26 +242,28 @@ namespace LiaoDongBay.Controllers
         {
             if (isRunnning)
             {
+                LogRacingError();
                 return BadRequest(runningMsg);
             }
             //override
-            arg.ModelPath = this.modelPath;
-            try
-            {
-                System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WaterQualityResult result = WengAnApi.WaterAge(arg);
-                LogCalcError(result);
-                return Ok(result);
-            }
-            finally
-            {
-                if (isRunnning)
-                {
-                    System.Threading.Monitor.Exit(__lockObj);
-                    isRunnning = false;
-                }
-            }
+            //arg.ModelPath = this.originalModelPath;
+            arg.ModelPath = CopyNewModel();
+            //try
+            //{
+            //    System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
+            _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+            WaterQualityResult result = WengAnApi.WaterAge(arg);
+            LogCalcError(result);
+            return Ok(result);
+            //}
+            //finally
+            //{
+            //    if (isRunnning)
+            //    {
+            //        System.Threading.Monitor.Exit(__lockObj);
+            //        isRunnning = false;
+            //    }
+            //}
         }
         /// <summary>
         /// 更新需水量
@@ -260,10 +277,12 @@ namespace LiaoDongBay.Controllers
         {
             if (isRunnning)
             {
+                LogRacingError();
                 return BadRequest(runningMsg);
             }
             //override
-            arg.ModelPath = this.modelPath;
+            arg.ModelPath = this.originalModelPath;
+          //  arg.ModelPath = CopyNewModel();
             try
             {
                 System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
@@ -303,29 +322,44 @@ namespace LiaoDongBay.Controllers
         //[ResponseType(typeof(WaterQualityResult))]
         public HttpResponseMessage GetLatestModel()
         {
-            //try
-            //{
-            //    System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
-            //    _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-
-            string archiveFileName = HostingEnvironment.MapPath($"~/NewModel.zip");
-            if (!File.Exists(archiveFileName))
+            if (isRunnning)
             {
-                return Request.CreateResponse(HttpStatusCode.NotFound, "未找到最新模型文件");
+                LogRacingError();
+                var response = new HttpResponseMessage(HttpStatusCode.Conflict);
+                response.Content = new StringContent(runningMsg);
+                return response;
             }
-
-            var time = File.GetLastWriteTime(archiveFileName).ToString("yyyyMMdd_HHmmss");
-            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-            var stream = new FileStream(archiveFileName, FileMode.Open, FileAccess.Read);
-            response.Content = new StreamContent(stream);
-            response.Content.Headers.ContentType =
-                new MediaTypeHeaderValue("application/zip");
-            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            try
             {
-                FileName = $"NewModel_{time}.zip"
-            };
-            return response;
+                System.Threading.Monitor.Enter(__lockObj, ref isRunnning);
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
 
+                string archiveFileName = HostingEnvironment.MapPath($"~/NewModel.zip");
+                if (!File.Exists(archiveFileName))
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "未找到最新模型文件");
+                }
+                //  ZipFile.CreateFromDirectory("aa","ff",compress);
+                var time = File.GetLastWriteTime(archiveFileName).ToString("yyyyMMdd_HHmmss");
+                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                var stream = new FileStream(archiveFileName, FileMode.Open, FileAccess.Read);
+                response.Content = new StreamContent(stream);
+                response.Content.Headers.ContentType =
+                    new MediaTypeHeaderValue("application/zip");
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                {
+                    FileName = $"NewModel_{time}.zip"
+                };
+                return response;
+            }
+            finally
+            {
+                if (isRunnning)
+                {
+                    System.Threading.Monitor.Exit(__lockObj);
+                    isRunnning = false;
+                }
+            }
         }
         private void LogCalcError(WaterEngineBaseResult baseResult)
         {
@@ -341,6 +375,23 @@ namespace LiaoDongBay.Controllers
                             Label = x.Label
                         }));
             }
+        }
+        private void LogRacingError()
+        {
+            _logger.Error("发生竟态: {0}", new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name);
+        }
+
+        private string CopyNewModel()
+        {
+            string newFolderName = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
+            string newDir = Path.Combine(runDirectory, newFolderName);
+            if (!Directory.Exists(newDir))
+                Directory.CreateDirectory(newDir);
+
+            string newModelPath = Path.Combine(newDir, modelName);
+            File.Copy(originalModelPath, newModelPath);
+            FileLibrary.SetReadWriteSafely(newModelPath);
+            return newModelPath;
         }
     }
 }
