@@ -10,7 +10,7 @@ using WengAn.Args;
 
 namespace LiaoDongBayTest
 {
-    public class DummyTestData
+    public class WengAnDummyData
     {
         public const string wenganModel = @"D:\BentleyModels\WengAn\WengAn0916.wtg.sqlite";
         public static Dictionary<int, double> GetCurrentReservoirElevation()

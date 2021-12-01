@@ -266,7 +266,7 @@ namespace LiaoDongBay
         private static string GetXmlCommentsPath2()
         {
 
-            return String.Format(@"{0}\bin\LiaoDongBayTest.xml",
+            return String.Format(@"{0}\bin\ChinaWaterLib.xml",
                 AppDomain.CurrentDomain.BaseDirectory);
 
         }

@@ -10,7 +10,7 @@ using AutoMapper;
 using Haestad.Support.User;
 using LiaoDongBay.App_Start;
 using LiaoDongBay.Models;
-using LiaoDongBayTest;
+using ChinaWaterLib;
 using Models;
 using NSwag.AspNet.Owin;
 using Serilog;

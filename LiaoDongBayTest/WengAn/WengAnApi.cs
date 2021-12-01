@@ -20,7 +20,73 @@ namespace LiaoDongBayTest
     public class WengAnApi
     {
         public static IMapper mapper;
+        /// <summary>
+        /// 运行水力模型 并发测试
+        /// </summary>
+        public static WengAnEpsBaseResult RunEPSP(RunEPSArg arg)
+        {
+            var wm = new WaterGEMSModel();
+            var result = new WengAnEpsBaseResult();
+            arg.ModelPath = MyUtils.CopyNewModel(arg.ModelPath);
+            try
+            {
+                wm.OpenDataSource(arg.ModelPath);
+                wm.SetActiveScenario(1);
+                //IDomainElementManager pipeManager = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager);
+                //ModelingElementCollection allPipes = pipeManager.Elements();
+                //IDomainElementManager junctionManager = wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoJunctionElementManager);
+                //ModelingElementCollection allJunctions = junctionManager.Elements();
+                //IDomainElementManager airManager = wm.DomainDataSet.DomainElementManager((int)DomainElementType.AirValveElementManager);
+                //ModelingElementCollection allAirValves = airManager.Elements();
 
+                #region set current value
+                Utils.SetCurrentPumpValveReservoir(wm, arg); ;
+                #endregion
+
+                //设置压力引擎开始时间
+                var now = DateTime.Now;
+                wm.PressureCalculationOption.SetPressureEngineSimulationStartDate(now);
+                wm.PressureCalculationOption.SetPressureEngineSimulationStartTime(now);
+
+                IUserNotification[] pressureNotifs = wm.RunPressureCalculation();
+                if (HasEngineFatalError(pressureNotifs, result))
+                {
+                    return result;
+                }
+
+                #region Get EPS Result
+
+                if (arg.ResultNodeIds == null || arg.ResultNodeIds.Length < 1)
+                {
+                    HmIDCollection allJunctionIds =
+                        wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoJunctionElementManager).ElementIDs();
+
+                    result.EpsNodeResult = GetEpsTimeNodePointResult(wm, allJunctionIds.ToArray());
+                }
+                else
+                {
+                    result.EpsNodeResult = GetEpsTimeNodePointResult(wm, arg.ResultNodeIds);
+                }
+                if (arg.ResultPipeIds == null || arg.ResultPipeIds.Length < 1)
+                {
+                    HmIDCollection allPipeIds =
+                        wm.DomainDataSet.DomainElementManager((int)DomainElementType.IdahoPipeElementManager).ElementIDs();
+
+                    result.EpsPipeResult = GetEpsTimePointPipeResult(wm, allPipeIds.ToArray());
+                }
+                else
+                {
+                    result.EpsPipeResult = GetEpsTimePointPipeResult(wm, arg.ResultPipeIds);
+                }
+                #endregion
+
+                return result;
+            }
+            finally
+            {
+                wm.CloseDataSource();
+            }
+        }
         /// <summary>
         /// 运行水力模型
         /// </summary>

@@ -4,8 +4,8 @@ using System.Configuration;
 using System.Linq;
 using System.Web;
 using LiaoDongBay.Controllers;
-using LiaoDongBayTest;
-using LiaoDongBayTest.WengAn.Args;
+using ChinaWaterLib;
+using ChinaWaterLib.WengAn.Args;
 using Swashbuckle.Examples;
 
 namespace LiaoDongBay.Swagger
@@ -26,7 +26,7 @@ namespace LiaoDongBay.Swagger
     {
         public object GetExamples()
         {
-            return   DummyTestData.DummyRunEPSArg();
+            return   WengAnDummyData.DummyRunEPSArg();
             
         }
     }
@@ -34,42 +34,42 @@ namespace LiaoDongBay.Swagger
     {
         public object GetExamples()
         {
-            return DummyTestData.DummyWaterConcentrationArg();
+            return WengAnDummyData.DummyWaterConcentrationArg();
         }
     }
     public class WA_Fire_Example : IExamplesProvider
     {
         public object GetExamples()
         {
-            return DummyTestData.DummyFireArg();
+            return WengAnDummyData.DummyFireArg();
         }
     }
     public class WA_BreakPipe_Example : IExamplesProvider
     {
         public object GetExamples()
         {
-            return DummyTestData.DummyBreakPipeArg();
+            return WengAnDummyData.DummyBreakPipeArg();
         }
     }
     public class WA_WaterAge_Example : IExamplesProvider
     {
         public object GetExamples()
         {
-            return DummyTestData.DummyWaterAgeArg();
+            return WengAnDummyData.DummyWaterAgeArg();
         }
     }
     public class WA_WaterTrace_Example : IExamplesProvider
     {
         public object GetExamples()
         {
-            return DummyTestData.DummyWaterTraceArg();
+            return WengAnDummyData.DummyWaterTraceArg();
         }
     }
     public class WA_UpDateDemand_Example : IExamplesProvider
     {
         public object GetExamples()
         {
-            return DummyTestData.UpdateDemandArg();
+            return WengAnDummyData.UpdateDemandArg();
         }
     }
 }
