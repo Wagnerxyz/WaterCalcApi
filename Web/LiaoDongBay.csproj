@@ -63,6 +63,9 @@
     <Reference Include="Azure.Storage.Common, Version=12.8.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
       <HintPath>..\packages\Azure.Storage.Common.12.8.0\lib\netstandard2.0\Azure.Storage.Common.dll</HintPath>
     </Reference>
+    <Reference Include="bentley.managed.entliclib">
+      <HintPath>..\..\HaestadLibsMain\bentley.managed.entliclib.dll</HintPath>
+    </Reference>
     <Reference Include="Haestad.Calculations.Shanghai.WaterGEMS">
       <HintPath>..\..\HaestadLibsMain\Haestad.Calculations.Shanghai.WaterGEMS.dll</HintPath>
     </Reference>
