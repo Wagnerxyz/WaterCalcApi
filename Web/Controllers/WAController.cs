@@ -30,7 +30,7 @@ namespace LiaoDongBay.Controllers
     {
         private object __lockObj = new object();
         private static bool isRunning = false;
-        private readonly string originalModelPath;
+        private readonly string demoModelPath;
         private readonly string runDirectory = @"D:\BentleyModels\WengAn\RunDirectory";
         private readonly string modelName = @"WengAn0916.wtg.sqlite";
         const string runningMsg = "有请求正在运行，不支持并发计算，请稍后再试";
@@ -39,9 +39,9 @@ namespace LiaoDongBay.Controllers
 
         public WAController()
         {
-            originalModelPath = @"D:\BentleyModels\WengAn\WengAn1109.wtg.sqlite"; ;
+            demoModelPath = @"D:\BentleyModels\WengAn\WengAn1109.wtg.sqlite"; ;
             //string path = ConfigurationManager.AppSettings["WengAnModelsFolder"];
-            //originalModelPath = Path.Combine(path, fileName);
+            //demoModelPath = Path.Combine(path, fileName);
 
         }
         /// <summary>
@@ -60,8 +60,8 @@ namespace LiaoDongBay.Controllers
             }
 
             //override
-            //arg.ModelPath = this.originalModelPath;
-            arg.ModelPath = CopyNewModel();
+            arg.ModelPath = this.demoModelPath;
+         //  arg.ModelPath = CopyNewModel();
             //try
             //{
             //   System.Threading.Monitor.Enter(__lockObj, ref isRunning);
@@ -88,7 +88,7 @@ namespace LiaoDongBay.Controllers
             }
 
             //override
-            //arg.ModelPath = this.originalModelPath;
+            arg.ModelPath = this.demoModelPath;
            // arg.ModelPath = CopyNewModel();
             //try
             //{
@@ -126,8 +126,8 @@ namespace LiaoDongBay.Controllers
                 return BadRequest(runningMsg);
             }
             //override
-            //arg.ModelPath = this.originalModelPath;
-            arg.ModelPath = CopyNewModel();
+            arg.ModelPath = this.demoModelPath;
+            // arg.ModelPath = CopyNewModel();
             //  try
             //  {
             //      System.Threading.Monitor.Enter(__lockObj, ref isRunning);
@@ -162,8 +162,8 @@ namespace LiaoDongBay.Controllers
                 return BadRequest(runningMsg);
             }
             //override
-            //arg.ModelPath = this.originalModelPath;
-            arg.ModelPath = CopyNewModel();
+            arg.ModelPath = this.demoModelPath;
+            //  arg.ModelPath = CopyNewModel();
             //try
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
@@ -201,8 +201,8 @@ namespace LiaoDongBay.Controllers
                 return BadRequest(runningMsg);
             }
             //override
-            //arg.ModelPath = this.originalModelPath;
-            arg.ModelPath = CopyNewModel();
+          arg.ModelPath = this.demoModelPath;
+          // arg.ModelPath = CopyNewModel();
             //try
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
@@ -240,8 +240,8 @@ namespace LiaoDongBay.Controllers
                 return BadRequest(runningMsg);
             }
             //override
-            //arg.ModelPath = this.originalModelPath;
-            arg.ModelPath = CopyNewModel();
+         arg.ModelPath = this.demoModelPath;
+         //   arg.ModelPath = CopyNewModel();
             //try
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
@@ -275,8 +275,8 @@ namespace LiaoDongBay.Controllers
                 return BadRequest(runningMsg);
             }
             //override
-            //arg.ModelPath = this.originalModelPath;
-            arg.ModelPath = CopyNewModel();
+           arg.ModelPath = this.demoModelPath;
+           // arg.ModelPath = CopyNewModel();
             //try
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
@@ -310,7 +310,7 @@ namespace LiaoDongBay.Controllers
                 return BadRequest(runningMsg);
             }
             //override
-            arg.ModelPath = this.originalModelPath;
+            arg.ModelPath = this.demoModelPath;
             //  arg.ModelPath = CopyNewModel();
             try
             {
@@ -428,7 +428,7 @@ namespace LiaoDongBay.Controllers
                     Directory.CreateDirectory(newDir);
 
                 string newModelPath = Path.Combine(newDir, modelName);
-                File.Copy(originalModelPath, newModelPath);
+                File.Copy(demoModelPath, newModelPath);
                 FileLibrary.SetReadWriteSafely(newModelPath);
                 return newModelPath;
             }
