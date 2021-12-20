@@ -19,12 +19,12 @@ using Models;
 using Newtonsoft.Json;
 using WengAn.Args;
 
-namespace LiaoDongBayTest
+namespace ChinaTest
 {
     class Program
     {
         const string ldModel = @"D:\BentleyModels\LiaoDong\LiaoDongBay_20210716.wtg.sqlite";
-        const string wenganModel = @"D:\BentleyModels\WengAn\WengAn0916.wtg.sqlite";
+        const string wenganModel = @"D:\BentleyModels\WengAn\WengAn1109.wtg.sqlite";
 
         static void Main(string[] args)
         {
@@ -32,7 +32,9 @@ namespace LiaoDongBayTest
             string demoModelPath = @"D:\DemoModel\demo\无标题 1.wtg.sqlite";
             var wm = new WaterGEMSModel();
             wm.OpenDataSource(demoModelPath, true);
-            WaterUtils.GetAllDemandPattern(wm.DomainDataSet, 33);
+
+
+            WaterUtils.GetAllDemandPattern(wm.DomainDataSet, out List<PatternHydraulic> patternHydraulicList);
 
             MapperConfiguration mapConfig = new MapperConfiguration(cfg =>
             {

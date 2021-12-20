@@ -39,7 +39,7 @@ namespace LiaoDongBay.Controllers
 
         public WAController()
         {
-            originalModelPath = @"D:\BentleyModels\WengAn\WengAn0916.wtg.sqlite"; ;
+            originalModelPath = @"D:\BentleyModels\WengAn\WengAn1109.wtg.sqlite"; ;
             //string path = ConfigurationManager.AppSettings["WengAnModelsFolder"];
             //originalModelPath = Path.Combine(path, fileName);
 
