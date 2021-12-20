@@ -8,14 +8,16 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using AutoMapper;
 using Haestad.Support.User;
-using LiaoDongBay.App_Start;
-using LiaoDongBay.Models;
 using ChinaWaterLib;
+using LiaoDongBay;
 using Models;
 using NSwag.AspNet.Owin;
 using Serilog;
+using Web;
+using Web.App_Start;
+using Web.Models;
 
-namespace LiaoDongBay
+namespace Web
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

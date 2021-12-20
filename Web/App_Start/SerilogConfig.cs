@@ -9,8 +9,9 @@ using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
+using Web;
 
-namespace LiaoDongBay.App_Start
+namespace Web.App_Start
 {
     public class SerilogConfig
     {

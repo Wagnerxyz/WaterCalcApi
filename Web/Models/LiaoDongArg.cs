@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace LiaoDongBay.Models
+namespace Web.Models
 {
     /// <summary>
     /// 请求参数，无需传ModelPath，接口里自动设置

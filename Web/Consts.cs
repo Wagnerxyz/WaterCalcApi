@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using AutoMapper;
 
-namespace LiaoDongBay
+namespace Web
 {
     public static class Consts
     {

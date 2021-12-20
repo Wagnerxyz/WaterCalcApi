@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
+using Web;
 
-namespace LiaoDongBay
+namespace Web
 {
     public static class WebApiConfig
     {

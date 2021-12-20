@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Web;
 using Swashbuckle.Swagger;
 
-namespace LiaoDongBay.Swagger
+namespace Web.Swagger
 {
     public class SwaggerExcludeFilter : ISchemaFilter
     {

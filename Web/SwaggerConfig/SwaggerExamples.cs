@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Web;
-using LiaoDongBay.Controllers;
-using ChinaWaterLib;
-using ChinaWaterLib.WengAn.Args;
+﻿using ChinaWaterLib;
+using LiaoDongBay;
 using Swashbuckle.Examples;
+using System.Configuration;
 
-namespace LiaoDongBay.Swagger
+namespace Web.Swagger
 {
     public class LD_LeakDetect_Example : IExamplesProvider
     {

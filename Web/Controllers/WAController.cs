@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using ChinaWaterLib;
+using ChinaWaterLib.WengAn;
+using ChinaWaterLib.WengAn.Args;
+using Haestad.Support.Library;
+using Models;
+using Serilog;
+using Swashbuckle.Examples;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
-using Haestad.Support.Library;
-using LiaoDongBay.Swagger;
-using ChinaWaterLib;
-using ChinaWaterLib.WengAn;
-using ChinaWaterLib.WengAn.Args;
-using Models;
-using Serilog;
-using Swashbuckle.Examples;
+using Web.Swagger;
 using WengAn.Args;
 
-namespace LiaoDongBay.Controllers
+namespace Web.Controllers
 {
     /// <summary>
     /// 并发执行控制，同时只能执行一个
@@ -32,7 +29,7 @@ namespace LiaoDongBay.Controllers
         private static bool isRunning = false;
         private readonly string demoModelPath;
         private readonly string runDirectory = @"D:\BentleyModels\WengAn\RunDirectory";
-        private readonly string modelName = @"WengAn0916.wtg.sqlite";
+        private readonly string modelName = @"WengAn1109.wtg.sqlite";
         const string runningMsg = "有请求正在运行，不支持并发计算，请稍后再试";
         const string argMsg = "请求参数错误";
         private static ILogger _logger = Serilog.Log.ForContext<WAController>();
