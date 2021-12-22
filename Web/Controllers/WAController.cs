@@ -6,13 +6,11 @@ using Models;
 using Serilog;
 using Swashbuckle.Examples;
 using System;
+using System.Configuration;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Web.Swagger;
@@ -36,8 +34,7 @@ namespace Web.Controllers
 
         public WAController()
         {
-            demoModelPath = @"D:\BentleyModels\WengAn\WengAn1109.wtg.sqlite"; ;
-            //string path = ConfigurationManager.AppSettings["WengAnModelsFolder"];
+            demoModelPath = ConfigurationManager.AppSettings["WengAnModel"];
             //demoModelPath = Path.Combine(path, fileName);
 
         }
@@ -58,12 +55,13 @@ namespace Web.Controllers
 
             //override
             arg.ModelPath = this.demoModelPath;
-         //  arg.ModelPath = CopyNewModel();
+            //  arg.ModelPath = CopyNewModel();
             //try
             //{
             //   System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
             var result = WengAnApi.RunEPS(arg);
+            WengAnDemandForecast.Run(arg);
             LogCalcError(result);
             return Ok(result);
             //}
@@ -76,6 +74,7 @@ namespace Web.Controllers
             //    }
             //}
         }
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IHttpActionResult RunEPSP(RunEPSArg arg)
         {
             if (isRunning)
@@ -86,11 +85,12 @@ namespace Web.Controllers
 
             //override
             arg.ModelPath = this.demoModelPath;
-           // arg.ModelPath = CopyNewModel();
+            // arg.ModelPath = CopyNewModel();
             //try
             //{
             //   System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+            WengAnDemandForecast.Run(arg);
             var result = WengAnApi.RunEPSP(arg);
             LogCalcError(result);
             return Ok(result);
@@ -129,8 +129,8 @@ namespace Web.Controllers
             //  {
             //      System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            var result = new BreakPipeResult();
-            result = WengAnApi.BreakPipe(arg);
+            WengAnDemandForecast.Run(arg);
+            var result = WengAnApi.BreakPipe(arg);
             LogCalcError(result);
             return Ok(result);
             //   }
@@ -165,6 +165,7 @@ namespace Web.Controllers
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+            WengAnDemandForecast.Run(arg);
             WaterTraceBaseResult baseResult = WengAnApi.GetWaterTraceResultsForMultipleElementIds(arg.ModelPath);
             LogCalcError(baseResult);
             return Ok(baseResult);
@@ -198,12 +199,13 @@ namespace Web.Controllers
                 return BadRequest(runningMsg);
             }
             //override
-          arg.ModelPath = this.demoModelPath;
-          // arg.ModelPath = CopyNewModel();
+            arg.ModelPath = this.demoModelPath;
+            // arg.ModelPath = CopyNewModel();
             //try
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+            WengAnDemandForecast.Run(arg);
             WengAnEpsBaseResult baseResult = WengAnApi.FireDemandAtOneNode(arg);
             LogCalcError(baseResult);
             return Ok(baseResult);
@@ -237,12 +239,13 @@ namespace Web.Controllers
                 return BadRequest(runningMsg);
             }
             //override
-         arg.ModelPath = this.demoModelPath;
-         //   arg.ModelPath = CopyNewModel();
+            arg.ModelPath = this.demoModelPath;
+            //   arg.ModelPath = CopyNewModel();
             //try
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+            WengAnDemandForecast.Run(arg);
             WaterQualityResult result = WengAnApi.Concentration(arg);
             LogCalcError(result);
             return Ok(result);
@@ -272,12 +275,13 @@ namespace Web.Controllers
                 return BadRequest(runningMsg);
             }
             //override
-           arg.ModelPath = this.demoModelPath;
-           // arg.ModelPath = CopyNewModel();
+            arg.ModelPath = this.demoModelPath;
+            // arg.ModelPath = CopyNewModel();
             //try
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+            WengAnDemandForecast.Run(arg);
             WaterQualityResult result = WengAnApi.WaterAge(arg);
             LogCalcError(result);
             return Ok(result);
@@ -297,48 +301,48 @@ namespace Web.Controllers
         /// <param name="arg"></param>
         /// <remarks>每半个小时， 平台 CALL 我们这个 API, 计算未来 24 小时的预报</remarks>
         /// <returns></returns>
-        [SwaggerRequestExample(typeof(ForecastDemandArg), typeof(WA_UpDateDemand_Example))]
-        [ResponseType(typeof(IHttpActionResult))]
-        public IHttpActionResult UpdateDemand(ForecastDemandArg arg)
-        {
-            if (isRunning)
-            {
-                LogRacingError();
-                return BadRequest(runningMsg);
-            }
-            //override
-            arg.ModelPath = this.demoModelPath;
-            //  arg.ModelPath = CopyNewModel();
-            try
-            {
-                System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WengAnDemandForecast.Run(arg);
-                //string archiveFileName = $"NewModel_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}.zip";
-                string archiveFileName = HostingEnvironment.MapPath($"~/NewModel.zip"); ;
-                if (File.Exists(archiveFileName))
-                {
-                    File.Delete(archiveFileName);
-                }
-                string newModel = Path.Combine(Path.GetDirectoryName(arg.ModelPath), "working", "workingmodel.sqlite");
-                using (ZipArchive zip = ZipFile.Open(archiveFileName, ZipArchiveMode.Create))
-                {
-                    zip.CreateEntryFromFile(newModel, Path.GetFileName(arg.ModelPath));
-                }
+        //[SwaggerRequestExample(typeof(ForecastDemandArg), typeof(WA_UpDateDemand_Example))]
+        //[ResponseType(typeof(IHttpActionResult))]
+        //public IHttpActionResult UpdateDemand(ForecastDemandArg arg)
+        //{
+        //    if (isRunning)
+        //    {
+        //        LogRacingError();
+        //        return BadRequest(runningMsg);
+        //    }
+        //    //override
+        //    arg.ModelPath = this.demoModelPath;
+        //    //  arg.ModelPath = CopyNewModel();
+        //    try
+        //    {
+        //        System.Threading.Monitor.Enter(__lockObj, ref isRunning);
+        //        _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+        //        WengAnDemandForecast.Run(arg);
+        //        //string archiveFileName = $"NewModel_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}.zip";
+        //        string archiveFileName = HostingEnvironment.MapPath($"~/NewModel.zip"); ;
+        //        if (File.Exists(archiveFileName))
+        //        {
+        //            File.Delete(archiveFileName);
+        //        }
+        //        string newModel = Path.Combine(Path.GetDirectoryName(arg.ModelPath), "working", "workingmodel.sqlite");
+        //        using (ZipArchive zip = ZipFile.Open(archiveFileName, ZipArchiveMode.Create))
+        //        {
+        //            zip.CreateEntryFromFile(newModel, Path.GetFileName(arg.ModelPath));
+        //        }
 
-                return Ok("更新需水量成功");
-                //LogCalcError(result);
-                //return Ok(result);
-            }
-            finally
-            {
-                if (isRunning)
-                {
-                    System.Threading.Monitor.Exit(__lockObj);
-                    isRunning = false;
-                }
-            }
-        }
+        //        return Ok("更新需水量成功");
+        //        //LogCalcError(result);
+        //        //return Ok(result);
+        //    }
+        //    finally
+        //    {
+        //        if (isRunning)
+        //        {
+        //            System.Threading.Monitor.Exit(__lockObj);
+        //            isRunning = false;
+        //        }
+        //    }
+        //}
         /// <summary>
         /// 下载最新模型文件（定时更新完需水量后的模型）供后续使用
         /// </summary>
@@ -346,47 +350,47 @@ namespace Web.Controllers
         /// <returns></returns>
         //[SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_WaterAge_Example))]
         //[ResponseType(typeof(WaterQualityResult))]
-        public HttpResponseMessage GetLatestModel()
-        {
-            if (isRunning)
-            {
-                LogRacingError();
-                var response = new HttpResponseMessage(HttpStatusCode.Conflict);
-                response.Content = new StringContent(runningMsg);
-                return response;
-            }
-            try
-            {
-                System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+        //public HttpResponseMessage GetLatestModel()
+        //{
+        //    if (isRunning)
+        //    {
+        //        LogRacingError();
+        //        var response = new HttpResponseMessage(HttpStatusCode.Conflict);
+        //        response.Content = new StringContent(runningMsg);
+        //        return response;
+        //    }
+        //    try
+        //    {
+        //        System.Threading.Monitor.Enter(__lockObj, ref isRunning);
+        //        _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
 
-                string archiveFileName = HostingEnvironment.MapPath($"~/NewModel.zip");
-                if (!File.Exists(archiveFileName))
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound, "未找到最新模型文件");
-                }
-                //  ZipFile.CreateFromDirectory("aa","ff",compress);
-                var time = File.GetLastWriteTime(archiveFileName).ToString("yyyyMMdd_HHmmss");
-                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                var stream = new FileStream(archiveFileName, FileMode.Open, FileAccess.Read);
-                response.Content = new StreamContent(stream);
-                response.Content.Headers.ContentType =
-                    new MediaTypeHeaderValue("application/zip");
-                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-                {
-                    FileName = $"NewModel_{time}.zip"
-                };
-                return response;
-            }
-            finally
-            {
-                if (isRunning)
-                {
-                    System.Threading.Monitor.Exit(__lockObj);
-                    isRunning = false;
-                }
-            }
-        }
+        //        string archiveFileName = HostingEnvironment.MapPath($"~/NewModel.zip");
+        //        if (!File.Exists(archiveFileName))
+        //        {
+        //            return Request.CreateResponse(HttpStatusCode.NotFound, "未找到最新模型文件");
+        //        }
+        //        //  ZipFile.CreateFromDirectory("aa","ff",compress);
+        //        var time = File.GetLastWriteTime(archiveFileName).ToString("yyyyMMdd_HHmmss");
+        //        HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+        //        var stream = new FileStream(archiveFileName, FileMode.Open, FileAccess.Read);
+        //        response.Content = new StreamContent(stream);
+        //        response.Content.Headers.ContentType =
+        //            new MediaTypeHeaderValue("application/zip");
+        //        response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+        //        {
+        //            FileName = $"NewModel_{time}.zip"
+        //        };
+        //        return response;
+        //    }
+        //    finally
+        //    {
+        //        if (isRunning)
+        //        {
+        //            System.Threading.Monitor.Exit(__lockObj);
+        //            isRunning = false;
+        //        }
+        //    }
+        //}
         private void LogCalcError(WaterEngineBaseResult baseResult)
         {
             if (baseResult != null && baseResult.IsCalculationFailure && baseResult.ErrorNotifs.Any())

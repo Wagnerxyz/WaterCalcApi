@@ -92,6 +92,7 @@ namespace ChinaTest
             var epsArg = WengAnDummyData.DummyRunEPSArg();
             WengAnApi.RunEPSP(epsArg);
         }
+        //不需要这个接口了
         private static void DemandForecast()
         {
             //每半个小时 CALL 预报更新 API, 这个是 CALL 的日期与时间：
@@ -144,7 +145,7 @@ namespace ChinaTest
                 DateTime = runStartDT
             };
             string s = JsonConvert.SerializeObject(arg1);
-            WengAnDemandForecast.Run(arg1);
+         //   WengAnDemandForecast.Run(arg1); 参数调整不需要这个接口了
 
         }
 
