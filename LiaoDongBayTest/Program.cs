@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using ChinaWaterLib;
-using ChinaWaterLib.WengAn;
-using Haestad.Calculations.Shanghai.QingDaoWT;
+using Haestad.Calculations.Shanghai.DataCleaner;
 using Haestad.Calculations.Shanghai.WaterGEMS;
-using Haestad.Domain;
-using Haestad.LicensingFacade;
 using Haestad.Support.User;
 using LiaoDongBay;
 using Models;
 using Newtonsoft.Json;
-using WengAn.Args;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using ChinaWaterLib.WengAn.Args;
 
 namespace ChinaTest
 {
@@ -56,7 +50,8 @@ namespace ChinaTest
             File.WriteAllText(@"fire baseResult.json", JsonConvert.SerializeObject(qwqeq));
 
             WengAnBreakPipe();
-            var result = WengAnApi.GetWaterTraceResultsForMultipleElementIds(wenganModel);
+            var arg = WengAnDummyData.FillDummyBaseArg(new WengAnBaseArg());
+            var result = WengAnApi.GetWaterTraceResultsForMultipleElementIds(arg);
 
             //string input = File.ReadAllText(@"d:\dhi.json");
             //var client = new HttpClient();
@@ -99,13 +94,13 @@ namespace ChinaTest
             DateTime runStartDT = new DateTime(2021, 10, 12, 14, 0, 0);
 
             //这个是 DATA OBJECT
-            ObsDate aData;
+            TimeSeries aData;
 
 
             //这个是查尔岩，西坡，剩土三个水厂的流量观察数据，是当前时间前面24小时的数据
-            List<ObsDate> cryData = new List<ObsDate>();
-            List<ObsDate> xipoData = new List<ObsDate>();
-            List<ObsDate> shengtuData = new List<ObsDate>();
+            List<TimeSeries> cryData = new List<TimeSeries>();
+            List<TimeSeries> xipoData = new List<TimeSeries>();
+            List<TimeSeries> shengtuData = new List<TimeSeries>();
 
             //数据案例
 
@@ -115,23 +110,23 @@ namespace ChinaTest
             //     7/19/2021 11:02 445
             //     7/19/2021 11:13 438
 
-            aData = new ObsDate(new DateTime(2021, 07, 19, 10, 31, 0), 419.0);
+            aData = new TimeSeries(new DateTime(2021, 07, 19, 10, 31, 0), 419.0);
             cryData.Add(aData);
             xipoData.Add(aData); // 这个根据西坡的实际数据来加
             shengtuData.Add(aData); // 这个根据剩土实际数据来加
-            aData = new ObsDate(new DateTime(2021, 07, 19, 10, 41, 0), 523.0);
+            aData = new TimeSeries(new DateTime(2021, 07, 19, 10, 41, 0), 523.0);
             cryData.Add(aData);
             xipoData.Add(aData);
             shengtuData.Add(aData);
-            aData = new ObsDate(new DateTime(2021, 07, 19, 10, 52, 0), 443.0);
+            aData = new TimeSeries(new DateTime(2021, 07, 19, 10, 52, 0), 443.0);
             cryData.Add(aData);
             xipoData.Add(aData);
             shengtuData.Add(aData);
-            aData = new ObsDate(new DateTime(2021, 07, 19, 11, 02, 0), 445.0);
+            aData = new TimeSeries(new DateTime(2021, 07, 19, 11, 02, 0), 445.0);
             cryData.Add(aData);
             xipoData.Add(aData);
             shengtuData.Add(aData);
-            aData = new ObsDate(new DateTime(2021, 07, 19, 11, 13, 0), 438.0);
+            aData = new TimeSeries(new DateTime(2021, 07, 19, 11, 13, 0), 438.0);
             cryData.Add(aData);
             xipoData.Add(aData);
             shengtuData.Add(aData);
@@ -145,7 +140,7 @@ namespace ChinaTest
                 DateTime = runStartDT
             };
             string s = JsonConvert.SerializeObject(arg1);
-         //   WengAnDemandForecast.Run(arg1); 参数调整不需要这个接口了
+            //   WengAnDemandForecast.Run(arg1); 参数调整不需要这个接口了
 
         }
 

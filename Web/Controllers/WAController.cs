@@ -28,19 +28,20 @@ namespace Web.Controllers
         private readonly string demoModelPath;
         private readonly string runDirectory = @"D:\BentleyModels\WengAn\RunDirectory";
         private readonly string modelName = @"WengAn1109.wtg.sqlite";
-        const string runningMsg = "有请求正在运行，不支持并发计算，请稍后再试";
-        const string argMsg = "请求参数错误";
+        private const string runningMsg = "有请求正在运行，不支持并发计算，请稍后再试";
+        private const string argMsg = "请求参数错误";
         private static ILogger _logger = Serilog.Log.ForContext<WAController>();
 
         public WAController()
         {
             demoModelPath = ConfigurationManager.AppSettings["WengAnModel"];
             //demoModelPath = Path.Combine(path, fileName);
-
         }
+
         /// <summary>
-        /// 运行水力模型返回结果(所有节点压力，所有管道流量，流速，水头损失梯度)
+        /// 运行水力模型
         /// </summary>
+        /// <remarks>返回结果(节点压力，管道流量，流速，水头损失梯度)</remarks>
         /// <param name="arg">请求</param>
         /// <returns></returns>
         [ResponseType(typeof(WengAnEpsBaseResult))]
@@ -60,8 +61,8 @@ namespace Web.Controllers
             //{
             //   System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            var result = WengAnApi.RunEPS(arg);
             WengAnDemandForecast.Run(arg);
+            var result = WengAnApi.RunEPS(arg);
             LogCalcError(result);
             return Ok(result);
             //}
@@ -74,6 +75,7 @@ namespace Web.Controllers
             //    }
             //}
         }
+
         [ApiExplorerSettings(IgnoreApi = true)]
         public IHttpActionResult RunEPSP(RunEPSArg arg)
         {
@@ -104,6 +106,7 @@ namespace Web.Controllers
             //    }
             //}
         }
+
         /// <summary>
         /// 爆管影响分析
         /// </summary>
@@ -143,6 +146,7 @@ namespace Web.Controllers
             //    }
             //}
         }
+
         /// <summary>
         /// 水源追踪(多水源供水分析)
         /// </summary>
@@ -166,7 +170,7 @@ namespace Web.Controllers
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
             WengAnDemandForecast.Run(arg);
-            WaterTraceBaseResult baseResult = WengAnApi.GetWaterTraceResultsForMultipleElementIds(arg.ModelPath);
+            WaterTraceBaseResult baseResult = WengAnApi.GetWaterTraceResultsForMultipleElementIds(WengAnDummyData.FillDummyBaseArg(new WengAnBaseArg()));
             LogCalcError(baseResult);
             return Ok(baseResult);
             //}
@@ -179,6 +183,7 @@ namespace Web.Controllers
             //    }
             //}
         }
+
         /// <summary>
         /// 消防事件
         /// </summary>
@@ -259,11 +264,12 @@ namespace Web.Controllers
             //    }
             //}
         }
+
         /// <summary>
         /// 水龄预测
         /// </summary>
-        /// <param name="arg">无需在线数据接入，仅需传modelpath一个属性(暂时可任意填写)</param>
-        /// <remarks>无需在线数据接入</remarks>
+        /// <param name="arg">水龄不用传泵阀实时值</param>
+        /// <remarks>水龄不用传泵阀实时值</remarks>
         /// <returns></returns>
         [SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_WaterAge_Example))]
         [ResponseType(typeof(WaterQualityResult))]
@@ -295,6 +301,7 @@ namespace Web.Controllers
             //    }
             //}
         }
+
         /// <summary>
         /// 更新需水量
         /// </summary>
@@ -406,9 +413,10 @@ namespace Web.Controllers
                         }));
             }
         }
+
         private void LogRacingError()
         {
-            _logger.Error("发生竟态: {0}", new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name);
+            _logger.Error("{0}: {1}", runningMsg, new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name);
         }
 
         private string CopyNewModel()
