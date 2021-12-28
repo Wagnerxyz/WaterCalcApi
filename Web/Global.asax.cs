@@ -61,7 +61,7 @@ namespace Web
             });
             var mapper = mapConfig.CreateMapper();
             Consts.Mapper = mapper;
-            WengAnApi.mapper = mapper;
+            WengAnHandler.mapper = mapper;
         }
     }
 }

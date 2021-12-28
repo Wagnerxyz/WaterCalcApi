@@ -35,7 +35,7 @@ namespace ChinaTest
                 cfg.CreateMap<IUserNotification, UserNotification>();
                 //cfg.AddProfile();
             });
-            WengAnApi.mapper = mapConfig.CreateMapper();
+            WengAnHandler.mapper = mapConfig.CreateMapper();
 
             WengAnRunEps();
             //  Parallel.For(0, 12, (x) => ForParallelWengAnRunEps());
@@ -45,13 +45,13 @@ namespace ChinaTest
 
 
             var fireArg = WengAnDummyData.DummyFireArg();
-            var aqweq = WengAnApi.FireDemandAtOneNode(fireArg);
+            var aqweq = WengAnHandler.FireDemandAtOneNode(fireArg);
             var qwqeq = aqweq.EpsNodeResult.Where(x => x.Id == 1338);
             File.WriteAllText(@"fire baseResult.json", JsonConvert.SerializeObject(qwqeq));
 
             WengAnBreakPipe();
             var arg = WengAnDummyData.FillDummyBaseArg(new WengAnBaseArg());
-            var result = WengAnApi.GetWaterTraceResultsForMultipleElementIds(arg);
+            var result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(arg);
 
             //string input = File.ReadAllText(@"d:\dhi.json");
             //var client = new HttpClient();
@@ -80,12 +80,12 @@ namespace ChinaTest
         private static void WengAnRunEps()
         {
             var epsArg = WengAnDummyData.DummyRunEPSArg();
-            WengAnApi.RunEPS(epsArg);
+            WengAnHandler.RunEPS(epsArg);
         }
         private static void ForParallelWengAnRunEps()
         {
             var epsArg = WengAnDummyData.DummyRunEPSArg();
-            WengAnApi.RunEPSP(epsArg);
+            WengAnHandler.RunEPSP(epsArg);
         }
         //不需要这个接口了
         private static void DemandForecast()
@@ -162,14 +162,14 @@ namespace ChinaTest
         private static void Fire()
         {
             var arg = WengAnDummyData.DummyBreakPipeArg();
-            var result = WengAnApi.BreakPipe(arg);
+            var result = WengAnHandler.BreakPipe(arg);
         }
 
         private static void WengAnBreakPipe()
         {
             var arg = WengAnDummyData.DummyBreakPipeArg();
             var xxx = JsonConvert.SerializeObject(arg);
-            var result = WengAnApi.BreakPipe(arg);
+            var result = WengAnHandler.BreakPipe(arg);
         }
 
 

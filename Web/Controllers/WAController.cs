@@ -61,8 +61,8 @@ namespace Web.Controllers
             //{
             //   System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            WengAnDemandForecast.Run(arg);
-            var result = WengAnApi.RunEPS(arg);
+            //WengAnHandler.WengAnDemandForecast(arg);
+            var result = WengAnHandler.RunEPS(arg);
             LogCalcError(result);
             return Ok(result);
             //}
@@ -92,8 +92,7 @@ namespace Web.Controllers
             //{
             //   System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            WengAnDemandForecast.Run(arg);
-            var result = WengAnApi.RunEPSP(arg);
+            var result = WengAnHandler.RunEPSP(arg);
             LogCalcError(result);
             return Ok(result);
             //}
@@ -132,8 +131,7 @@ namespace Web.Controllers
             //  {
             //      System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            WengAnDemandForecast.Run(arg);
-            var result = WengAnApi.BreakPipe(arg);
+            var result = WengAnHandler.BreakPipe(arg);
             LogCalcError(result);
             return Ok(result);
             //   }
@@ -150,8 +148,6 @@ namespace Web.Controllers
         /// <summary>
         /// 水源追踪(多水源供水分析)
         /// </summary>
-        /// <param name="arg">无需在线数据接入，仅需传modelpath一个属性(暂时可任意填写)</param>
-        /// <remarks>无需在线数据接入</remarks>
         /// <returns></returns>
         [SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_WaterTrace_Example))]
         [ResponseType(typeof(WaterTraceBaseResult))]
@@ -169,8 +165,7 @@ namespace Web.Controllers
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            WengAnDemandForecast.Run(arg);
-            WaterTraceBaseResult baseResult = WengAnApi.GetWaterTraceResultsForMultipleElementIds(WengAnDummyData.FillDummyBaseArg(new WengAnBaseArg()));
+            WaterTraceBaseResult baseResult = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(WengAnDummyData.FillDummyBaseArg(new WengAnBaseArg()));
             LogCalcError(baseResult);
             return Ok(baseResult);
             //}
@@ -210,8 +205,7 @@ namespace Web.Controllers
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            WengAnDemandForecast.Run(arg);
-            WengAnEpsBaseResult baseResult = WengAnApi.FireDemandAtOneNode(arg);
+            WengAnEpsBaseResult baseResult = WengAnHandler.FireDemandAtOneNode(arg);
             LogCalcError(baseResult);
             return Ok(baseResult);
             //}
@@ -250,8 +244,7 @@ namespace Web.Controllers
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            WengAnDemandForecast.Run(arg);
-            WaterQualityResult result = WengAnApi.Concentration(arg);
+            WaterQualityResult result = WengAnHandler.Concentration(arg);
             LogCalcError(result);
             return Ok(result);
             //}
@@ -268,8 +261,6 @@ namespace Web.Controllers
         /// <summary>
         /// 水龄预测
         /// </summary>
-        /// <param name="arg">水龄不用传泵阀实时值</param>
-        /// <remarks>水龄不用传泵阀实时值</remarks>
         /// <returns></returns>
         [SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_WaterAge_Example))]
         [ResponseType(typeof(WaterQualityResult))]
@@ -287,8 +278,7 @@ namespace Web.Controllers
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            WengAnDemandForecast.Run(arg);
-            WaterQualityResult result = WengAnApi.WaterAge(arg);
+            WaterQualityResult result = WengAnHandler.WaterAge(arg);
             LogCalcError(result);
             return Ok(result);
             //}
