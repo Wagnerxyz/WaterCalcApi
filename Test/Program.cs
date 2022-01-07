@@ -4,7 +4,6 @@ using Haestad.Calculations.Shanghai.DataCleaner;
 using Haestad.Calculations.Shanghai.WaterGEMS;
 using Haestad.Support.User;
 using LiaoDongBay;
-using Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ChinaWaterLib.WengAn.Args;
+using ChinaWaterLib.Models;
 
 namespace ChinaTest
 {
@@ -22,7 +22,7 @@ namespace ChinaTest
 
         static void Main(string[] args)
         {
-
+            WengAnDummyData.wenganModel = wenganModel;
             string demoModelPath = @"D:\DemoModel\demo\无标题 1.wtg.sqlite";
             var wm = new WaterGEMSModel();
             wm.OpenDataSource(demoModelPath, true);

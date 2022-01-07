@@ -1,8 +1,8 @@
 ﻿using ChinaWaterLib;
+using ChinaWaterLib.Models;
 using ChinaWaterLib.WengAn;
 using ChinaWaterLib.WengAn.Args;
 using Haestad.Support.Library;
-using Models;
 using Serilog;
 using Swashbuckle.Examples;
 using System;
@@ -165,7 +165,7 @@ namespace Web.Controllers
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            WaterTraceBaseResult baseResult = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(WengAnDummyData.FillDummyBaseArg(new WengAnBaseArg()));
+            WaterTraceBaseResult baseResult = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(arg);
             LogCalcError(baseResult);
             return Ok(baseResult);
             //}
