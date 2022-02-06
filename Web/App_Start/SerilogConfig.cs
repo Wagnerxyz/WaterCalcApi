@@ -28,10 +28,10 @@ namespace Web.App_Start
             {
                 //write to remote azure share folder 按机器名区分文件夹
                 //WriteToAzureFileShare();
-                const string userIdentityclientId = "e8a3015a-8a80-48e9-8966-a2eafbb334c4";
-                var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = userIdentityclientId });
-
-                var client = new BlobServiceClient(new Uri("https://storagebentley.blob.core.windows.net"), credential);
+                //const string userIdentityclientId = "";
+                //var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = userIdentityclientId });
+                //var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+                //var client = new BlobServiceClient(new Uri("https://storagebentley.blob.core.windows.net"), credential);
 
                 //var clients = new SecretClient(new Uri("https://bentleykeyvault.vault.azure.net/"), credential);
                 //var asda = clients.GetSecret("ConnectionStrings--storagebentley").Value.Value;
@@ -48,11 +48,11 @@ namespace Web.App_Start
                     .WriteTo.File(localFilePath, outputTemplate: outputTemplate, rollingInterval: RollingInterval.Day)
                     .WriteTo.EventLog(Consts.ProjectName, manageEventSource: true, outputTemplate: outputTemplate)
                     //.WriteTo.Udp(udpAddress, 7071, AddressFamily.InterNetwork, outputTemplate: outputTemplate)
-                    .WriteTo.ApplicationInsights(new TelemetryConfiguration(ConfigurationManager.AppSettings["ApplicationInsightsKey"]), TelemetryConverter.Traces)
-                    .WriteTo.Async(x =>
-                        x.AzureBlobStorage(client,
-                            Serilog.Events.LogEventLevel.Information, "demoapilog",
-                            $"{{yyyy}}_{{MM}}/{{dd}}/{Environment.MachineName}_Log.txt"))
+                    //.WriteTo.ApplicationInsights(new TelemetryConfiguration(ConfigurationManager.AppSettings["ApplicationInsightsKey"]), TelemetryConverter.Traces)
+                    //.WriteTo.Async(x =>
+                    //    x.AzureBlobStorage(client,
+                    //        Serilog.Events.LogEventLevel.Information, "wenganlog",
+                    //        $"{{yyyy}}_{{MM}}/{{dd}}/{Environment.MachineName}_Log.txt"))
                     //因为是appendblob 必须用async包下 不然卡住了。。。
                     // azure data lake Gen2 Preview之前不支持Append Blob 需要新的SDK https://azure.microsoft.com/en-us/updates/append-blob-support-for-azure-data-lake-storage-preview/
 
@@ -74,7 +74,6 @@ namespace Web.App_Start
                     .WriteTo.File(localFilePath, outputTemplate: outputTemplate, rollingInterval: RollingInterval.Day)
                     .WriteTo.EventLog(Consts.ProjectName, manageEventSource: true, outputTemplate: outputTemplate)
                     //.WriteTo.Udp(udpAddress, 7071, AddressFamily.InterNetwork, outputTemplate: outputTemplate)
-                    .WriteTo.ApplicationInsights(new TelemetryConfiguration(ConfigurationManager.AppSettings["ApplicationInsightsKey"]), TelemetryConverter.Traces)
 
                     .CreateLogger();
             }
