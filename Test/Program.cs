@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using ChinaWaterLib.WengAn.Args;
 using ChinaWaterLib.Models;
 
@@ -22,6 +23,20 @@ namespace ChinaTest
 
         static void Main(string[] args)
         {
+            ProfileOptimization.SetProfileRoot(@"C:\files\");
+            ProfileOptimization.StartProfile("wagner.fff");
+            MapperConfiguration mapConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<IUserNotification, UserNotification>();
+                //cfg.AddProfile();
+            });
+            WengAnHandler.mapper = mapConfig.CreateMapper();
+            WengAnRunEps();
+
+            var result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(WengAnDummyData.DummyWaterTraceArg(), 4014, 72, true, 20);
+
+
+
             WengAnDummyData.wenganModel = wenganModel;
             string demoModelPath = @"D:\DemoModel\demo\无标题 1.wtg.sqlite";
             var wm = new WaterGEMSModel();
@@ -30,37 +45,24 @@ namespace ChinaTest
 
             WaterUtils.GetAllDemandPattern(wm.DomainDataSet, out List<PatternHydraulic> patternHydraulicList);
 
-            MapperConfiguration mapConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<IUserNotification, UserNotification>();
-                //cfg.AddProfile();
-            });
-            WengAnHandler.mapper = mapConfig.CreateMapper();
-
-            WengAnRunEps();
+       
+           
             //  Parallel.For(0, 12, (x) => ForParallelWengAnRunEps());
 
             DemandForecast();
 
 
-
-            var fireArg = WengAnDummyData.DummyFireArg();
-            var aqweq = WengAnHandler.FireDemandAtOneNode(fireArg);
-            var qwqeq = aqweq.EpsNodeResult.Where(x => x.Id == 1338);
-            File.WriteAllText(@"fire baseResult.json", JsonConvert.SerializeObject(qwqeq));
-
             WengAnBreakPipe();
             var arg = WengAnDummyData.FillDummyBaseArg(new WengAnBaseArg());
-            var result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(arg);
 
             //string input = File.ReadAllText(@"d:\dhi.json");
             //var client = new HttpClient();
             //var contentData = new StringContent(input, Encoding.UTF8, "application/json");
             //client.Timeout = TimeSpan.FromMinutes(30);
-            //var response = client.PostAsync("http://40.117.47.87/BentleyAPI/api/qingdao/FlushWater", contentData).TracePercentageResults;
+            //var response = client.PostAsync("http://40.117.47.87/BentleyAPI/api/qingdao/FlushWater", contentData).WaterHeadTracePercentageResults;
             //if (response.IsSuccessStatusCode)
             //{
-            //    var stringData = response.Content.ReadAsStringAsync().TracePercentageResults;
+            //    var stringData = response.Content.ReadAsStringAsync().WaterHeadTracePercentageResults;
             //    var baseResult = JsonConvert.DeserializeObject<LiaoDongResult>(stringData);
             //}
 
@@ -80,7 +82,8 @@ namespace ChinaTest
         private static void WengAnRunEps()
         {
             var epsArg = WengAnDummyData.DummyRunEPSArg();
-            WengAnHandler.RunEPS(epsArg);
+            var json=JsonConvert.SerializeObject(epsArg);
+            WengAnHandler.RunEPS(epsArg, 20, 24, true, 20);
         }
         private static void ForParallelWengAnRunEps()
         {
@@ -161,15 +164,17 @@ namespace ChinaTest
 
         private static void Fire()
         {
-            var arg = WengAnDummyData.DummyBreakPipeArg();
-            var result = WengAnHandler.BreakPipe(arg);
+            var fireArg = WengAnDummyData.DummyFireArg();
+            var aqweq = WengAnHandler.FireDemandAtOneNode(fireArg, 3972, 24, true, 20);
+            var qwqeq = aqweq.EpsNodeResult.Where(x => x.Id == 1338);
+            File.WriteAllText(@"fire baseResult.json", JsonConvert.SerializeObject(qwqeq));
         }
 
         private static void WengAnBreakPipe()
         {
             var arg = WengAnDummyData.DummyBreakPipeArg();
             var xxx = JsonConvert.SerializeObject(arg);
-            var result = WengAnHandler.BreakPipe(arg);
+            var result = WengAnHandler.BreakPipe(arg, 3972, 24, true, 20);
         }
 
 

@@ -1,6 +1,5 @@
 ﻿using ChinaWaterLib;
 using ChinaWaterLib.Models;
-using ChinaWaterLib.WengAn;
 using ChinaWaterLib.WengAn.Args;
 using Haestad.Support.Library;
 using Serilog;
@@ -19,22 +18,25 @@ using WengAn.Args;
 namespace Web.Controllers
 {
     /// <summary>
-    /// 并发执行控制，同时只能执行一个
+    /// 不允许并发，只能同时执行一个
     /// </summary>
     public class WAController : ApiController
     {
-        private object __lockObj = new object();
+        private readonly object __lockObj = new object();
         private static bool isRunning = false;
         private readonly string demoModelPath;
+        private readonly int demandAdjustmentScenarioId;
         private readonly string runDirectory = @"D:\BentleyModels\WengAn\RunDirectory";
         private readonly string modelName = @"WengAn1109.wtg.sqlite";
-        private const string runningMsg = "有请求正在运行，不支持并发计算，请稍后再试";
+        private const string runningMsg = "有请求正在运行，不支持同时计算，请稍后再试";
         private const string argMsg = "请求参数错误";
         private static ILogger _logger = Serilog.Log.ForContext<WAController>();
 
         public WAController()
         {
             demoModelPath = ConfigurationManager.AppSettings["WengAnModel"];
+            demandAdjustmentScenarioId = Convert.ToInt32(ConfigurationManager.AppSettings["DemandAdjustmentScenarioId"]);
+
             //demoModelPath = Path.Combine(path, fileName);
         }
 
@@ -62,7 +64,7 @@ namespace Web.Controllers
             //   System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
             //WengAnHandler.WengAnDemandForecast(arg);
-            var result = WengAnHandler.RunEPS(arg);
+            var result = WengAnHandler.RunEPS(arg, Convert.ToInt32(ConfigurationManager.AppSettings["RunEPSScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["RunEPSPressureEngineSimulationDuration"]), true, demandAdjustmentScenarioId);
             LogCalcError(result);
             return Ok(result);
             //}
@@ -131,7 +133,7 @@ namespace Web.Controllers
             //  {
             //      System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            var result = WengAnHandler.BreakPipe(arg);
+            var result = WengAnHandler.BreakPipe(arg, Convert.ToInt32(ConfigurationManager.AppSettings["BreakPipeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["BreakPipePressureEngineSimulationDuration"]), true, demandAdjustmentScenarioId);
             LogCalcError(result);
             return Ok(result);
             //   }
@@ -150,8 +152,8 @@ namespace Web.Controllers
         /// </summary>
         /// <returns></returns>
         [SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_WaterTrace_Example))]
-        [ResponseType(typeof(WaterTraceBaseResult))]
-        public IHttpActionResult WaterTrace(WengAnBaseArg arg)
+        [ResponseType(typeof(WaterHeadTraceResult))]
+        public IHttpActionResult WaterTrace(WaterTraceArg arg)
         {
             if (isRunning)
             {
@@ -165,9 +167,9 @@ namespace Web.Controllers
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            WaterTraceBaseResult baseResult = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(arg);
-            LogCalcError(baseResult);
-            return Ok(baseResult);
+            WaterHeadTraceResult result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(arg, Convert.ToInt32(ConfigurationManager.AppSettings["WaterTraceScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["WaterTracePressureEngineSimulationDuration"]), true, demandAdjustmentScenarioId);
+            LogCalcError(result);
+            return Ok(result);
             //}
             //finally
             //{
@@ -205,7 +207,7 @@ namespace Web.Controllers
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            WengAnEpsBaseResult baseResult = WengAnHandler.FireDemandAtOneNode(arg);
+            WengAnEpsBaseResult baseResult = WengAnHandler.FireDemandAtOneNode(arg, Convert.ToInt32(ConfigurationManager.AppSettings["FireDemandAtOneNodeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["FireDemandAtOneNodeEngineSimulationDuration"]), true, demandAdjustmentScenarioId);
             LogCalcError(baseResult);
             return Ok(baseResult);
             //}
@@ -244,7 +246,7 @@ namespace Web.Controllers
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            WaterQualityResult result = WengAnHandler.Concentration(arg);
+            WaterQualityResult result = WengAnHandler.Concentration(arg, Convert.ToInt32(ConfigurationManager.AppSettings["WaterConcentrationScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["WaterConcentrationPressureEngineSimulationDuration"]), true, demandAdjustmentScenarioId);
             LogCalcError(result);
             return Ok(result);
             //}
@@ -262,9 +264,9 @@ namespace Web.Controllers
         /// 水龄预测
         /// </summary>
         /// <returns></returns>
-        [SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_WaterAge_Example))]
+        [SwaggerRequestExample(typeof(WaterAgeArg), typeof(WA_WaterAge_Example))]
         [ResponseType(typeof(WaterQualityResult))]
-        public IHttpActionResult WaterAge(WengAnBaseArg arg)
+        public IHttpActionResult WaterAge(WaterAgeArg arg)
         {
             if (isRunning)
             {
@@ -278,7 +280,7 @@ namespace Web.Controllers
             //{
             //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
             _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-            WaterQualityResult result = WengAnHandler.WaterAge(arg);
+            WaterQualityResult result = WengAnHandler.WaterAge(arg, Convert.ToInt32(ConfigurationManager.AppSettings["WaterAgeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["WaterAgePressureEngineSimulationDuration"]), true, demandAdjustmentScenarioId);
             LogCalcError(result);
             return Ok(result);
             //}
