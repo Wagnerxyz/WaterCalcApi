@@ -266,6 +266,5 @@ public class SwaggerConfig
 
         return String.Format(@"{0}\bin\ChinaWaterLib.xml",
             AppDomain.CurrentDomain.BaseDirectory);
-
     }
 }

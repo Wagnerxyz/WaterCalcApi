@@ -11,7 +11,6 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Web.App_Start;
-using Web.Models;
 
 namespace Web
 {
@@ -50,9 +49,7 @@ namespace Web
         {
             MapperConfiguration mapConfig = new MapperConfiguration(cfg =>
             {
-
                 cfg.CreateMap<IUserNotification, UserNotification>();
-                cfg.CreateMap<LiaoDongArg, NodeEmitterCoefficientArg>();
                 //cfg.AddProfile();
             });
             var mapper = mapConfig.CreateMapper();

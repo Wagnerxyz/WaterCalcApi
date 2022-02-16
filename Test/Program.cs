@@ -3,7 +3,6 @@ using ChinaWaterLib;
 using Haestad.Calculations.Shanghai.DataCleaner;
 using Haestad.Calculations.Shanghai.WaterGEMS;
 using Haestad.Support.User;
-using LiaoDongBay;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,8 +17,8 @@ namespace ChinaTest
 {
     class Program
     {
-        const string ldModel = @"D:\BentleyModels\LiaoDong\LiaoDongBay_20210716.wtg.sqlite";
-        const string wenganModel = @"D:\BentleyModels\WengAn\WengAn1109.wtg.sqlite";
+        const string ldModel = @"C:\BentleyModels\LiaoDong\LiaoDongBay_20210716.wtg.sqlite";
+        const string wenganModel = @"C:\BentleyModels\WengAn\WengAn1109.wtg.sqlite";
 
         static void Main(string[] args)
         {
