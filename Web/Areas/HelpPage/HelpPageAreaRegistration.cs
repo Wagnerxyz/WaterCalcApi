@@ -1,7 +1,7 @@
 using System.Web.Http;
 using System.Web.Mvc;
 
-namespace LiaoDongBay.Areas.HelpPage
+namespace Web.Areas.HelpPage
 {
     public class HelpPageAreaRegistration : AreaRegistration
     {

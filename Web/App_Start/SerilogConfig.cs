@@ -17,7 +17,7 @@ namespace Web.App_Start
     {
         public static void RegisterComponents()
         {
-            string localFilePath = HostingEnvironment.MapPath($"~/{ConfigurationManager.AppSettings["DemoApiLogPath"]}/Log.txt");
+            string localFilePath = HostingEnvironment.MapPath($"~/{ConfigurationManager.AppSettings["BentleyApiLogFilePath"]}/Log.txt");
             string udpAddress = "172.18.208.1";
             //The {Message:lj} format options cause data embedded in the message to be output in JSON (j) except for string literals, which are output as-is.
             string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj} {Properties}{NewLine}{Exception}";
@@ -78,7 +78,7 @@ namespace Web.App_Start
                     .CreateLogger();
             }
 
-            Log.Logger.Information("Start Serilog");
+            Log.Logger.Information("Serilog配置成功，开始记录日志");
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace LiaoDongBay.Areas.HelpPage.ModelDescriptions
+namespace Web.Areas.HelpPage.ModelDescriptions
 {
     /// <summary>
     /// Describes a type model.

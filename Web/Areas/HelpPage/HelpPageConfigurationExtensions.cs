@@ -11,10 +11,10 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Description;
-using LiaoDongBay.Areas.HelpPage.ModelDescriptions;
-using LiaoDongBay.Areas.HelpPage.Models;
+using Web.Areas.HelpPage.ModelDescriptions;
+using Web.Areas.HelpPage.Models;
 
-namespace LiaoDongBay.Areas.HelpPage
+namespace Web.Areas.HelpPage
 {
     public static class HelpPageConfigurationExtensions
     {

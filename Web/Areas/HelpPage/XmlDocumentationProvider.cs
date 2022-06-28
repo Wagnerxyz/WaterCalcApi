@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Web.Http.Controllers;
 using System.Web.Http.Description;
 using System.Xml.XPath;
-using LiaoDongBay.Areas.HelpPage.ModelDescriptions;
+using Web.Areas.HelpPage.ModelDescriptions;
 
-namespace LiaoDongBay.Areas.HelpPage
+namespace Web.Areas.HelpPage
 {
     /// <summary>
     /// A custom <see cref="IDocumentationProvider"/> that reads the API documentation from an XML documentation file.

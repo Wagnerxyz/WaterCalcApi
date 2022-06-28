@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http.Headers;
 using System.Web.Http.Description;
-using LiaoDongBay.Areas.HelpPage.ModelDescriptions;
+using Web.Areas.HelpPage.ModelDescriptions;
 
-namespace LiaoDongBay.Areas.HelpPage.Models
+namespace Web.Areas.HelpPage.Models
 {
     /// <summary>
     /// The model that represents an API displayed on the help page.

@@ -1,10 +1,10 @@
 using System;
 using System.Web.Http;
 using System.Web.Mvc;
-using LiaoDongBay.Areas.HelpPage.ModelDescriptions;
-using LiaoDongBay.Areas.HelpPage.Models;
+using Web.Areas.HelpPage.ModelDescriptions;
+using Web.Areas.HelpPage.Models;
 
-namespace LiaoDongBay.Areas.HelpPage.Controllers
+namespace Web.Areas.HelpPage.Controllers
 {
     /// <summary>
     /// The controller that will handle requests for the help page.
