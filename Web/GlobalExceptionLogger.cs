@@ -16,7 +16,7 @@ namespace Web
         public override void Log(ExceptionLoggerContext context)
         {
             //Trace.TraceError(context.ExceptionContext.Exception.ToString());
-            _logger.Error("BentleyAPI ExceptionLogger" + context.ExceptionContext.Exception.ToString());
+            _logger.Error("Global ExceptionLogger: " + context.ExceptionContext.Exception.ToString());
         }
     }
 }

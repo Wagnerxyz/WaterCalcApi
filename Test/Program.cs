@@ -19,6 +19,7 @@ namespace ChinaTest
     {
         const string ldModel = @"C:\BentleyModels\LiaoDong\LiaoDongBay_20210716.wtg.sqlite";
         const string wenganModel = @"C:\BentleyModels\WengAn\WengAn1109.wtg.sqlite";
+        const bool isServerModeLicense = false;
 
         static void Main(string[] args)
         {
@@ -31,8 +32,7 @@ namespace ChinaTest
             });
             WengAnHandler.mapper = mapConfig.CreateMapper();
             WengAnRunEps();
-
-            var result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(WengAnDummyData.DummyWaterTraceArg(), 4014, 72, true, 20);
+            var result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(WengAnDummyData.DummyWaterTraceArg(), 4014, 72, true,isServerModeLicense, 20);
 
 
 
@@ -82,13 +82,9 @@ namespace ChinaTest
         {
             var epsArg = WengAnDummyData.DummyRunEPSArg();
             var json=JsonConvert.SerializeObject(epsArg);
-            WengAnHandler.RunEPS(epsArg, 20, 24, true, 20);
+            WengAnHandler.RunEPS(epsArg, 20, 24, true, isServerModeLicense,20);
         }
-        private static void ForParallelWengAnRunEps()
-        {
-            var epsArg = WengAnDummyData.DummyRunEPSArg();
-            WengAnHandler.RunEPSP(epsArg);
-        }
+     
         //不需要这个接口了
         private static void DemandForecast()
         {
@@ -164,7 +160,7 @@ namespace ChinaTest
         private static void Fire()
         {
             var fireArg = WengAnDummyData.DummyFireArg();
-            var aqweq = WengAnHandler.FireDemandAtOneNode(fireArg, 3972, 24, true, 20);
+            var aqweq = WengAnHandler.FireDemandAtOneNode(fireArg, 3972, 24, true, isServerModeLicense, 20);
             var qwqeq = aqweq.EpsNodeResult.Where(x => x.Id == 1338);
             File.WriteAllText(@"fire baseResult.json", JsonConvert.SerializeObject(qwqeq));
         }
@@ -173,7 +169,7 @@ namespace ChinaTest
         {
             var arg = WengAnDummyData.DummyBreakPipeArg();
             var xxx = JsonConvert.SerializeObject(arg);
-            var result = WengAnHandler.BreakPipe(arg, 3972, 24, true, 20);
+            var result = WengAnHandler.BreakPipe(arg, 3972, 24, true, isServerModeLicense, 20);
         }
 
 
