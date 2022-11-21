@@ -17,8 +17,7 @@ namespace ChinaTest
 {
     class Program
     {
-        const string ldModel = @"C:\BentleyModels\LiaoDong\LiaoDongBay_20210716.wtg.sqlite";
-        const string wenganModel = @"C:\BentleyModels\WengAn\WengAn1109.wtg.sqlite";
+        const string wenganModel = @"C:\BentleyModels\WengAn\WengAn20220310.wtg.sqlite";
         const bool isServerModeLicense = false;
 
         static void Main(string[] args)
@@ -52,7 +51,7 @@ namespace ChinaTest
 
 
             WengAnBreakPipe();
-            var arg = WengAnDummyData.FillDummyBaseArg(new WengAnBaseArg());
+            var arg = WengAnDummyData.FillDummyBaseArg(new WengAnCalculationBaseArg());
 
             //string input = File.ReadAllText(@"d:\dhi.json");
             //var client = new HttpClient();
@@ -65,7 +64,6 @@ namespace ChinaTest
             //    var baseResult = JsonConvert.DeserializeObject<LiaoDongResult>(stringData);
             //}
 
-            TestLiaoDong();
 
             //  WengAnWaterQuality();
             WengAnBreakPipe();
@@ -142,20 +140,6 @@ namespace ChinaTest
 
         }
 
-        private static void TestLiaoDong()
-        {
-            var arg = new NodeEmitterCoefficientArg()
-            {
-                ModelPath = ldModel,
-                CurrentNodePressures = LiaoDongDummyData.GetLiaoDongNodePressure(),
-                CurrentPipeFlows = LiaoDongDummyData.GetLiaoDongPipeFlow()
-            };
-            File.WriteAllText(@"liaodonginput.json", JsonConvert.SerializeObject(arg));
-            //TestWaterLeakByFindingEmitterCoefficient();
-            // TestSettingObservedDataAndRunWaterLeakCalibration();
-
-            LiaoDongApi.SettingObservedDataAndRunWaterLeakCalibration(arg);
-        }
 
         private static void Fire()
         {

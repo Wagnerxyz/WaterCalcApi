@@ -18,16 +18,6 @@ namespace Web
     {
         protected void Application_Start()
         {
-            //RouteTable.Routes.MapOwinPath("swagger", app =>
-            //{
-            //    app.UseSwaggerUi3(typeof(WebApiApplication).Assembly, settings =>
-            //    {
-            //        settings.MiddlewareBasePath = "/swagger";
-            //        //settings.GeneratorSettings.DefaultUrlTemplate = "api/{controller}/{id}";  //this is the default one
-            //        settings.GeneratorSettings.DefaultUrlTemplate = "api/{controller}/{action}/{id}";
-            //        settings.DocumentTitle = "Bentley API";
-            //    });
-            //});
             SerilogConfig.RegisterComponents();
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);

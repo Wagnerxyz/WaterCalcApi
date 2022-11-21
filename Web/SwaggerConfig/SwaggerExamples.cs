@@ -5,24 +5,12 @@ using System.Configuration;
 
 namespace Web.Swagger
 {
-    public class LD_LeakDetect_Example : IExamplesProvider
-    {
-        public object GetExamples()
-        {
-            return new NodeEmitterCoefficientArg()
-            {
-                ModelPath = ConfigurationManager.AppSettings["LiaoDongModel"],
-                CurrentNodePressures = LiaoDongDummyData.GetLiaoDongNodePressure(),
-                CurrentPipeFlows = LiaoDongDummyData.GetLiaoDongPipeFlow()
-            };
-        }
-    }
     public class WA_RunEPS1_Example : IExamplesProvider
     {
         public object GetExamples()
         {
-            return   WengAnDummyData.DummyRunEPSArg();
-            
+            return WengAnDummyData.DummyRunEPSArg();
+
         }
     }
     public class WA_WaterConcentration_Example : IExamplesProvider

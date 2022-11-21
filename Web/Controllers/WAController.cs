@@ -20,6 +20,10 @@ using Web.Swagger;
 using WengAn.Args;
 using Haestad.ManagedLicensing;
 using System.Runtime.Caching;
+using Haestad.Calculations.Shanghai.WaterGEMS;
+using Haestad.Domain;
+using Haestad.Support.Support;
+using Web.Models;
 
 namespace Web.Controllers
 {
@@ -69,7 +73,7 @@ namespace Web.Controllers
                 LogContentionError();
                 return Content(HttpStatusCode.Conflict, conflictMsg);
             }
-            CheckLicense();
+            //CheckLicense();
             try
             {
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
@@ -147,7 +151,7 @@ namespace Web.Controllers
             //{
             //    SlidingExpiration = TimeSpan.FromHours(6)
             //};
-            cache.Set("isLicenseOk",true, DateTimeOffset.Now.AddHours(6));
+            cache.Set("isLicenseOk", true, DateTimeOffset.Now.AddHours(6));
         }
 
 
@@ -173,7 +177,7 @@ namespace Web.Controllers
                 LogContentionError();
                 return Content(HttpStatusCode.Conflict, conflictMsg);
             }
-            CheckLicense();
+            //CheckLicense();
             try
             {
                 // arg.ModelPath = CopyNewModel();
@@ -211,7 +215,7 @@ namespace Web.Controllers
                 LogContentionError();
                 return Content(HttpStatusCode.Conflict, conflictMsg);
             }
-            CheckLicense();
+            //  CheckLicense();
             try
             {
                 //  arg.ModelPath = CopyNewModel();
@@ -326,7 +330,7 @@ namespace Web.Controllers
                 LogContentionError();
                 return Content(HttpStatusCode.Conflict, conflictMsg);
             }
-            CheckLicense();
+            //   CheckLicense();
             try
             {
                 // arg.ModelPath = CopyNewModel();
@@ -400,7 +404,7 @@ namespace Web.Controllers
         /// <returns></returns>
         ///<response code="400">错误</response>
         ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
-        //[SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_WaterAge_Example))]
+        //[SwaggerRequestExample(typeof(WengAnCalculationBaseArg), typeof(WA_WaterAge_Example))]
         //[ResponseType(typeof(WaterQualityResult))]
         //public HttpResponseMessage GetLatestModel()
         //{
@@ -493,6 +497,79 @@ namespace Web.Controllers
                     System.Threading.Monitor.Exit(__lockObj);
                     isRunning = false;
                 }
+            }
+        }
+
+
+        private IHttpActionResult UpdateControl(FireDemandArg arg)
+        {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!System.Threading.Monitor.TryEnter(__lockObj))
+            {
+                LogContentionError();
+                return Content(HttpStatusCode.Conflict, conflictMsg);
+            }
+            try
+            {
+                // arg.ModelPath = CopyNewModel();
+                //try
+                //{
+                //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
+
+
+
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                WengAnEpsBaseResult result = WengAnHandler.FireDemandAtOneNode(arg, Convert.ToInt32(ConfigurationManager.AppSettings["FireDemandAtOneNodeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["FireDemandAtOneNodeEngineSimulationDuration"]), true, isServerModeLicense, demandAdjustmentScenarioId);
+                CheckAndLogWaterEngineError(result);
+                return Ok(result);
+            }
+            finally
+            {
+                Monitor.Exit(__lockObj);
+            }
+        }
+        /// <summary>
+        /// 设置管道开闭状态(0-打开，1-关闭)
+        /// </summary>
+        /// <param name="pipeId"></param>
+        /// <param name="pipeStatus"></param>
+        /// <returns></returns>
+        /// <response code="200">正常结果</response>
+        ///<response code="400">错误</response>
+        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
+        public IHttpActionResult SetPipeStatus(SetPipeStatusArg arg)
+        {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!System.Threading.Monitor.TryEnter(__lockObj))
+            {
+                LogContentionError();
+                return Content(HttpStatusCode.Conflict, conflictMsg);
+            }
+
+            try
+            {
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                WaterGEMSModel wm = new WaterGEMSModel();
+                wm.ProductId = ProductId.Bentley_WaterGEMS;
+                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, true, isServerModeLicense);
+                if (!licenseSuccess)
+                {
+                    throw new LicenseClientException("License不正常");
+                }
+                IField pipeStatusField = wm.DomainDataSet.FieldManager.DomainElementField(StandardFieldName.PipeStatus, (int)AlternativeType.InitialSettingsAlternative, (int)DomainElementType.IdahoPipeElementManager);
+                ((IEditField)pipeStatusField).SetValue(arg.PipeId, (int)arg.PipeStatus);
+                wm.CloseDataSource();
+                return Ok("修改成功");
+            }
+            finally
+            {
+                Monitor.Exit(__lockObj);
             }
         }
     }

@@ -54,17 +54,17 @@
     <Reference Include="AutoMapper, Version=10.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.10.1.1\lib\net461\AutoMapper.dll</HintPath>
     </Reference>
-    <Reference Include="Azure.Core, Version=1.24.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
-      <HintPath>..\packages\Azure.Core.1.24.0\lib\net461\Azure.Core.dll</HintPath>
+    <Reference Include="Azure.Core, Version=1.26.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Azure.Core.1.26.0\lib\net461\Azure.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Azure.Identity, Version=1.6.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
-      <HintPath>..\packages\Azure.Identity.1.6.0\lib\netstandard2.0\Azure.Identity.dll</HintPath>
+    <Reference Include="Azure.Identity, Version=1.8.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Azure.Identity.1.8.0\lib\netstandard2.0\Azure.Identity.dll</HintPath>
     </Reference>
-    <Reference Include="Azure.Storage.Blobs, Version=12.12.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
-      <HintPath>..\packages\Azure.Storage.Blobs.12.12.0\lib\netstandard2.0\Azure.Storage.Blobs.dll</HintPath>
+    <Reference Include="Azure.Storage.Blobs, Version=12.14.1.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Azure.Storage.Blobs.12.14.1\lib\netstandard2.0\Azure.Storage.Blobs.dll</HintPath>
     </Reference>
-    <Reference Include="Azure.Storage.Common, Version=12.11.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
-      <HintPath>..\packages\Azure.Storage.Common.12.11.0\lib\netstandard2.0\Azure.Storage.Common.dll</HintPath>
+    <Reference Include="Azure.Storage.Common, Version=12.13.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Azure.Storage.Common.12.13.0\lib\netstandard2.0\Azure.Storage.Common.dll</HintPath>
     </Reference>
     <Reference Include="bentley.managed.entliclib, Version=1.0.0.0, Culture=neutral, PublicKeyToken=4bf6c96a266e58d4, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -75,6 +75,10 @@
     </Reference>
     <Reference Include="Haestad.Domain">
       <HintPath>..\..\HaestadLibsMain\Haestad.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="Haestad.Domain.ModelingObjects.Water, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b4db808388021f6e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\HaestadLibsMain\Haestad.Domain.ModelingObjects.Water.dll</HintPath>
     </Reference>
     <Reference Include="Haestad.LicensingFacade">
       <HintPath>..\..\HaestadLibsMain\Haestad.LicensingFacade.dll</HintPath>
@@ -89,8 +93,8 @@
     <Reference Include="Haestad.Support">
       <HintPath>..\..\HaestadLibsMain\Haestad.Support.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.ApplicationInsights, Version=2.20.0.103, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.2.20.0\lib\net46\Microsoft.ApplicationInsights.dll</HintPath>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.21.0.429, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.2.21.0\lib\net46\Microsoft.ApplicationInsights.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -174,11 +178,14 @@
     <Reference Include="Microsoft.Extensions.Primitives, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Primitives.6.0.0\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Identity.Client, Version=4.39.0.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Identity.Client.4.39.0\lib\net461\Microsoft.Identity.Client.dll</HintPath>
+    <Reference Include="Microsoft.Identity.Client, Version=4.46.0.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Identity.Client.4.46.0\lib\net461\Microsoft.Identity.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Identity.Client.Extensions.Msal, Version=2.19.3.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Identity.Client.Extensions.Msal.2.19.3\lib\net45\Microsoft.Identity.Client.Extensions.Msal.dll</HintPath>
+    <Reference Include="Microsoft.Identity.Client.Extensions.Msal, Version=2.23.0.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Identity.Client.Extensions.Msal.2.23.0\lib\net45\Microsoft.Identity.Client.Extensions.Msal.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Abstractions, Version=6.18.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Abstractions.6.18.0\lib\net472\Microsoft.IdentityModel.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ML.Mkl.Redist, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ML.Mkl.Redist.1.7.0\lib\netstandard2.0\Microsoft.ML.Mkl.Redist.dll</HintPath>
@@ -202,7 +209,7 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.2.11.0\lib\net46\Serilog.dll</HintPath>
+      <HintPath>..\packages\Serilog.2.12.0\lib\net47\Serilog.dll</HintPath>
     </Reference>
     <Reference Include="Serilog.Enrichers.ClientInfo, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.Enrichers.ClientInfo.1.2.0\lib\net462\Serilog.Enrichers.ClientInfo.dll</HintPath>
@@ -219,8 +226,8 @@
     <Reference Include="Serilog.Sinks.Async, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.Sinks.Async.1.5.0\lib\net461\Serilog.Sinks.Async.dll</HintPath>
     </Reference>
-    <Reference Include="Serilog.Sinks.AzureBlobStorage, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.Sinks.AzureBlobStorage.3.1.2\lib\netstandard2.0\Serilog.Sinks.AzureBlobStorage.dll</HintPath>
+    <Reference Include="Serilog.Sinks.AzureBlobStorage, Version=3.1.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.AzureBlobStorage.3.1.3\lib\netstandard2.0\Serilog.Sinks.AzureBlobStorage.dll</HintPath>
     </Reference>
     <Reference Include="Serilog.Sinks.EventLog, Version=3.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.Sinks.EventLog.3.1.0\lib\net45\Serilog.Sinks.EventLog.dll</HintPath>
@@ -228,14 +235,14 @@
     <Reference Include="Serilog.Sinks.File, Version=5.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.Sinks.File.5.0.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
     </Reference>
-    <Reference Include="Serilog.Sinks.PeriodicBatching, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.Sinks.PeriodicBatching.2.3.1\lib\net45\Serilog.Sinks.PeriodicBatching.dll</HintPath>
+    <Reference Include="Serilog.Sinks.PeriodicBatching, Version=3.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.PeriodicBatching.3.1.0\lib\net45\Serilog.Sinks.PeriodicBatching.dll</HintPath>
     </Reference>
     <Reference Include="Swashbuckle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cd1bb07a5ac7c7bc, processorArchitecture=MSIL">
       <HintPath>..\packages\Swashbuckle.Core.5.6.0\lib\net40\Swashbuckle.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Swashbuckle.Examples, Version=3.12.0.0, Culture=neutral, PublicKeyToken=aa1e9c5053bfbe95, processorArchitecture=MSIL">
-      <HintPath>..\packages\Swashbuckle.Examples.3.12.0\lib\net40\Swashbuckle.Examples.dll</HintPath>
+    <Reference Include="Swashbuckle.Examples, Version=4.1.0.0, Culture=neutral, PublicKeyToken=aa1e9c5053bfbe95, processorArchitecture=MSIL">
+      <HintPath>..\packages\Swashbuckle.Examples.4.1.0\lib\net40\Swashbuckle.Examples.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -371,6 +378,8 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\SerilogConfig.cs" />
+    <Compile Include="LicenseCheckAttribute.cs" />
+    <Compile Include="Models\SetPipeStatusArg.cs" />
     <Compile Include="SwaggerConfig\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.cs" />
@@ -471,7 +480,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
