@@ -70,6 +70,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\HaestadLibsMain\bentley.managed.entliclib.dll</HintPath>
     </Reference>
+    <Reference Include="Haestad.Calculations.Shanghai.DataCleaner, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b4db808388021f6e, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\HaestadLibsMain\Haestad.Calculations.Shanghai.DataCleaner.dll</HintPath>
+    </Reference>
     <Reference Include="Haestad.Calculations.Shanghai.WaterGEMS">
       <HintPath>..\..\HaestadLibsMain\Haestad.Calculations.Shanghai.WaterGEMS.dll</HintPath>
     </Reference>
@@ -207,6 +211,10 @@
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="QingDaoWT, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b4db808388021f6e, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\HaestadLibsMain\QingDaoWT.dll</HintPath>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.12.0\lib\net47\Serilog.dll</HintPath>
@@ -380,6 +388,7 @@
     <Compile Include="App_Start\SerilogConfig.cs" />
     <Compile Include="LicenseCheckAttribute.cs" />
     <Compile Include="Models\SetPipeStatusArg.cs" />
+    <Compile Include="SetWengAnOnlineData.cs" />
     <Compile Include="SwaggerConfig\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.cs" />
@@ -421,6 +430,8 @@
     <Compile Include="SwaggerConfig\SwaggerExamples.cs" />
     <Compile Include="SwaggerConfig\SwaggerExcludeAttribute.cs" />
     <Compile Include="SwaggerConfig\SwaggerExcludeFilter.cs" />
+    <Compile Include="WengAnDummyData.cs" />
+    <Compile Include="WengAnHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -514,6 +525,10 @@
     <ProjectReference Include="..\..\ChinaWaterLib\ChinaWaterLib.csproj">
       <Project>{4cba5581-ddf8-4f12-9377-2ce516e6744a}</Project>
       <Name>ChinaWaterLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ChinaWaterUtils\ChinaWaterUtils.csproj">
+      <Project>{8092ff7a-dcd4-43b3-a64f-9d9888742dff}</Project>
+      <Name>ChinaWaterUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

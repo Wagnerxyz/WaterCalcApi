@@ -43,7 +43,7 @@ namespace Web
                 //cfg.AddProfile();
             });
             var mapper = mapConfig.CreateMapper();
-            Consts.Mapper = mapper;
+            //Consts.Mapper = mapper;
             WengAnHandler.mapper = mapper;
         }
     }
