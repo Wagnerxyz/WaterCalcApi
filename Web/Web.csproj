@@ -387,7 +387,9 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\SerilogConfig.cs" />
     <Compile Include="LicenseCheckAttribute.cs" />
-    <Compile Include="Models\SetPipeStatusArg.cs" />
+    <Compile Include="Models\IsolationValveInitialStatusArg.cs" />
+    <Compile Include="Models\PipeStatusArg.cs" />
+    <Compile Include="Models\ValveInitialStatusArg.cs" />
     <Compile Include="SetWengAnOnlineData.cs" />
     <Compile Include="SwaggerConfig\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -549,7 +551,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>5469</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost/ApiTest</IISUrl>
+          <IISUrl>http://localhost:5555/ApiTest</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

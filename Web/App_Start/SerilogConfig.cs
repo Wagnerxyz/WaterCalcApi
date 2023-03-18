@@ -48,7 +48,7 @@ namespace Web.App_Start
                     .WriteTo.File(localFilePath, outputTemplate: outputTemplate, rollingInterval: RollingInterval.Day)
                     .WriteTo.EventLog(Consts.ProjectName, manageEventSource: true, outputTemplate: outputTemplate)
                     //.WriteTo.Udp(udpAddress, 7071, AddressFamily.InterNetwork, outputTemplate: outputTemplate)
-                    //.WriteTo.ApplicationInsights(new TelemetryConfiguration(ConfigurationManager.AppSettings["ApplicationInsightsKey"]), TelemetryConverter.Traces)
+                    .WriteTo.ApplicationInsights(new TelemetryConfiguration(ConfigurationManager.AppSettings["ApplicationInsightsKey"]), TelemetryConverter.Traces)
                     //.WriteTo.Async(x =>
                     //    x.AzureBlobStorage(client,
                     //        Serilog.Events.LogEventLevel.Information, "wenganlog",
@@ -74,7 +74,7 @@ namespace Web.App_Start
                     .WriteTo.File(localFilePath, outputTemplate: outputTemplate, rollingInterval: RollingInterval.Day)
                     .WriteTo.EventLog(Consts.ProjectName, manageEventSource: true, outputTemplate: outputTemplate)
                     //.WriteTo.Udp(udpAddress, 7071, AddressFamily.InterNetwork, outputTemplate: outputTemplate)
-
+                    .WriteTo.ApplicationInsights(new TelemetryConfiguration(ConfigurationManager.AppSettings["ApplicationInsightsKey"]), TelemetryConverter.Traces)
                     .CreateLogger();
             }
 

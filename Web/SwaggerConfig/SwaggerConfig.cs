@@ -257,13 +257,11 @@ public class SwaggerConfig
     private static string GetXmlCommentsPath()
     {
         //$"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
-        return String.Format(@"{0}\bin\Web.xml",
-            AppDomain.CurrentDomain.BaseDirectory);
-
+        return String.Format(@"{0}\bin\Web.xml", AppDomain.CurrentDomain.BaseDirectory);
     }
+
     private static string GetXmlCommentsPath2()
     {
-
         return String.Format(@"{0}\bin\ChinaWaterLib.xml",
             AppDomain.CurrentDomain.BaseDirectory);
     }

@@ -20,7 +20,7 @@ namespace ChinaTest
     {
         const string wenganModel = @"C:\BentleyModels\WengAn\WengAn20220310.wtg.sqlite";
         const bool isServerModeLicense = false;
-
+        const bool workOnCopiedModel = true;
         static void Main(string[] args)
         {
             ProfileOptimization.SetProfileRoot(@"C:\files\");
@@ -32,9 +32,9 @@ namespace ChinaTest
             });
             WengAnHandler.mapper = mapConfig.CreateMapper();
             WengAnRunEps();
-            var result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(WengAnDummyData.DummyWaterTraceArg(), 4014, 72, true,isServerModeLicense, 20);
+            var result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(WengAnDummyData.DummyWaterTraceArg(), 4014, 72, true, isServerModeLicense, workOnCopiedModel, 20);
 
-
+            string aaa = null;
 
             WengAnDummyData.wenganModel = wenganModel;
             string demoModelPath = @"D:\DemoModel\demo\无标题 1.wtg.sqlite";
@@ -44,8 +44,8 @@ namespace ChinaTest
 
             WaterUtils.GetAllDemandPattern(wm.DomainDataSet, out List<PatternHydraulic> patternHydraulicList);
 
-       
-           
+
+
             //  Parallel.For(0, 12, (x) => ForParallelWengAnRunEps());
 
             DemandForecast();
@@ -80,10 +80,10 @@ namespace ChinaTest
         private static void WengAnRunEps()
         {
             var epsArg = WengAnDummyData.DummyRunEPSArg();
-            var json=JsonConvert.SerializeObject(epsArg);
-            WengAnHandler.RunEPS(epsArg, 20, 24, true, isServerModeLicense,20);
+            var json = JsonConvert.SerializeObject(epsArg);
+            WengAnHandler.RunEPS(epsArg, 20, 24, true, isServerModeLicense, workOnCopiedModel, 20);
         }
-     
+
         //不需要这个接口了
         private static void DemandForecast()
         {
@@ -145,7 +145,7 @@ namespace ChinaTest
         private static void Fire()
         {
             var fireArg = WengAnDummyData.DummyFireArg();
-            var aqweq = WengAnHandler.FireDemandAtOneNode(fireArg, 3972, 24, true, isServerModeLicense, 20);
+            var aqweq = WengAnHandler.FireDemandAtOneNode(fireArg, 3972, 24, true, isServerModeLicense, workOnCopiedModel, 20);
             var qwqeq = aqweq.EpsNodeResult.Where(x => x.Id == 1338);
             File.WriteAllText(@"fire baseResult.json", JsonConvert.SerializeObject(qwqeq));
         }
@@ -154,7 +154,7 @@ namespace ChinaTest
         {
             var arg = WengAnDummyData.DummyBreakPipeArg();
             var xxx = JsonConvert.SerializeObject(arg);
-            var result = WengAnHandler.BreakPipe(arg, 3972, 24, true, isServerModeLicense, 20);
+            var result = WengAnHandler.BreakPipe(arg, 3972, 24, true, isServerModeLicense, workOnCopiedModel, 20);
         }
 
 

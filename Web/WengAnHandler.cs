@@ -25,14 +25,14 @@ namespace Web
         /// <summary>
         /// 运行水力模型
         /// </summary>
-        public static WengAnEpsBaseResult RunEPS(RunEPSArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, int demandAdjustmentScenarioId = 0)
+        public static WengAnEpsBaseResult RunEPS(RunEPSArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, bool workOnCopiedModel, int demandAdjustmentScenarioId = 0)
         {
             var wm = new WaterGEMSModel();
             var result = new WengAnEpsBaseResult();
             result.StartTime = arg.StartTime;
             try
             {
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, true, isServerModeLicense);
+                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
                 if (!licenseSuccess)
                 {
                     throw new LicenseClientException("License不正常");
@@ -104,7 +104,7 @@ namespace Web
         /// </summary>
         /// <param name="arg">输入参数</param>
         /// <returns></returns>
-        public static WengAnEpsBaseResult FireDemandAtOneNode(FireDemandArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, int demandAdjustmentScenarioId = 0)
+        public static WengAnEpsBaseResult FireDemandAtOneNode(FireDemandArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, bool workOnCopiedModel, int demandAdjustmentScenarioId = 0)
         {
             WaterGEMSModel wm = new WaterGEMSModel();
             wm.ProductId = ProductId.Bentley_WaterGEMS;
@@ -113,7 +113,7 @@ namespace Web
 
             try
             {
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, true, isServerModeLicense);
+                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
                 if (!licenseSuccess)
                 {
                     throw new LicenseClientException("License不正常");
@@ -175,7 +175,7 @@ namespace Web
 
         }
 
-        public static WaterQualityResult WaterAge(WaterAgeArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, int demandAdjustmentScenarioId = 0)
+        public static WaterQualityResult WaterAge(WaterAgeArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, bool workOnCopiedModel, int demandAdjustmentScenarioId = 0)
         {
             WaterGEMSModel wm = new WaterGEMSModel();
             wm.ProductId = ProductId.Bentley_WaterGEMS;
@@ -183,7 +183,7 @@ namespace Web
             result.StartTime = arg.StartTime;
             try
             {
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, true, isServerModeLicense);
+                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
                 if (!licenseSuccess)
                 {
                     throw new LicenseClientException("License不正常");
@@ -266,7 +266,7 @@ namespace Web
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public static WaterQualityResult Concentration(WaterConcentrationArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, int demandAdjustmentScenarioId = 0)
+        public static WaterQualityResult Concentration(WaterConcentrationArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, bool workOnCopiedModel, int demandAdjustmentScenarioId = 0)
         {
             WaterGEMSModel wm = new WaterGEMSModel();
             wm.ProductId = ProductId.Bentley_WaterGEMS;
@@ -274,7 +274,7 @@ namespace Web
             result.StartTime = arg.StartTime;
             try
             {
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, true, isServerModeLicense);
+                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
                 if (!licenseSuccess)
                 {
                     throw new LicenseClientException("License不正常");
@@ -359,10 +359,10 @@ namespace Web
         }
 
         /// <summary>
-        ///     瓮安爆管影响分析
+        /// 瓮安爆管影响分析
         /// </summary>
         /// <returns></returns>
-        public static BreakPipeResult BreakPipe(BreakPipeArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, int demandAdjustmentScenarioId = 0)
+        public static BreakPipeResult BreakPipe(BreakPipeArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, bool workOnCopiedModel, int demandAdjustmentScenarioId = 0)
         {
 
             WaterGEMSModel wm = new WaterGEMSModel();
@@ -372,7 +372,7 @@ namespace Web
             var isolationValveInitialDict = new Dictionary<int, IsolationValveInitialSettingEnum>();
             try
             {
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, true, isServerModeLicense);
+                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
                 if (!licenseSuccess)
                 {
                     throw new LicenseClientException("License不正常");
@@ -508,7 +508,7 @@ namespace Web
         /// <summary>
         /// 多水源供水分析 水源追踪
         /// </summary>
-        public static WaterHeadTraceResult GetWaterTraceResultsForMultipleElementIds(WaterTraceArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, int demandAdjustmentScenarioId = 0)
+        public static WaterHeadTraceResult GetWaterTraceResultsForMultipleElementIds(WaterTraceArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense,bool workOnCopiedModel, int demandAdjustmentScenarioId = 0)
         {
             if (arg.TraceSourceElementIds == null || !arg.TraceSourceElementIds.Any())
             {
@@ -519,7 +519,7 @@ namespace Web
             result.StartTime = arg.StartTime;
             try
             {
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, true, isServerModeLicense);
+                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
                 if (!licenseSuccess)
                 {
                     throw new LicenseClientException("License不正常");
@@ -643,6 +643,7 @@ namespace Web
             return timePointPipeResults;
 
         }
+
         #region 废弃
         [Obsolete]
         public static BreakPipeResult BreakPipe2(BreakPipeArg arg)
@@ -816,5 +817,5 @@ namespace Web
 
     }
 
-  
+
 }

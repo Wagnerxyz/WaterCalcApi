@@ -20,6 +20,8 @@ using System.Runtime.Caching;
 using System.Threading;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Http.Results;
+using Swashbuckle.Swagger.Annotations;
 using Web.Models;
 using Web.Swagger;
 using WengAn.Args;
@@ -42,11 +44,13 @@ namespace Web.Controllers
         private static ILogger _logger = Serilog.Log.ForContext<WAController>();
         //private static bool isLicenseOk = false;
         private bool isServerModeLicense;
+        private bool workOnCopiedModel;
 
         public WAController()
         {
             demandAdjustmentScenarioId = Convert.ToInt32(ConfigurationManager.AppSettings["DemandAdjustmentScenarioId"]);
             isServerModeLicense = Convert.ToBoolean(ConfigurationManager.AppSettings["ServerModeLicense"]);
+            workOnCopiedModel = Convert.ToBoolean(ConfigurationManager.AppSettings["WorkOnCopiedModel"]);
             //demoModelPath = Path.Combine(path, fileName);
         }
 
@@ -77,7 +81,7 @@ namespace Web.Controllers
             {
                 _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 //WengAnHandler.WengAnDemandForecast(arg);
-                var result = WengAnHandler.RunEPS(arg, Convert.ToInt32(ConfigurationManager.AppSettings["RunEPSScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["RunEPSPressureEngineSimulationDuration"]), true, isServerModeLicense, demandAdjustmentScenarioId);
+                var result = WengAnHandler.RunEPS(arg, Convert.ToInt32(ConfigurationManager.AppSettings["RunEPSScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["RunEPSPressureEngineSimulationDuration"]), true, isServerModeLicense, workOnCopiedModel, demandAdjustmentScenarioId);
                 CheckAndLogWaterEngineError(result);
                 return Ok(result);
             }
@@ -87,6 +91,383 @@ namespace Web.Controllers
                 //{
                 Monitor.Exit(__lockObj);
                 //}
+            }
+        }
+
+
+        /// <summary>
+        /// 爆管影响分析
+        /// </summary>
+        /// <param name="arg">输入参数</param>
+        /// <returns></returns>
+        ///<response code="200">正常结果</response>
+        ///<response code="400">错误</response>
+        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
+        [ResponseType(typeof(BreakPipeResult))]
+        [SwaggerRequestExample(typeof(BreakPipeArg), typeof(WA_BreakPipe_Example))]
+        public IHttpActionResult BreakPipe(BreakPipeArg arg)
+        {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!System.Threading.Monitor.TryEnter(__lockObj))
+            {
+                LogContentionError();
+                return Content(HttpStatusCode.Conflict, conflictMsg);
+            }
+            //CheckLicense();
+            try
+            {
+                // arg.ModelPath = CopyNewModel();
+                //  try
+                //  {
+                //      System.Threading.Monitor.Enter(__lockObj, ref isRunning);
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new StackTrace().GetFrame(0).GetMethod().Name}");
+                var result = WengAnHandler.BreakPipe(arg, Convert.ToInt32(ConfigurationManager.AppSettings["BreakPipeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["BreakPipePressureEngineSimulationDuration"]), true, isServerModeLicense, workOnCopiedModel, demandAdjustmentScenarioId);
+                CheckAndLogWaterEngineError(result);
+                return Ok(result);
+            }
+            finally
+            {
+                Monitor.Exit(__lockObj);
+            }
+        }
+
+        /// <summary>
+        /// 水源追踪(多水源供水分析)
+        /// </summary>
+        /// <returns></returns>
+        ///<response code="200">正常结果</response>
+        ///<response code="400">错误</response>
+        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
+        [SwaggerRequestExample(typeof(WaterTraceArg), typeof(WA_WaterTrace_Example))]
+        [ResponseType(typeof(WaterHeadTraceResult))]
+        public IHttpActionResult WaterTrace(WaterTraceArg arg)
+        {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!System.Threading.Monitor.TryEnter(__lockObj))
+            {
+                LogContentionError();
+                return Content(HttpStatusCode.Conflict, conflictMsg);
+            }
+            //  CheckLicense();
+            try
+            {
+                //  arg.ModelPath = CopyNewModel();
+                //try
+                //{
+                //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new StackTrace().GetFrame(0).GetMethod().Name}");
+                WaterHeadTraceResult result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(arg, Convert.ToInt32(ConfigurationManager.AppSettings["WaterTraceScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["WaterTracePressureEngineSimulationDuration"]), true, isServerModeLicense, workOnCopiedModel, demandAdjustmentScenarioId);
+                CheckAndLogWaterEngineError(result);
+                return Ok(result);
+            }
+            finally
+            {
+                System.Threading.Monitor.Exit(__lockObj);
+            }
+        }
+
+        /// <summary>
+        /// 消防事件
+        /// </summary>
+        /// <param name="arg">请求参数</param>
+        /// <returns></returns>
+        ///<response code="200">正常结果</response>
+        ///<response code="400">错误</response>
+        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
+        [ResponseType(typeof(WengAnEpsBaseResult))]
+        //[ApiExplorerSettings(IgnoreApi = true)]
+        [SwaggerRequestExample(typeof(FireDemandArg), typeof(WA_Fire_Example))]
+        public IHttpActionResult FireDemand(FireDemandArg arg)
+        {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!System.Threading.Monitor.TryEnter(__lockObj))
+            {
+                LogContentionError();
+                return Content(HttpStatusCode.Conflict, conflictMsg);
+            }
+            try
+            {
+                // arg.ModelPath = CopyNewModel();
+                //try
+                //{
+                //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                WengAnEpsBaseResult result = WengAnHandler.FireDemandAtOneNode(arg, Convert.ToInt32(ConfigurationManager.AppSettings["FireDemandAtOneNodeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["FireDemandAtOneNodeEngineSimulationDuration"]), true, isServerModeLicense, workOnCopiedModel, demandAdjustmentScenarioId);
+                CheckAndLogWaterEngineError(result);
+                return Ok(result);
+            }
+            finally
+            {
+                Monitor.Exit(__lockObj);
+            }
+        }
+
+        /// <summary>
+        /// 水质余氯预测
+        /// </summary>
+        /// <param name="arg">输入参数</param>
+        /// <returns></returns>
+        ///<response code="200">正常结果</response>
+        ///<response code="400">错误</response>
+        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
+        [ResponseType(typeof(WaterQualityResult))]
+        [SwaggerRequestExample(typeof(WaterConcentrationArg), typeof(WA_WaterConcentration_Example))]
+        public IHttpActionResult Concentration(WaterConcentrationArg arg)
+        {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!System.Threading.Monitor.TryEnter(__lockObj))
+            {
+                LogContentionError();
+                return Content(HttpStatusCode.Conflict, conflictMsg);
+            }
+            try
+            {
+                //   arg.ModelPath = CopyNewModel();
+                //try
+                //{
+                //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                WaterQualityResult result = WengAnHandler.Concentration(arg, Convert.ToInt32(ConfigurationManager.AppSettings["WaterConcentrationScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["WaterConcentrationPressureEngineSimulationDuration"]), true, isServerModeLicense, workOnCopiedModel, demandAdjustmentScenarioId);
+                CheckAndLogWaterEngineError(result);
+                return Ok(result);
+            }
+            finally
+            {
+                System.Threading.Monitor.Exit(__lockObj);
+            }
+        }
+
+        /// <summary>
+        /// 水龄预测
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="200">正常结果</response>
+        ///<response code="400">错误</response>
+        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
+        [SwaggerRequestExample(typeof(WaterAgeArg), typeof(WA_WaterAge_Example))]
+        [ResponseType(typeof(WaterQualityResult))]
+        public IHttpActionResult WaterAge(WaterAgeArg arg)
+        {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!System.Threading.Monitor.TryEnter(__lockObj))
+            {
+                LogContentionError();
+                return Content(HttpStatusCode.Conflict, conflictMsg);
+            }
+            //   CheckLicense();
+            try
+            {
+                // arg.ModelPath = CopyNewModel();
+                //try
+                //{
+                //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                WaterQualityResult result = WengAnHandler.WaterAge(arg, Convert.ToInt32(ConfigurationManager.AppSettings["WaterAgeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["WaterAgePressureEngineSimulationDuration"]), true, isServerModeLicense, workOnCopiedModel, demandAdjustmentScenarioId);
+                CheckAndLogWaterEngineError(result);
+                return Ok(result);
+            }
+            finally
+            {
+                System.Threading.Monitor.Exit(__lockObj);
+            }
+        }
+
+        #region 更改管道，阀门状态
+
+        /// <summary>
+        /// 更改管道开闭状态(0-打开，1-关闭)
+        /// </summary>
+        /// <param name="pipeId">管道id</param>
+        /// <param name="pipeStatus">管道状态(0-打开，1-关闭)</param>
+        /// <returns></returns>
+        /// <response code="200">正常结果</response>
+        ///<response code="400">错误</response>
+        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
+        public IHttpActionResult SetPipeStatus(PipeStatusArg arg)
+        {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!System.Threading.Monitor.TryEnter(__lockObj))
+            {
+                LogContentionError();
+                return Content(HttpStatusCode.Conflict, conflictMsg);
+            }
+
+            try
+            {
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                WaterGEMSModel wm = new WaterGEMSModel();
+                wm.ProductId = ProductId.Bentley_WaterGEMS;
+                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
+                if (!licenseSuccess)
+                {
+                    throw new LicenseClientException("License不正常");
+                }
+                IField pipeStatusField = wm.DomainDataSet.FieldManager.DomainElementField(StandardFieldName.PipeStatus, (int)AlternativeType.InitialSettingsAlternative, (int)DomainElementType.IdahoPipeElementManager);
+                ((IEditField)pipeStatusField).SetValue(arg.PipeId, (int)arg.PipeStatus);
+                wm.CloseDataSource();
+                return Ok("修改管道状态成功");
+            }
+            finally
+            {
+                Monitor.Exit(__lockObj);
+            }
+        }
+
+        /// <summary>
+        /// 更改阀门状态(0-激活，1-非激活，2-关闭)
+        /// </summary>
+        /// <param name="ValveId">阀门id</param>
+        /// <param name="ValveStatus">阀门状态(0-激活，1-非激活，2-关闭)</param>
+        /// <returns></returns>
+        /// <response code="200">正常结果</response>
+        ///<response code="400">错误</response>
+        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
+        public IHttpActionResult SetValveInitialStatus(ValveInitialStatusArg arg)
+        {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!System.Threading.Monitor.TryEnter(__lockObj))
+            {
+                LogContentionError();
+                return Content(HttpStatusCode.Conflict, conflictMsg);
+            }
+
+            try
+            {
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                WaterGEMSModel wm = new WaterGEMSModel();
+                wm.ProductId = ProductId.Bentley_WaterGEMS;
+                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
+                if (!licenseSuccess)
+                {
+                    throw new LicenseClientException("License不正常");
+                }
+                IField valveInitialStatusField = wm.DomainDataSet.FieldManager.DomainElementField(StandardFieldName.ValveSetting, StandardAlternativeName.InitialSettings,
+                    StandardDomainElementTypeName.BaseValve);
+                ((IEditField)valveInitialStatusField).SetValue(arg.ValveId, (int)arg.ValveStatus);
+                wm.CloseDataSource();
+                return Ok("修改阀门状态成功");
+            }
+            finally
+            {
+                Monitor.Exit(__lockObj);
+            }
+        }
+        /// <summary>
+        /// 更改隔离阀状态(0-打开，1-关闭) 
+        /// </summary>
+        /// <param name="ValveId">阀门id</param>
+        /// <param name="ValveStatus">阀门状态(0-打开，1-关闭)</param>
+        /// <returns></returns>
+        /// <response code="200">正常结果</response>
+        ///<response code="400">错误</response>
+        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
+        public IHttpActionResult SetIsolationValveInitialStatus(IsolationValveInitialStatusArg arg)
+        {
+            if (arg == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!System.Threading.Monitor.TryEnter(__lockObj))
+            {
+                LogContentionError();
+                return Content(HttpStatusCode.Conflict, conflictMsg);
+            }
+
+            try
+            {
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                WaterGEMSModel wm = new WaterGEMSModel();
+                wm.ProductId = ProductId.Bentley_WaterGEMS;
+                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
+                if (!licenseSuccess)
+                {
+                    throw new LicenseClientException("License不正常");
+                }
+                IField isoInitialStatusField = wm.DomainDataSet.FieldManager.DomainElementField(StandardFieldName.IsolationValveInitialSetting, StandardAlternativeName.InitialSettings,
+                    StandardDomainElementTypeName.PressureIsolationValve);
+                ((IEditField)isoInitialStatusField).SetValue(arg.ValveId, arg.ValveStatus);
+                wm.CloseDataSource();
+                return Ok("修改隔离阀状态成功");
+            }
+            finally
+            {
+                Monitor.Exit(__lockObj);
+            }
+        }
+        #endregion
+
+        private void CheckAndLogWaterEngineError(WaterEngineBaseResult baseResult)
+        {
+            if (baseResult != null && baseResult.IsCalculationFailure && baseResult.ErrorNotifs.Any())
+            {
+                _logger.Error("{0}: 计算错误总数:{1}  @{2}", new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name, baseResult.ErrorNotifs.Count,
+                    baseResult.ErrorNotifs
+                        .Select(x => new
+                        {
+                            Id = x.ElementId,
+                            Message = x.MessageKey,
+                            SourceKey = x.SourceKey,
+                            Label = x.Label
+                        }));
+            }
+        }
+
+        private void LogContentionError()
+        {
+            _logger.Error("{0}: {1}", conflictMsg, new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name);
+        }
+
+        private string CopyNewModel()
+        {
+            if (isRunning)
+            {
+                LogContentionError();
+                var response = new HttpResponseMessage(HttpStatusCode.Conflict);
+                response.Content = new StringContent("计算接口之间模型拷贝冲突");
+                throw new HttpResponseException(response);
+            }
+            try
+            {
+                System.Threading.Monitor.Enter(__lockObj, ref isRunning);
+                string newFolderName = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
+                string newDir = Path.Combine(runDirectory, newFolderName);
+                if (!Directory.Exists(newDir))
+                    Directory.CreateDirectory(newDir);
+
+                string newModelPath = Path.Combine(newDir, modelName);
+                File.Copy(demoModelPath, newModelPath);
+                FileLibrary.SetReadWriteSafely(newModelPath);
+                return newModelPath;
+            }
+            finally
+            {
+                if (isRunning)
+                {
+                    System.Threading.Monitor.Exit(__lockObj);
+                    isRunning = false;
+                }
             }
         }
 
@@ -151,200 +532,6 @@ namespace Web.Controllers
             //    SlidingExpiration = TimeSpan.FromHours(6)
             //};
             cache.Set("isLicenseOk", true, DateTimeOffset.Now.AddHours(6));
-        }
-
-
-        /// <summary>
-        /// 爆管影响分析
-        /// </summary>
-        /// <param name="arg">输入参数</param>
-        /// <returns></returns>
-        ///<response code="200">正常结果</response>
-        ///<response code="400">错误</response>
-        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
-        [ResponseType(typeof(BreakPipeResult))]
-        [SwaggerRequestExample(typeof(BreakPipeArg), typeof(WA_BreakPipe_Example))]
-        public IHttpActionResult BreakPipe(BreakPipeArg arg)
-        {
-            if (arg == null || !ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (!System.Threading.Monitor.TryEnter(__lockObj))
-            {
-                LogContentionError();
-                return Content(HttpStatusCode.Conflict, conflictMsg);
-            }
-            //CheckLicense();
-            try
-            {
-                // arg.ModelPath = CopyNewModel();
-                //  try
-                //  {
-                //      System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new StackTrace().GetFrame(0).GetMethod().Name}");
-                var result = WengAnHandler.BreakPipe(arg, Convert.ToInt32(ConfigurationManager.AppSettings["BreakPipeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["BreakPipePressureEngineSimulationDuration"]), true, isServerModeLicense, demandAdjustmentScenarioId);
-                CheckAndLogWaterEngineError(result);
-                return Ok(result);
-            }
-            finally
-            {
-                Monitor.Exit(__lockObj);
-            }
-        }
-
-        /// <summary>
-        /// 水源追踪(多水源供水分析)
-        /// </summary>
-        /// <returns></returns>
-        ///<response code="200">正常结果</response>
-        ///<response code="400">错误</response>
-        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
-        [SwaggerRequestExample(typeof(WaterTraceArg), typeof(WA_WaterTrace_Example))]
-        [ResponseType(typeof(WaterHeadTraceResult))]
-        public IHttpActionResult WaterTrace(WaterTraceArg arg)
-        {
-            if (arg == null || !ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            if (!System.Threading.Monitor.TryEnter(__lockObj))
-            {
-                LogContentionError();
-                return Content(HttpStatusCode.Conflict, conflictMsg);
-            }
-            //  CheckLicense();
-            try
-            {
-                //  arg.ModelPath = CopyNewModel();
-                //try
-                //{
-                //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new StackTrace().GetFrame(0).GetMethod().Name}");
-                WaterHeadTraceResult result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(arg, Convert.ToInt32(ConfigurationManager.AppSettings["WaterTraceScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["WaterTracePressureEngineSimulationDuration"]), true, isServerModeLicense, demandAdjustmentScenarioId);
-                CheckAndLogWaterEngineError(result);
-                return Ok(result);
-            }
-            finally
-            {
-                System.Threading.Monitor.Exit(__lockObj);
-            }
-        }
-
-        /// <summary>
-        /// 消防事件
-        /// </summary>
-        /// <param name="arg">请求参数</param>
-        /// <returns></returns>
-        ///<response code="200">正常结果</response>
-        ///<response code="400">错误</response>
-        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
-        [ResponseType(typeof(WengAnEpsBaseResult))]
-        //[ApiExplorerSettings(IgnoreApi = true)]
-        [SwaggerRequestExample(typeof(FireDemandArg), typeof(WA_Fire_Example))]
-        public IHttpActionResult FireDemand(FireDemandArg arg)
-        {
-            if (arg == null || !ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            if (!System.Threading.Monitor.TryEnter(__lockObj))
-            {
-                LogContentionError();
-                return Content(HttpStatusCode.Conflict, conflictMsg);
-            }
-            try
-            {
-                // arg.ModelPath = CopyNewModel();
-                //try
-                //{
-                //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WengAnEpsBaseResult result = WengAnHandler.FireDemandAtOneNode(arg, Convert.ToInt32(ConfigurationManager.AppSettings["FireDemandAtOneNodeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["FireDemandAtOneNodeEngineSimulationDuration"]), true, isServerModeLicense, demandAdjustmentScenarioId);
-                CheckAndLogWaterEngineError(result);
-                return Ok(result);
-            }
-            finally
-            {
-                Monitor.Exit(__lockObj);
-            }
-        }
-
-        /// <summary>
-        /// 水质余氯预测
-        /// </summary>
-        /// <param name="arg">输入参数</param>
-        /// <returns></returns>
-        ///<response code="200">正常结果</response>
-        ///<response code="400">错误</response>
-        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
-        [ResponseType(typeof(WaterQualityResult))]
-        [SwaggerRequestExample(typeof(WaterConcentrationArg), typeof(WA_WaterConcentration_Example))]
-        public IHttpActionResult Concentration(WaterConcentrationArg arg)
-        {
-            if (arg == null || !ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            if (!System.Threading.Monitor.TryEnter(__lockObj))
-            {
-                LogContentionError();
-                return Content(HttpStatusCode.Conflict, conflictMsg);
-            }
-            try
-            {
-                //   arg.ModelPath = CopyNewModel();
-                //try
-                //{
-                //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WaterQualityResult result = WengAnHandler.Concentration(arg, Convert.ToInt32(ConfigurationManager.AppSettings["WaterConcentrationScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["WaterConcentrationPressureEngineSimulationDuration"]), true, isServerModeLicense, demandAdjustmentScenarioId);
-                CheckAndLogWaterEngineError(result);
-                return Ok(result);
-            }
-            finally
-            {
-                System.Threading.Monitor.Exit(__lockObj);
-            }
-        }
-
-        /// <summary>
-        /// 水龄预测
-        /// </summary>
-        /// <returns></returns>
-        /// <response code="200">正常结果</response>
-        ///<response code="400">错误</response>
-        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
-        [SwaggerRequestExample(typeof(WaterAgeArg), typeof(WA_WaterAge_Example))]
-        [ResponseType(typeof(WaterQualityResult))]
-        public IHttpActionResult WaterAge(WaterAgeArg arg)
-        {
-            if (arg == null || !ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            if (!System.Threading.Monitor.TryEnter(__lockObj))
-            {
-                LogContentionError();
-                return Content(HttpStatusCode.Conflict, conflictMsg);
-            }
-            //   CheckLicense();
-            try
-            {
-                // arg.ModelPath = CopyNewModel();
-                //try
-                //{
-                //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WaterQualityResult result = WengAnHandler.WaterAge(arg, Convert.ToInt32(ConfigurationManager.AppSettings["WaterAgeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["WaterAgePressureEngineSimulationDuration"]), true, isServerModeLicense, demandAdjustmentScenarioId);
-                CheckAndLogWaterEngineError(result);
-                return Ok(result);
-            }
-            finally
-            {
-                System.Threading.Monitor.Exit(__lockObj);
-            }
         }
 
         /// <summary>
@@ -446,130 +633,6 @@ namespace Web.Controllers
         //        }
         //    }
         //}
-        private void CheckAndLogWaterEngineError(WaterEngineBaseResult baseResult)
-        {
-            if (baseResult != null && baseResult.IsCalculationFailure && baseResult.ErrorNotifs.Any())
-            {
-                _logger.Error("{0}: 计算错误总数:{1}  @{2}", new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name, baseResult.ErrorNotifs.Count,
-                    baseResult.ErrorNotifs
-                        .Select(x => new
-                        {
-                            Id = x.ElementId,
-                            Message = x.MessageKey,
-                            SourceKey = x.SourceKey,
-                            Label = x.Label
-                        }));
-            }
-        }
 
-        private void LogContentionError()
-        {
-            _logger.Error("{0}: {1}", conflictMsg, new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name);
-        }
-
-        private string CopyNewModel()
-        {
-            if (isRunning)
-            {
-                LogContentionError();
-                var response = new HttpResponseMessage(HttpStatusCode.Conflict);
-                response.Content = new StringContent("计算接口之间模型拷贝冲突");
-                throw new HttpResponseException(response);
-            }
-            try
-            {
-                System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                string newFolderName = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
-                string newDir = Path.Combine(runDirectory, newFolderName);
-                if (!Directory.Exists(newDir))
-                    Directory.CreateDirectory(newDir);
-
-                string newModelPath = Path.Combine(newDir, modelName);
-                File.Copy(demoModelPath, newModelPath);
-                FileLibrary.SetReadWriteSafely(newModelPath);
-                return newModelPath;
-            }
-            finally
-            {
-                if (isRunning)
-                {
-                    System.Threading.Monitor.Exit(__lockObj);
-                    isRunning = false;
-                }
-            }
-        }
-
-
-        private IHttpActionResult UpdateControl(FireDemandArg arg)
-        {
-            if (arg == null || !ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            if (!System.Threading.Monitor.TryEnter(__lockObj))
-            {
-                LogContentionError();
-                return Content(HttpStatusCode.Conflict, conflictMsg);
-            }
-            try
-            {
-                // arg.ModelPath = CopyNewModel();
-                //try
-                //{
-                //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-
-
-
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WengAnEpsBaseResult result = WengAnHandler.FireDemandAtOneNode(arg, Convert.ToInt32(ConfigurationManager.AppSettings["FireDemandAtOneNodeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["FireDemandAtOneNodeEngineSimulationDuration"]), true, isServerModeLicense, demandAdjustmentScenarioId);
-                CheckAndLogWaterEngineError(result);
-                return Ok(result);
-            }
-            finally
-            {
-                Monitor.Exit(__lockObj);
-            }
-        }
-        /// <summary>
-        /// 设置管道开闭状态(0-打开，1-关闭)
-        /// </summary>
-        /// <param name="pipeId"></param>
-        /// <param name="pipeStatus"></param>
-        /// <returns></returns>
-        /// <response code="200">正常结果</response>
-        ///<response code="400">错误</response>
-        ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
-        public IHttpActionResult SetPipeStatus(SetPipeStatusArg arg)
-        {
-            if (arg == null || !ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            if (!System.Threading.Monitor.TryEnter(__lockObj))
-            {
-                LogContentionError();
-                return Content(HttpStatusCode.Conflict, conflictMsg);
-            }
-
-            try
-            {
-                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
-                WaterGEMSModel wm = new WaterGEMSModel();
-                wm.ProductId = ProductId.Bentley_WaterGEMS;
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, true, isServerModeLicense);
-                if (!licenseSuccess)
-                {
-                    throw new LicenseClientException("License不正常");
-                }
-                IField pipeStatusField = wm.DomainDataSet.FieldManager.DomainElementField(StandardFieldName.PipeStatus, (int)AlternativeType.InitialSettingsAlternative, (int)DomainElementType.IdahoPipeElementManager);
-                ((IEditField)pipeStatusField).SetValue(arg.PipeId, (int)arg.PipeStatus);
-                wm.CloseDataSource();
-                return Ok("修改成功");
-            }
-            finally
-            {
-                Monitor.Exit(__lockObj);
-            }
-        }
     }
 }
