@@ -2,6 +2,7 @@
 using Swashbuckle.Examples;
 using System;
 using System.Web.Http;
+using Web;
 using Web.Swagger;
 using WebActivatorEx;
 
@@ -33,7 +34,7 @@ public class SwaggerConfig
                     // hold additional metadata for an API. Version and title are required but you can also provide
                     // additional fields by chaining methods off SingleApiVersion.
                     //
-                    c.SingleApiVersion("v1", "瓮安API");
+                    c.SingleApiVersion("v1", Consts.ProjectName);
                     // Enable Swagger examples
                     c.OperationFilter<ExamplesOperationFilter>();
                     c.SchemaFilter<SwaggerExcludeFilter>();

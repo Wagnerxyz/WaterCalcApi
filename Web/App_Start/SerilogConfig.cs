@@ -9,18 +9,19 @@ using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
-using Web;
 
 namespace Web.App_Start
 {
     public class SerilogConfig
     {
-        public static void RegisterComponents()
+        public static void Register()
         {
-            string localFilePath = HostingEnvironment.MapPath($"~/{ConfigurationManager.AppSettings["BentleyApiLogFilePath"]}/Log.txt");
+            string localFilePath =
+                HostingEnvironment.MapPath($"~/{ConfigurationManager.AppSettings["BentleyApiLogFilePath"]}/Log.txt");
             string udpAddress = "172.18.208.1";
             //The {Message:lj} format options cause data embedded in the message to be output in JSON (j) except for string literals, which are output as-is.
-            string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj} {Properties}{NewLine}{Exception}";
+            string outputTemplate =
+                "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj} {Properties}{NewLine}{Exception}";
             string logDestination = ConfigurationManager.AppSettings["LogFileDestination"];
 
             //Azure环境 Key Vault, Blob, File Share支持
@@ -42,39 +43,39 @@ namespace Web.App_Start
                     .Enrich.WithClientIp()
                     //.Enrich.WithClientAgent()
                     .Enrich.WithThreadId()
-
                     .MinimumLevel.Debug() //Logging level要高于或等于sink level才行。否则没效果。
                                           //.WriteTo.Console()//sink 可以设置MinimumLevel  但必须高于logging level
                     .WriteTo.File(localFilePath, outputTemplate: outputTemplate, rollingInterval: RollingInterval.Day)
                     .WriteTo.EventLog(Consts.ProjectName, manageEventSource: true, outputTemplate: outputTemplate)
                     //.WriteTo.Udp(udpAddress, 7071, AddressFamily.InterNetwork, outputTemplate: outputTemplate)
-                    .WriteTo.ApplicationInsights(new TelemetryConfiguration(ConfigurationManager.AppSettings["ApplicationInsightsKey"]), TelemetryConverter.Traces)
+                    .WriteTo.ApplicationInsights(
+                        new TelemetryConfiguration(ConfigurationManager.AppSettings["ApplicationInsightsKey"]),
+                        TelemetryConverter.Traces)
                     //.WriteTo.Async(x =>
                     //    x.AzureBlobStorage(client,
                     //        Serilog.Events.LogEventLevel.Information, "wenganlog",
                     //        $"{{yyyy}}_{{MM}}/{{dd}}/{Environment.MachineName}_Log.txt"))
                     //因为是appendblob 必须用async包下 不然卡住了。。。
                     // azure data lake Gen2 Preview之前不支持Append Blob 需要新的SDK https://azure.microsoft.com/en-us/updates/append-blob-support-for-azure-data-lake-storage-preview/
-
                     .CreateLogger();
-
             }
             else
             {
-
                 Log.Logger = new LoggerConfiguration()
                     //.Enrich.WithCorrelationId()
                     .Enrich.WithCorrelationIdHeader()
                     .Enrich.WithClientIp()
                     //.Enrich.WithClientAgent()
                     .Enrich.WithThreadId()
-
                     .MinimumLevel.Debug() //Logging level要高于或等于sink level才行。否则没效果。
-                                          //.WriteTo.Console()//sink 可以设置MinimumLevel  但必须高于logging level
+                    .WriteTo.Debug()//
+                    .WriteTo.Console()//sink 可以设置MinimumLevel, 但必须高于logging level
                     .WriteTo.File(localFilePath, outputTemplate: outputTemplate, rollingInterval: RollingInterval.Day)
                     .WriteTo.EventLog(Consts.ProjectName, manageEventSource: true, outputTemplate: outputTemplate)
                     //.WriteTo.Udp(udpAddress, 7071, AddressFamily.InterNetwork, outputTemplate: outputTemplate)
-                    .WriteTo.ApplicationInsights(new TelemetryConfiguration(ConfigurationManager.AppSettings["ApplicationInsightsKey"]), TelemetryConverter.Traces)
+                    //.WriteTo.ApplicationInsights(
+                    //    new TelemetryConfiguration(ConfigurationManager.AppSettings["ApplicationInsightsKey"]),
+                    //    TelemetryConverter.Traces)
                     .CreateLogger();
             }
 

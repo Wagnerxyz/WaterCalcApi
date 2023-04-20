@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Http.Controllers;
@@ -12,13 +13,17 @@ namespace Web
 {
     public class LicenseCheckAttribute : ActionFilterAttribute
     {
+        private bool isServerModeLicense;
+
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
+            isServerModeLicense = Convert.ToBoolean(ConfigurationManager.AppSettings["ServerModeLicense"]);
+
             CheckLicense();
         }
         private void CheckLicense()
         {
-            var m_managedLicense = new ManagedLicense((int)ProductId.Bentley_WaterGEMS, "WaterGEMS", "10.00.00.00");   // to be changed: Use OpenFlowAnalysisAPI product
+            ManagedLicense m_managedLicense = new ManagedLicense((int)ProductId.Bentley_WaterGEMS, "WaterGEMS", "10.00.00.00");   // to be changed: Use OpenFlowAnalysisAPI product
             if (m_managedLicense.IsServerModeEnabled())
             {
                 LicenseRunStatus managedStatus = m_managedLicense.StartServerLicense();

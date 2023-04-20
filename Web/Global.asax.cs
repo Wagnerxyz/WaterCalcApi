@@ -1,11 +1,12 @@
-﻿using AutoMapper;
-using ChinaWaterLib;
+﻿using Autofac;
+using Autofac.Integration.WebApi;
+using AutoMapper;
 using ChinaWaterLib.Models;
 using Haestad.Support.User;
-using LiaoDongBay;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
-using System.Web;
+using System.Reflection;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -18,18 +19,59 @@ namespace Web
     {
         protected void Application_Start()
         {
-            SerilogConfig.RegisterComponents();
+            SerilogConfig.Register();
             AreaRegistration.RegisterAllAreas();
+
+            #region Autofac
+            var builder = new ContainerBuilder();
+            // Get your HttpConfiguration.
+            var config = GlobalConfiguration.Configuration;
+
+            // Register your Web API controllers.
+            builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
+
+            // OPTIONAL: Register the filter provider if you have custom filters that need DI.
+            //builder.RegisterWebApiFilterProvider(config);
+
+            // OPTIONAL: Register the Autofac model binder provider.
+            //builder.RegisterWebApiModelBinderProvider();
+            builder.RegisterModule<MyAutofacModule>();//具体注册类型放这里面
+
+            //builder.RegisterInstance(mapper).As<IMapper>(); //not work
+            // Set the dependency resolver to be Autofac.
+            var container = builder.Build();
+            config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
+            Consts.Container = container;
+            #endregion
+
+            //container.Resolve<SerilogConfig>().Register();
+
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             RegisterAutoMapper();
+            var logger = ((ILoggerFactory)config.DependencyResolver.GetService(typeof(ILoggerFactory))).CreateLogger("Main");
+            logger.LogInformation("Web Site已启动");
+
+            //    using (var scope = container.BeginLifetimeScope())
+            //{
+            //    var logger = scope.Resolve<ILoggerFactory>().CreateLogger("Main");
+            //    logger.LogInformation("Web Site已启动");
+            //}
         }
+
         protected void Application_End(object sender, EventArgs e)
         {
+            var shutdownReason = System.Web.Hosting.HostingEnvironment.ShutdownReason;
+
+            //using (var scope =  Consts.Container.BeginLifetimeScope())
+            //{
+            //    var logger = scope.Resolve<ILoggerFactory>().CreateLogger("Main");
+            //    logger.LogInformation("In Application_End");
+            //}
+
             Log.Debug("In Application_End");
-            ApplicationShutdownReason shutdownReason = System.Web.Hosting.HostingEnvironment.ShutdownReason;
             Log.Information("App is shutting down (reason = {@shutdownReason})", shutdownReason);
             // Finally, once just before the application exits...
             Log.CloseAndFlush();
@@ -43,8 +85,7 @@ namespace Web
                 //cfg.AddProfile();
             });
             var mapper = mapConfig.CreateMapper();
-            //Consts.Mapper = mapper;
-            WengAnHandler.mapper = mapper;
+            Consts.Mapper = mapper;
         }
     }
 }

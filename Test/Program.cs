@@ -18,7 +18,6 @@ namespace ChinaTest
 {
     class Program
     {
-        const string wenganModel = @"C:\BentleyModels\WengAn\WengAn20220310.wtg.sqlite";
         const bool isServerModeLicense = false;
         const bool workOnCopiedModel = true;
         static void Main(string[] args)
@@ -30,13 +29,13 @@ namespace ChinaTest
                 cfg.CreateMap<IUserNotification, UserNotification>();
                 //cfg.AddProfile();
             });
-            WengAnHandler.mapper = mapConfig.CreateMapper();
+            Consts.Mapper = mapConfig.CreateMapper();
             WengAnRunEps();
             var result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(WengAnDummyData.DummyWaterTraceArg(), 4014, 72, true, isServerModeLicense, workOnCopiedModel, 20);
 
             string aaa = null;
 
-            WengAnDummyData.wenganModel = wenganModel;
+            WengAnDummyData.wenganModel = Consts.WenganDefaultModel;
             string demoModelPath = @"D:\DemoModel\demo\无标题 1.wtg.sqlite";
             var wm = new WaterGEMSModel();
             wm.OpenDataSource(demoModelPath, true);
@@ -130,7 +129,7 @@ namespace ChinaTest
 
             var arg1 = new ForecastDemandArg()
             {
-                ModelPath = wenganModel,
+                ModelPath = Consts.WenganDefaultModel,
                 shengtuData = shengtuData,
                 cryData = cryData,
                 xipoData = xipoData,

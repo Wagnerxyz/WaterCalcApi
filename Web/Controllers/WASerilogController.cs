@@ -1,14 +1,13 @@
 ﻿using Bentley.SelectServer.ManagedClient;
 using ChinaWaterLib.Models;
 using ChinaWaterLib.WengAn.Args;
-using ChinaWebUtils;
 using Haestad.Calculations.Shanghai.WaterGEMS;
 using Haestad.Domain;
 using Haestad.LicensingFacade;
 using Haestad.ManagedLicensing;
 using Haestad.Support.Library;
 using Haestad.Support.Support;
-using Microsoft.Extensions.Logging;
+using Serilog;
 using Swashbuckle.Examples;
 using System;
 using System.Configuration;
@@ -21,19 +20,19 @@ using System.Runtime.Caching;
 using System.Threading;
 using System.Web.Http;
 using System.Web.Http.Description;
-using ChinaWaterLib;
+using System.Web.Http.Results;
+using Swashbuckle.Swagger.Annotations;
 using Web.Models;
 using Web.Swagger;
 using WengAn.Args;
+using ChinaWebUtils;
 
 namespace Web.Controllers
 {
-    //use Microsoft.Extensions.Logging,not serilog
     /// <summary>
     /// 不允许并发，只能同时执行一个
     /// </summary>
-    [ModelExistCheckAttribute(ArgumentName = "arg")]
-    [LogWebApiActionFilter]
+    [ModelExistCheckAttribute(ArgumentName ="arg")]
     public class WAController : ApiController
     {
         private static readonly object __lockObj = new object();
@@ -44,14 +43,13 @@ namespace Web.Controllers
         private readonly string modelName = @"WengAn1109.wtg.sqlite";
         private const string conflictMsg = "水力引擎不支持多个计算，有计算正在运行，请稍后再试";
         private const string argMsg = "请求参数错误";
-        private static ILogger _logger;
+        private static ILogger _logger = Serilog.Log.ForContext<WAController>();
         //private static bool isLicenseOk = false;
         private bool isServerModeLicense;
         private bool workOnCopiedModel;
 
-        public WAController(ILoggerFactory factory)
+        public WAController()
         {
-            _logger = factory.CreateLogger<WAController>();
             demandAdjustmentScenarioId = Convert.ToInt32(ConfigurationManager.AppSettings["DemandAdjustmentScenarioId"]);
             isServerModeLicense = Convert.ToBoolean(ConfigurationManager.AppSettings["ServerModeLicense"]);
             workOnCopiedModel = Convert.ToBoolean(ConfigurationManager.AppSettings["WorkOnCopiedModel"]);
@@ -83,7 +81,7 @@ namespace Web.Controllers
             //CheckLicense();
             try
             {
-                _logger.LogInformation($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 //WengAnHandler.WengAnDemandForecast(arg);
                 var result = WengAnHandler.RunEPS(arg, Convert.ToInt32(ConfigurationManager.AppSettings["RunEPSScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["RunEPSPressureEngineSimulationDuration"]), true, isServerModeLicense, workOnCopiedModel, demandAdjustmentScenarioId);
                 CheckAndLogWaterEngineError(result);
@@ -128,7 +126,7 @@ namespace Web.Controllers
                 //  try
                 //  {
                 //      System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                _logger.LogInformation($"项目名：{Consts.ProjectName},开始执行 {new StackTrace().GetFrame(0).GetMethod().Name}");
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new StackTrace().GetFrame(0).GetMethod().Name}");
                 var result = WengAnHandler.BreakPipe(arg, Convert.ToInt32(ConfigurationManager.AppSettings["BreakPipeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["BreakPipePressureEngineSimulationDuration"]), true, isServerModeLicense, workOnCopiedModel, demandAdjustmentScenarioId);
                 CheckAndLogWaterEngineError(result);
                 return Ok(result);
@@ -166,7 +164,7 @@ namespace Web.Controllers
                 //try
                 //{
                 //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                _logger.LogInformation($"项目名：{Consts.ProjectName},开始执行 {new StackTrace().GetFrame(0).GetMethod().Name}");
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new StackTrace().GetFrame(0).GetMethod().Name}");
                 WaterHeadTraceResult result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(arg, Convert.ToInt32(ConfigurationManager.AppSettings["WaterTraceScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["WaterTracePressureEngineSimulationDuration"]), true, isServerModeLicense, workOnCopiedModel, demandAdjustmentScenarioId);
                 CheckAndLogWaterEngineError(result);
                 return Ok(result);
@@ -205,7 +203,7 @@ namespace Web.Controllers
                 //try
                 //{
                 //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                _logger.LogInformation($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 WengAnEpsBaseResult result = WengAnHandler.FireDemandAtOneNode(arg, Convert.ToInt32(ConfigurationManager.AppSettings["FireDemandAtOneNodeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["FireDemandAtOneNodeEngineSimulationDuration"]), true, isServerModeLicense, workOnCopiedModel, demandAdjustmentScenarioId);
                 CheckAndLogWaterEngineError(result);
                 return Ok(result);
@@ -243,7 +241,7 @@ namespace Web.Controllers
                 //try
                 //{
                 //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                _logger.LogInformation($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 WaterQualityResult result = WengAnHandler.Concentration(arg, Convert.ToInt32(ConfigurationManager.AppSettings["WaterConcentrationScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["WaterConcentrationPressureEngineSimulationDuration"]), true, isServerModeLicense, workOnCopiedModel, demandAdjustmentScenarioId);
                 CheckAndLogWaterEngineError(result);
                 return Ok(result);
@@ -258,7 +256,7 @@ namespace Web.Controllers
         /// 水龄预测
         /// </summary>
         /// <returns></returns>
-        ///<response code="200">正常结果</response>
+        /// <response code="200">正常结果</response>
         ///<response code="400">错误</response>
         ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
         [SwaggerRequestExample(typeof(WaterAgeArg), typeof(WA_WaterAge_Example))]
@@ -281,7 +279,7 @@ namespace Web.Controllers
                 //try
                 //{
                 //    System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-                _logger.LogInformation($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 WaterQualityResult result = WengAnHandler.WaterAge(arg, Convert.ToInt32(ConfigurationManager.AppSettings["WaterAgeScenarioId"]), Convert.ToDouble(ConfigurationManager.AppSettings["WaterAgePressureEngineSimulationDuration"]), true, isServerModeLicense, workOnCopiedModel, demandAdjustmentScenarioId);
                 CheckAndLogWaterEngineError(result);
                 return Ok(result);
@@ -317,7 +315,7 @@ namespace Web.Controllers
 
             try
             {
-                _logger.LogInformation($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 WaterGEMSModel wm = new WaterGEMSModel();
                 wm.ProductId = ProductId.Bentley_WaterGEMS;
                 bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
@@ -359,7 +357,7 @@ namespace Web.Controllers
 
             try
             {
-                _logger.LogInformation($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 WaterGEMSModel wm = new WaterGEMSModel();
                 wm.ProductId = ProductId.Bentley_WaterGEMS;
                 bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
@@ -401,7 +399,7 @@ namespace Web.Controllers
 
             try
             {
-                _logger.LogInformation($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+                _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
                 WaterGEMSModel wm = new WaterGEMSModel();
                 wm.ProductId = ProductId.Bentley_WaterGEMS;
                 bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
@@ -426,7 +424,7 @@ namespace Web.Controllers
         {
             if (baseResult != null && baseResult.IsCalculationFailure && baseResult.ErrorNotifs.Any())
             {
-                _logger.LogError("{0}: 计算错误总数:{1}  @{2}", new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name, baseResult.ErrorNotifs.Count,
+                _logger.Error("{0}: 计算错误总数:{1}  @{2}", new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name, baseResult.ErrorNotifs.Count,
                     baseResult.ErrorNotifs
                         .Select(x => new
                         {
@@ -440,7 +438,7 @@ namespace Web.Controllers
 
         private void LogContentionError()
         {
-            _logger.LogError("{0}: {1}", conflictMsg, new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name);
+            _logger.Error("{0}: {1}", conflictMsg, new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name);
         }
 
         //执行前将模型拷贝到日期命名目录
@@ -485,7 +483,7 @@ namespace Web.Controllers
                 return true;
             }
 
-            _logger.LogInformation("Start check license");
+            _logger.Information("Start check license");
             ProductRelease pr = new ProductRelease(ProductId.Bentley_WaterGEMS, "10.00.00.00");
             if (isServerModeLicense)
             {
@@ -495,11 +493,11 @@ namespace Web.Controllers
                     #region Check Server Mode SES Licensing 
                     if (m_managedLicense.IsServerModeEnabled())
                     {
-                        _logger.LogInformation("Check Server Mode SES Licensing");
+                        _logger.Information("Check Server Mode SES Licensing");
                         LicenseRunStatus managedStatus = m_managedLicense.StartServerLicense();
                         if (managedStatus == LicenseRunStatus.Ok)
                         {
-                            LicenseUtil.CheckHaestadLicenseFacadeLicense(pr, _logger);
+                            CheckHaestadLicenseFacadeLicense(pr);
                         }
                         if (m_managedLicense != null)
                         {
@@ -513,7 +511,7 @@ namespace Web.Controllers
                 {
                     if (e.Message.Trim() == "The Client was not successfully initialized.")
                     {
-                        _logger.LogError("The server is not configured in ServerMode");
+                        _logger.Error("The server is not configured in ServerMode");
                         throw new Exception("The server is not configured in ServerMode");
                     }
                     else
@@ -522,19 +520,41 @@ namespace Web.Controllers
             }
             else
             {
-                _logger.LogInformation("in Appsetting license");
-                LicenseUtil.CheckHaestadLicenseFacadeLicense(pr, _logger);
-
+                _logger.Information("in Appsetting license");
+                CheckHaestadLicenseFacadeLicense(pr);
                 return true;
             }
-            _logger.LogInformation("end license");
+            _logger.Information("end license");
             //CacheItemPolicy policy = new CacheItemPolicy
             //{
             //    SlidingExpiration = TimeSpan.FromHours(6)
             //};
             return false;
         }
-
+        /// <summary>
+        /// Check whether Haestad.LicenseFacade.License is OK, hydraulic engine only accepts this license
+        /// </summary>
+        /// <param name="pr"></param>
+        /// <exception cref="LicenseClientException"></exception>
+        private void CheckHaestadLicenseFacadeLicense(ProductRelease pr)
+        {
+            LicenseRunStatusEnum status;
+            License m_license = License.Default(pr, IntPtr.Zero, null);
+            if (m_license.Initialize())
+            {
+                status = m_license.StartDesktop();
+                if (status == LicenseRunStatusEnum.OK)
+                {
+                    _logger.Information("LicenseRunStatusEnum is OK");
+                }
+                else
+                {
+                    throw new LicenseClientException("Can't get Haestad.LicensingFacade.License");
+                }
+            }
+            if (m_license != null)
+                m_license.Dispose();
+        }
         /// <summary>
         /// 更新需水量
         /// </summary>
@@ -557,7 +577,7 @@ namespace Web.Controllers
         //    try
         //    {
         //        System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-        //        _logger.LogInformation($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+        //        _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
         //        WengAnDemandForecast.Run(arg);
         //        //string archiveFileName = $"NewModel_{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}.zip";
         //        string archiveFileName = HostingEnvironment.MapPath($"~/NewModel.zip"); ;
@@ -605,7 +625,7 @@ namespace Web.Controllers
         //    try
         //    {
         //        System.Threading.Monitor.Enter(__lockObj, ref isRunning);
-        //        _logger.LogInformation($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
+        //        _logger.Information($"项目名：{Consts.ProjectName},开始执行 {new System.Diagnostics.StackTrace().GetFrame(0).GetMethod().Name}");
 
         //        string archiveFileName = HostingEnvironment.MapPath($"~/NewModel.zip");
         //        if (!File.Exists(archiveFileName))

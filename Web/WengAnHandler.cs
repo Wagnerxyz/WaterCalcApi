@@ -1,10 +1,8 @@
-﻿using AutoMapper;
-using Bentley.SelectServer.ManagedClient;
+﻿using Bentley.SelectServer.ManagedClient;
 using ChinaWaterLib;
 using ChinaWaterLib.Models;
 using ChinaWaterLib.WengAn.Args;
 using ChinaWaterUtils;
-using Haestad.Calculations.Shanghai.QingDaoWT;
 using Haestad.Calculations.Shanghai.WaterGEMS;
 using Haestad.Domain;
 using Haestad.LicensingFacade;
@@ -13,15 +11,13 @@ using Haestad.Support.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Haestad.Calculations.Shanghai.QingDaoWT;
 using WengAn.Args;
 
 namespace Web
 {
     public class WengAnHandler
     {
-        //todo: Automapper放到外面做！
-        public static IMapper mapper;
-
         /// <summary>
         /// 运行水力模型
         /// </summary>
@@ -508,7 +504,7 @@ namespace Web
         /// <summary>
         /// 多水源供水分析 水源追踪
         /// </summary>
-        public static WaterHeadTraceResult GetWaterTraceResultsForMultipleElementIds(WaterTraceArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense,bool workOnCopiedModel, int demandAdjustmentScenarioId = 0)
+        public static WaterHeadTraceResult GetWaterTraceResultsForMultipleElementIds(WaterTraceArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, bool workOnCopiedModel, int demandAdjustmentScenarioId = 0)
         {
             if (arg.TraceSourceElementIds == null || !arg.TraceSourceElementIds.Any())
             {
@@ -584,11 +580,19 @@ namespace Web
             if (error != null && error.Any())
             {
                 baseResult.IsCalculationFailure = true;
-                baseResult.ErrorNotifs = mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
+                baseResult.ErrorNotifs = Consts.Mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
             }
             return baseResult.IsCalculationFailure;
         }
         //抛出IndexOutOfRangeException 可能是License问题，里面代码wm.RunWTmodel(); Catch了没往外抛
+        //将引擎计算开始时间设为arg.StartTime.AddDays(-1)
+        /// <summary>
+        /// 蓄水量调整
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <param name="wm"></param>
+        /// <param name="demandAdjustmentScenarioId"></param>
+        /// <exception cref="Exception"></exception>
         public static void DemandAdjustment(WengAnCalculationBaseArg arg, WaterGEMSModel wm, int demandAdjustmentScenarioId)
         {
             if (!wm.IsLicenseOk())
@@ -733,13 +737,12 @@ namespace Web
                 //wm.PressureCalculationOption.
                 wm.PressureCalculationOption.AddValveSettingControlOverride(7597, ValveSettingEnum.ValveClosedType, now, 2);
 
-
                 IUserNotification[] notif = wm.RunPressureCalculation();
                 List<IUserNotification> error = notif?.Where(x => x.Level == Haestad.Support.User.NotificationLevel.Error).ToList();
                 if (error != null && error.Any())
                 {
                     result.IsCalculationFailure = true;
-                    result.ErrorNotifs = mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
+                    result.ErrorNotifs = Consts.Mapper.Map<List<IUserNotification>, List<UserNotification>>(error);
                 }
                 #region 比较节点水压
                 //todo:返回结构已变化
@@ -816,6 +819,4 @@ namespace Web
         }
 
     }
-
-
 }
