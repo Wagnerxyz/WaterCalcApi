@@ -9,7 +9,7 @@ using Bentley.SelectServer.ManagedClient;
 using Haestad.LicensingFacade;
 using Haestad.ManagedLicensing;
 
-namespace Web
+namespace WengAn
 {
     public class LicenseCheckAttribute : ActionFilterAttribute
     {

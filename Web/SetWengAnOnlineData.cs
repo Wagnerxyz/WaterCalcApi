@@ -1,11 +1,7 @@
-﻿using ChinaWaterLib.WengAn.Args;
-using Haestad.Calculations.Shanghai.WaterGEMS;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using Haestad.Calculations.Shanghai.WaterGEMS;
+using WengAn.Args;
 
-namespace Web
+namespace WengAn
 {
     public static class SetWengAnOnlineData
     {

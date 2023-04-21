@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace WengAn
+namespace WengAnOwin.Models
 {
     /// <summary>
     /// 更改隔离阀状态接口输入参数

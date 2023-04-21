@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Web.Models
+namespace WengAn
 {
     /// <summary>
     /// 更改阀门状态接口输入参数

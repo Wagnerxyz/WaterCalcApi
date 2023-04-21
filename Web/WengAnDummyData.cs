@@ -1,12 +1,10 @@
 ﻿using ChinaWaterLib.Models;
-using ChinaWaterLib.WengAn.Args;
+using Haestad.Calculations.Shanghai.DataCleaner;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using Haestad.Calculations.Shanghai.DataCleaner;
 using WengAn.Args;
 
-namespace Web
+namespace WengAn
 {
     //放这里既可以被 web的swaggerexample引用，也可被console test app引用
     public class WengAnDummyData

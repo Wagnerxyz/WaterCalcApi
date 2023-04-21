@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Http.ExceptionHandling;
 using Serilog;
 
-namespace Web
+namespace WengAn
 {
     //support registering multiple exception loggers but only a single exception handler.
     //https://docs.microsoft.com/en-us/aspnet/web-api/overview/error-handling/web-api-global-error-handling

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace WengAn
+namespace WengAnOwin.Models
 {
     /// <summary>
-    /// 更改隔离阀状态接口输入参数
+    /// 更改阀门状态接口输入参数
     /// </summary>
-    public class IsolationValveInitialStatusArg
+    public class ValveInitialStatusArg
     {
         /// <summary>
         /// 模型文件 .sqlite路径
@@ -19,8 +19,8 @@ namespace WengAn
         /// </summary>
         public int ValveId { get; set; }
         /// <summary>
-        /// 阀门状态(0-打开，1-关闭)
+        /// 阀门状态(0-激活，1-非激活，2-关闭)
         /// </summary>
-        public IsolationValveInitialSettingEnum ValveStatus { get; set; }
+        public ValveSettingEnum ValveStatus { get; set; }
     }
 }

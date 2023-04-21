@@ -2,9 +2,9 @@
 using Swashbuckle.Examples;
 using System;
 using System.Web.Http;
-using Web;
 using Web.Swagger;
 using WebActivatorEx;
+using WengAn;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 

@@ -448,9 +448,6 @@
     <Compile Include="Controllers\WAController.cs" />
     <Compile Include="LicenseCheckAttribute.cs" />
     <Compile Include="LogWebApiActionFilter.cs" />
-    <Compile Include="Models\IsolationValveInitialStatusArg.cs" />
-    <Compile Include="Models\PipeStatusArg.cs" />
-    <Compile Include="Models\ValveInitialStatusArg.cs" />
     <Compile Include="SetWengAnOnlineData.cs" />
     <Compile Include="SwaggerConfig\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />

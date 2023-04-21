@@ -5,7 +5,7 @@ using System.Web;
 using Autofac;
 using AutoMapper;
 
-namespace Web
+namespace WengAn
 {
     public static class Consts
     {
@@ -14,5 +14,7 @@ namespace Web
         public static string CurrentModelPath { get; set; } = string.Empty;
         public static IContainer Container { get; set; }
         public const string WenganDefaultModel = @"C:\BentleyModels\WengAn\WengAn20230412.wtg.sqlite";
+        public const string HealthCheckUrl = "http://localhost:8620/api/Home/Healthcheck";
+
     }
 }

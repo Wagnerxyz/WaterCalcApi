@@ -1,7 +1,9 @@
-﻿using Swashbuckle.Examples;
+﻿using ChinaWaterLib;
+using Swashbuckle.Examples;
+using System.Configuration;
 using WengAn;
 
-namespace Web.Swagger
+namespace WengAnOwin.Swagger
 {
     public class WA_RunEPS1_Example : IExamplesProvider
     {
