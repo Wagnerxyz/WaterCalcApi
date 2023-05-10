@@ -22,9 +22,9 @@ namespace WengAnOwin
 
         public void Start()
         {
-            string baseAddress = ConfigurationManager.AppSettings["BaseAddress"];
+            string port = ConfigurationManager.AppSettings["Port"];
             // Start OWIN host 
-            Program.StartOwinService(baseAddress,Consts.HealthCheckUrl);
+            Program.StartOwinService(port);
             _logger.Information("服务启动aa");
         }
 

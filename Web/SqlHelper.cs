@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 using Microsoft.Data.SqlClient;
 
-namespace WengAnOwin
+namespace WengAn
 {
     static class SqlHelper
     {
@@ -140,5 +139,4 @@ namespace WengAnOwin
             Console.WriteLine("{0} row{1} {2} updated.", rows, rows > 1 ? "s" : null, rows > 1 ? "are" : "is");
         }
     }
- 
 }

@@ -6,6 +6,7 @@ using Haestad.Support.User;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
+using System.Configuration;
 using System.Reflection;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -54,7 +55,8 @@ namespace Web
             RegisterAutoMapper();
             var logger = ((ILoggerFactory)config.DependencyResolver.GetService(typeof(ILoggerFactory))).CreateLogger("Main");
             logger.LogInformation("Web Site已启动");
-
+            Consts.isWriteDatabase = Convert.ToBoolean(ConfigurationManager.AppSettings["PerformanceLogToDatabase"]);
+            Consts.Logger = Log.Logger;
             //    using (var scope = container.BeginLifetimeScope())
             //{
             //    var logger = scope.Resolve<ILoggerFactory>().CreateLogger("Main");

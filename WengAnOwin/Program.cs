@@ -25,6 +25,8 @@ namespace WengAnOwin
             SerilogConfig.Register();
             RegisterAutoMapper();
             //SetHaestadAppRuntimePath();
+            Consts.isWriteDatabase = Convert.ToBoolean(ConfigurationManager.AppSettings["PerformanceLogToDatabase"]);
+            Consts.Logger = Log.Logger;
 
             //  UseOwinBoot();
             UseTopShelfBoot();
@@ -62,13 +64,15 @@ namespace WengAnOwin
         /// </summary>
         /// <param name="baseAddress"></param>
         /// <param name="testUrl"></param>
-        internal static void StartOwinService(string baseAddress, string testUrl)
+        internal static void StartOwinService(string port)
         {
+            var prefix = "http://*:";
+            var baseAddress = prefix + port + "/";
             using (WebApp.Start<Startup>(url: baseAddress))
             {
                 // Create HttpClient and make a request to api/values 
                 HttpClient client = new HttpClient();
-
+                var testUrl = "http://localhost:" + port + Consts.HealthCheckApiPath;
                 var response = client.GetAsync(testUrl).Result;
 
                 Console.WriteLine(response);
@@ -78,8 +82,8 @@ namespace WengAnOwin
         }
         private static void UseOwinBoot()
         {
-            string baseAddress = ConfigurationManager.AppSettings["BaseAddress"];
-            StartOwinService(baseAddress, Consts.HealthCheckUrl);
+            string port = ConfigurationManager.AppSettings["Port"];
+            StartOwinService(port);
         }
         //private static void UseWinServiceBoot()
         //{

@@ -51,7 +51,7 @@ namespace ChinaTest
 
 
             WengAnBreakPipe();
-            var arg = WengAnDummyData.FillDummyBaseArg(new WengAnCalculationBaseArg());
+            var arg = WengAnDummyData.FillDummyBaseArg(new WengAnBaseArg());
 
             //string input = File.ReadAllText(@"d:\dhi.json");
             //var client = new HttpClient();

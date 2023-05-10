@@ -77,7 +77,7 @@ namespace WengAn
             };
             return dict;
         }
-        public static WengAnCalculationBaseArg FillDummyBaseArg(WengAnCalculationBaseArg arg)
+        public static WengAnBaseArg FillDummyBaseArg(WengAnBaseArg arg)
         {
             arg.ModelPath = wenganModel;
             arg.CurrentPrvPressure = GetCurrentPRVPressure();

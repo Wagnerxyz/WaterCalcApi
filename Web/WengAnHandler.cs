@@ -11,12 +11,28 @@ using Haestad.Support.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using WengAn.Args;
 
 namespace WengAn
 {
     public class WengAnHandler
     {
+        /// <summary>
+        ///打开数据模型，且 StartDesktop()获取License不报错 
+        /// </summary>
+        /// <exception cref="LicenseClientException"></exception>
+        public static void OpenDataSourceAndGetLicenseSuccess(WaterGEMSModel wm, WengAnBaseArg arg, bool isServerModeLicense, bool workOnCopiedModel)
+        {
+            //可通过配置文件传入productversion，但测试和里面hardcode的10.00.00.00没区别。
+            //wm.ProductVersion = ConfigurationManager.AppSettings["ProductVersion"];
+            bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
+            if (!licenseSuccess)
+            {
+                Log.Error("OpenDataSource() License返回false!");
+                throw new LicenseClientException("OpenDataSource() License返回false!");
+            }
+        }
         /// <summary>
         /// 运行水力模型
         /// </summary>
@@ -27,11 +43,7 @@ namespace WengAn
             result.StartTime = arg.StartTime;
             try
             {
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
-                if (!licenseSuccess)
-                {
-                    throw new LicenseClientException("License不正常");
-                }
+                OpenDataSourceAndGetLicenseSuccess(wm, arg, isServerModeLicense, workOnCopiedModel);
                 if (demandAdjustmentScenarioId != 0)
                 {
                     DemandAdjustment(arg, wm, demandAdjustmentScenarioId);
@@ -108,11 +120,7 @@ namespace WengAn
 
             try
             {
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
-                if (!licenseSuccess)
-                {
-                    throw new LicenseClientException("License不正常");
-                }
+                OpenDataSourceAndGetLicenseSuccess(wm, arg, isServerModeLicense, workOnCopiedModel);
                 if (demandAdjustmentScenarioId != 0)
                 {
                     DemandAdjustment(arg, wm, demandAdjustmentScenarioId);
@@ -178,11 +186,7 @@ namespace WengAn
             result.StartTime = arg.StartTime;
             try
             {
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
-                if (!licenseSuccess)
-                {
-                    throw new LicenseClientException("License不正常");
-                }
+                OpenDataSourceAndGetLicenseSuccess(wm, arg, isServerModeLicense, workOnCopiedModel);
                 if (demandAdjustmentScenarioId != 0)
                 {
                     DemandAdjustment(arg, wm, demandAdjustmentScenarioId);
@@ -269,11 +273,7 @@ namespace WengAn
             result.StartTime = arg.StartTime;
             try
             {
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
-                if (!licenseSuccess)
-                {
-                    throw new LicenseClientException("License不正常");
-                }
+                OpenDataSourceAndGetLicenseSuccess(wm, arg, isServerModeLicense, workOnCopiedModel);
                 if (demandAdjustmentScenarioId != 0)
                 {
                     DemandAdjustment(arg, wm, demandAdjustmentScenarioId);
@@ -367,11 +367,7 @@ namespace WengAn
             var isolationValveInitialDict = new Dictionary<int, IsolationValveInitialSettingEnum>();
             try
             {
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
-                if (!licenseSuccess)
-                {
-                    throw new LicenseClientException("License不正常");
-                }
+                OpenDataSourceAndGetLicenseSuccess(wm, arg, isServerModeLicense, workOnCopiedModel);
                 if (demandAdjustmentScenarioId != 0)
                 {
                     DemandAdjustment(arg, wm, demandAdjustmentScenarioId);
@@ -514,11 +510,7 @@ namespace WengAn
             result.StartTime = arg.StartTime;
             try
             {
-                bool licenseSuccess = wm.OpenDataSource(arg.ModelPath, workOnCopiedModel, isServerModeLicense);
-                if (!licenseSuccess)
-                {
-                    throw new LicenseClientException("License不正常");
-                }
+                OpenDataSourceAndGetLicenseSuccess(wm, arg, isServerModeLicense, workOnCopiedModel);
                 if (demandAdjustmentScenarioId != 0)
                 {
                     DemandAdjustment(arg, wm, demandAdjustmentScenarioId);
@@ -592,15 +584,43 @@ namespace WengAn
         /// <param name="wm"></param>
         /// <param name="demandAdjustmentScenarioId"></param>
         /// <exception cref="Exception"></exception>
-        public static void DemandAdjustment(WengAnCalculationBaseArg arg, WaterGEMSModel wm, int demandAdjustmentScenarioId)
+        public static void DemandAdjustment(WengAnBaseArg arg, WaterGEMSModel wm, int demandAdjustmentScenarioId)
         {
-            if (!wm.IsLicenseOk())
-            {
-                throw new Exception("License不正常");
-            }
+            LicenseCheck(wm, Consts.Logger);
+
             wm.SetActiveScenario(demandAdjustmentScenarioId);
             new WengAnProj().RTDemandAdjustment(wm, arg.StartTime, arg.StartTime.AddDays(-1), arg.FlowSensors);
             wm.CloseResults();
+        }
+        /// <summary>
+        /// 检查LicenseRunStatusEnum和LicenseStatus
+        /// </summary>
+        /// <param name="wm"></param>
+        /// <param name="logger"></param>
+        /// <exception cref="Exception"></exception>
+        private static void LicenseCheck(WaterGEMSModel wm, ILogger logger)
+        {
+            var license = wm.License;
+            if (license == null)
+            {
+                throw new Exception("License null不正常");
+            }
+
+            if (license.RunStatus == LicenseRunStatusEnum.Unknown || license.RunStatus == LicenseRunStatusEnum.Shutdown)
+            {
+                logger.Error("License Run Status 不正常 (Unknown||Shutdown)");
+                logger.Error("licenseRunStatus: " + license.RunStatus.ToString());
+                throw new Exception("License Run Status 不正常(Unknown||Shutdown)");
+            }
+
+            Haestad.LicensingFacade.LicenseStatus licenseStatus = license.GetLicenseStatus();
+            if (licenseStatus != Haestad.LicensingFacade.LicenseStatus.OK &&
+                licenseStatus != Haestad.LicensingFacade.LicenseStatus.Trial)
+            {
+                logger.Error("License Status 不正常 (!OK&&!Trial)");
+                logger.Error("licenseStatus: " + licenseStatus.ToString());
+                throw new Exception("License Status 不正常 (!OK&&!Trial)");
+            }
         }
 
         /// <summary>

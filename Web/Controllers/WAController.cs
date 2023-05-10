@@ -590,7 +590,7 @@ namespace Web.Controllers
         /// <returns></returns>
         ///<response code="400">错误</response>
         ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
-        //[SwaggerRequestExample(typeof(WengAnCalculationBaseArg), typeof(WA_WaterAge_Example))]
+        //[SwaggerRequestExample(typeof(WengAnBaseArg), typeof(WA_WaterAge_Example))]
         //[ResponseType(typeof(WaterQualityResult))]
         //public HttpResponseMessage GetLatestModel()
         //{

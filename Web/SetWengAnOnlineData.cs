@@ -5,7 +5,7 @@ namespace WengAn
 {
     public static class SetWengAnOnlineData
     {
-        public static void SetCurrentPumpValveReservoir(WaterGEMSModel wm, WengAnCalculationBaseArg args)
+        public static void SetCurrentPumpValveReservoir(WaterGEMSModel wm, WengAnBaseArg args)
         {
             //foreach (var item in args.CurrentPumpSpeed)
             //{

@@ -387,8 +387,14 @@
     <Compile Include="..\Web\LicenseCheckAttribute.cs">
       <Link>LicenseCheckAttribute.cs</Link>
     </Compile>
+    <Compile Include="..\Web\LogWebApiActionFilter.cs">
+      <Link>LogWebApiActionFilter.cs</Link>
+    </Compile>
     <Compile Include="..\Web\SetWengAnOnlineData.cs">
       <Link>SetWengAnOnlineData.cs</Link>
+    </Compile>
+    <Compile Include="..\Web\SqlHelper.cs">
+      <Link>SqlHelper.cs</Link>
     </Compile>
     <Compile Include="..\Web\WengAnDummyData.cs">
       <Link>WengAnDummyData.cs</Link>
@@ -399,10 +405,8 @@
     <Compile Include="App_Start\SerilogConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\WAController.cs" />
-    <Compile Include="LogWebApiActionFilter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlHelper.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="SwaggerConfig\SwaggerConfig.cs" />
     <Compile Include="SwaggerConfig\SwaggerExamples.cs" />
