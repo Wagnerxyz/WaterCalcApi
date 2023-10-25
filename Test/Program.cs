@@ -11,6 +11,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime;
+using Haestad.Domain;
+using Haestad.Support.Support;
 using WengAn;
 using WengAn.Args;
 
@@ -30,14 +32,32 @@ namespace ChinaTest
                 //cfg.AddProfile();
             });
             Consts.Mapper = mapConfig.CreateMapper();
-            WengAnRunEps();
+
+            var wm = new WaterGEMSModel();
+            //上一步已经复制了，不要复制 用原来的改
+            wm.OpenDataSource(@"C:\Temp\Qingdao.wtg.sqlite", true);
+
+
+            var ids1 = wm.DomainDataSet.DomainElementManager((int)DomainElementType.BaseValveElementManager).ElementIDs();
+
+            foreach (var valveId in ids1)
+            {
+            int valveType = wm.DomainDataSet.DomainElementTypeID(valveId);
+
+            IField relativeClosurePatternField = wm.DomainDataSet.FieldManager.DomainElementField(StandardFieldName.Hammer_OperatingRule, (int)AlternativeType.HammerAlternative, valveType);
+
+            ((IEditField)relativeClosurePatternField).SetValue(valveId, DBNull.Value);
+            }
+            wm.CloseDataSource();
+
+
+                WengAnRunEps();
             var result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(WengAnDummyData.DummyWaterTraceArg(), 4014, 72, true, isServerModeLicense, workOnCopiedModel, 20);
 
             string aaa = null;
 
             WengAnDummyData.wenganModel = Consts.WenganDefaultModel;
             string demoModelPath = @"D:\DemoModel\demo\无标题 1.wtg.sqlite";
-            var wm = new WaterGEMSModel();
             wm.OpenDataSource(demoModelPath, true);
 
 

@@ -79,8 +79,6 @@ namespace Web.App_Start
                     //    TelemetryConverter.Traces)
                     .CreateLogger();
             }
-
-            Log.Logger.Information("Serilog配置成功，开始记录日志");
         }
     }
 }
