@@ -42,16 +42,16 @@ namespace ChinaTest
 
             foreach (var valveId in ids1)
             {
-            int valveType = wm.DomainDataSet.DomainElementTypeID(valveId);
+                int valveType = wm.DomainDataSet.DomainElementTypeID(valveId);
 
-            IField relativeClosurePatternField = wm.DomainDataSet.FieldManager.DomainElementField(StandardFieldName.Hammer_OperatingRule, (int)AlternativeType.HammerAlternative, valveType);
+                IField relativeClosurePatternField = wm.DomainDataSet.FieldManager.DomainElementField(StandardFieldName.Hammer_OperatingRule, (int)AlternativeType.HammerAlternative, valveType);
 
-            ((IEditField)relativeClosurePatternField).SetValue(valveId, DBNull.Value);
+                ((IEditField)relativeClosurePatternField).SetValue(valveId, DBNull.Value);
             }
             wm.CloseDataSource();
 
 
-                WengAnRunEps();
+            WengAnRunEps();
             var result = WengAnHandler.GetWaterTraceResultsForMultipleElementIds(WengAnDummyData.DummyWaterTraceArg(), 4014, 72, true, isServerModeLicense, workOnCopiedModel, 20);
 
             string aaa = null;
