@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Web;
-using System.Web.Hosting;
 using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
@@ -17,12 +16,18 @@ namespace Web.App_Start
     {
         public static void Register()
         {
+#if OWIN
+            string localFilePath = Path.Combine(Directory.GetCurrentDirectory(),
+                       ConfigurationManager.AppSettings["BentleyApiLogFilePath"], "Log.txt");
+#else
             string localFilePath =
-                HostingEnvironment.MapPath($"~/{ConfigurationManager.AppSettings["BentleyApiLogFilePath"]}/Log.txt");
-            string udpAddress = "172.18.208.1";
+                System.Web.Hosting.HostingEnvironment.MapPath($"~/{ConfigurationManager.AppSettings["BentleyApiLogFilePath"]}/Log.txt");
+#endif
+
+            string udpAddress = ConfigurationManager.AppSettings["SerilogUdpLogReceiverAddress"];
+            // { Properties} can include any other enrichment which is applied.
             //The {Message:lj} format options cause data embedded in the message to be output in JSON (j) except for string literals, which are output as-is.
-            string outputTemplate =
-                "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj} {Properties}{NewLine}{Exception}";
+            string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {SourceContext} {Message:lj} {Properties}{NewLine}{Exception}";
             string logDestination = ConfigurationManager.AppSettings["LogFileDestination"];
 
             //Azure环境 Key Vault, Blob, File Share支持
@@ -30,19 +35,23 @@ namespace Web.App_Start
             {
                 //write to remote azure share folder 按机器名区分文件夹
                 //WriteToAzureFileShare();
-                //const string userIdentityclientId = "";
-                //var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = userIdentityclientId });
-                //var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
-                //var client = new BlobServiceClient(new Uri("https://storagebentley.blob.core.windows.net"), credential);
+                string storageContainerName = "log-nuopai-wengan";
 
-                //var clients = new SecretClient(new Uri("https://bentleykeyvault.vault.azure.net/"), credential);
-                //var asda = clients.GetSecret("ConnectionStrings--storagebentley").Value.Value;
+                #region Via UserIdentity
+                string userIdentityclientId = ConfigurationManager.AppSettings["AzureUserAssignedClientId"];
+                var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = userIdentityclientId });
+
+                #endregion
+
+                //var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+                //var credential = new DefaultAzureCredential();
+                var blobClient = new BlobServiceClient(new Uri("https://storagebentley.blob.core.windows.net"), credential);
+                //var client = new SecretClient(new Uri("https://bentley.vault.azure.net/"), credential);
 
                 Log.Logger = new LoggerConfiguration()
-                    //.Enrich.WithCorrelationId()
-                    .Enrich.WithCorrelationIdHeader()
+                    .Enrich.WithRequestHeader("User-Agent")
+                    .Enrich.WithCorrelationId(headerName: "correlation-id", addValueIfHeaderAbsence: false)
                     .Enrich.WithClientIp()
-                    //.Enrich.WithClientAgent()
                     .Enrich.WithThreadId()
                     .MinimumLevel.Debug() //Logging level要高于或等于sink level才行。否则没效果。
                                           //.WriteTo.Console()//sink 可以设置MinimumLevel  但必须高于logging level
@@ -52,21 +61,20 @@ namespace Web.App_Start
                     .WriteTo.ApplicationInsights(
                         new TelemetryConfiguration(ConfigurationManager.AppSettings["ApplicationInsightsKey"]),
                         TelemetryConverter.Traces)
-                    //.WriteTo.Async(x =>
-                    //    x.AzureBlobStorage(client,
-                    //        Serilog.Events.LogEventLevel.Information, "wenganlog",
-                    //        $"{{yyyy}}_{{MM}}/{{dd}}/{Environment.MachineName}_Log.txt"))
-                    //因为是appendblob 必须用async包下 不然卡住了。。。
+                    .WriteTo.AzureBlobStorage(blobClient,
+                            Serilog.Events.LogEventLevel.Debug, storageContainerName,
+                            $"{{yyyy}}_{{MM}}/{{dd}}/{Environment.MachineName}_Log.txt",
+                            writeInBatches: true, period: TimeSpan.FromSeconds(3), batchPostingLimit: 10)
+                    //因为appendblob 没有confirm write https://github.com/chriswill/serilog-sinks-azureblobstorage/issues/32 必须用async包住，或者改为批量写 不然卡住不写入
                     // azure data lake Gen2 Preview之前不支持Append Blob 需要新的SDK https://azure.microsoft.com/en-us/updates/append-blob-support-for-azure-data-lake-storage-preview/
                     .CreateLogger();
             }
             else
             {
                 Log.Logger = new LoggerConfiguration()
-                    //.Enrich.WithCorrelationId()
-                    .Enrich.WithCorrelationIdHeader()
+                    .Enrich.WithRequestHeader("User-Agent")
+                    .Enrich.WithCorrelationId(headerName: "correlation-id", addValueIfHeaderAbsence: false)
                     .Enrich.WithClientIp()
-                    //.Enrich.WithClientAgent()
                     .Enrich.WithThreadId()
                     .MinimumLevel.Debug() //Logging level要高于或等于sink level才行。否则没效果。
                     .WriteTo.Debug()//
@@ -79,6 +87,7 @@ namespace Web.App_Start
                     //    TelemetryConverter.Traces)
                     .CreateLogger();
             }
+            Log.Logger.Information("Serilog配置成功，开始记录日志");
         }
     }
 }

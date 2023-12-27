@@ -37,7 +37,8 @@ namespace Web
 
             // OPTIONAL: Register the Autofac model binder provider.
             //builder.RegisterWebApiModelBinderProvider();
-            builder.RegisterModule<MyAutofacModule>();//具体注册类型放这里面
+            //具体注册类型放这里面
+            builder.RegisterModule<MyAutoFacModule>();
 
             //builder.RegisterInstance(mapper).As<IMapper>(); //not work
             // Set the dependency resolver to be Autofac.
@@ -45,18 +46,18 @@ namespace Web
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
             Consts.Container = container;
             #endregion
-
-            //container.Resolve<SerilogConfig>().Register();
+            
 
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             RegisterAutoMapper();
-            var logger = ((ILoggerFactory)config.DependencyResolver.GetService(typeof(ILoggerFactory))).CreateLogger("Main");
-            logger.LogInformation("Web Site已启动");
+            //var logger = ((ILoggerFactory)config.DependencyResolver.GetService(typeof(ILoggerFactory))).CreateLogger("Main");
             Consts.isWriteDatabase = Convert.ToBoolean(ConfigurationManager.AppSettings["PerformanceLogToDatabase"]);
             Consts.Logger = Log.Logger;
+            Consts.Logger.Information("Web Site已启动");
+
             //    using (var scope = container.BeginLifetimeScope())
             //{
             //    var logger = scope.Resolve<ILoggerFactory>().CreateLogger("Main");
@@ -67,14 +68,11 @@ namespace Web
         protected void Application_End(object sender, EventArgs e)
         {
             var shutdownReason = System.Web.Hosting.HostingEnvironment.ShutdownReason;
-
             //using (var scope =  Consts.Container.BeginLifetimeScope())
             //{
             //    var logger = scope.Resolve<ILoggerFactory>().CreateLogger("Main");
             //    logger.LogInformation("In Application_End");
             //}
-
-            Log.Debug("In Application_End");
             Log.Information("App is shutting down (reason = {@shutdownReason})", shutdownReason);
             // Finally, once just before the application exits...
             Log.CloseAndFlush();
