@@ -11,6 +11,10 @@ using Haestad.Support.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ChinaWaterLib.Models.WengAn;
+using ChinaWaterModel;
+using ChinaWaterModel.Arg;
+using ChinaWaterModel.Result;
 using Serilog;
 using WengAn.Args;
 
@@ -499,7 +503,7 @@ namespace WengAn
         /// <summary>
         /// 多水源供水分析 水源追踪
         /// </summary>
-        public static WaterHeadTraceResult GetWaterTraceResultsForMultipleElementIds(WaterTraceArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, bool workOnCopiedModel, int demandAdjustmentScenarioId = 0)
+        public static WaterHeadTraceResult GetWaterTraceResultsForMultipleElementIds(MultiWaterSourceTraceArg arg, int scenarioId, double pressureEngineSimulationDuration, bool needRealTimeData, bool isServerModeLicense, bool workOnCopiedModel, int demandAdjustmentScenarioId = 0)
         {
             if (arg.TraceSourceElementIds == null || !arg.TraceSourceElementIds.Any())
             {

@@ -636,6 +636,10 @@
       <Project>{4cba5581-ddf8-4f12-9377-2ce516e6744a}</Project>
       <Name>ChinaWaterLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ChinaWaterModel\ChinaWaterModel\ChinaWaterModel.csproj">
+      <Project>{1c9730eb-9ca6-434a-8afa-c5194b2041ca}</Project>
+      <Name>ChinaWaterModel</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ChinaWaterUtils\ChinaWaterUtils.csproj">
       <Project>{8092ff7a-dcd4-43b3-a64f-9d9888742dff}</Project>
       <Name>ChinaWaterUtils</Name>

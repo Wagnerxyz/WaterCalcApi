@@ -2,6 +2,7 @@
 using Haestad.Calculations.Shanghai.DataCleaner;
 using System;
 using System.Collections.Generic;
+using ChinaWaterLib.Models.WengAn;
 using WengAn.Args;
 
 namespace WengAn
@@ -178,10 +179,10 @@ namespace WengAn
             arg = (BreakPipeArg)FillDummyBaseArg(arg);
             return arg;
         }
-        public static WaterTraceArg DummyWaterTraceArg()
+        public static MultiWaterSourceTraceArg DummyWaterTraceArg()
         {
-            var arg = new WaterTraceArg();
-            arg = (WaterTraceArg)FillDummyBaseArg(arg);
+            var arg = new MultiWaterSourceTraceArg();
+            arg = (MultiWaterSourceTraceArg)FillDummyBaseArg(arg);
             arg.TraceSourceElementIds = new List<int>() { 2243, 2965, 2953 };
             return arg;
         }

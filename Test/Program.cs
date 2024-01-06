@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime;
+using ChinaWaterModel;
 using Haestad.Domain;
 using Haestad.Support.Support;
 using WengAn;
@@ -35,6 +36,13 @@ namespace ChinaTest
 
             var wm = new WaterGEMSModel();
             //上一步已经复制了，不要复制 用原来的改
+
+            wm.OpenDataSource(@"C:\BentleyModels\tianjin\TianjinModel_Trace_20231222.wtg.sqlite", true);
+            //wm.OpenDataSource(@"C:\BentleyModels\WengAn\WengAn20230412.wtg.sqlite", true);
+            
+            wm.PressureCalculationOption.AddActiveDemandAdjustmentMultiplierForAllNetwork(1.3);
+            wm.CloseDataSource();
+
             wm.OpenDataSource(@"C:\Temp\Qingdao.wtg.sqlite", true);
 
 

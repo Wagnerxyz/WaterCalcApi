@@ -21,6 +21,8 @@ using System.Runtime.Caching;
 using System.Threading;
 using System.Web.Http;
 using System.Web.Http.Description;
+using ChinaWaterLib.Models.WengAn;
+using ChinaWaterModel.Result;
 using Web.Swagger;
 using WengAn;
 using WengAn.Args;
@@ -145,9 +147,9 @@ namespace Web.Controllers
         ///<response code="200">正常结果</response>
         ///<response code="400">错误</response>
         ///<response code="409">有请求正在运行，不支持同时计算，请稍后再试</response>
-        [SwaggerRequestExample(typeof(WaterTraceArg), typeof(WA_WaterTrace_Example))]
+        [SwaggerRequestExample(typeof(MultiWaterSourceTraceArg), typeof(WA_WaterTrace_Example))]
         [ResponseType(typeof(WaterHeadTraceResult))]
-        public IHttpActionResult WaterTrace(WaterTraceArg arg)
+        public IHttpActionResult WaterTrace(MultiWaterSourceTraceArg arg)
         {
             if (arg == null || !ModelState.IsValid)
             {
