@@ -20,7 +20,7 @@ namespace WengAnOwin
 
         }
 
-        public void Start()
+        public void StartOWIN()
         {
             string port = ConfigurationManager.AppSettings["Port"];
             // Start OWIN host 
@@ -30,7 +30,7 @@ namespace WengAnOwin
 
       
 
-        public void Stop()
+        public void StopServer()
         {
             if (_server != null)
             {

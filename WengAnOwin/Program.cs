@@ -10,6 +10,7 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using ChinaWaterLib.Models;
+using ChinaWaterModel;
 using Haestad.Support.User;
 using Serilog;
 using Topshelf;
@@ -38,10 +39,10 @@ namespace WengAnOwin
                 x.Service<TopShelfService>(s => //2
                 {
                     s.ConstructUsing(name => new TopShelfService()); //3
-                    s.WhenStarted(tc => tc.Start()); //4
-                    s.WhenStopped(tc => tc.Stop()); //5
+                    s.WhenStarted(tc => tc.StartOWIN()); //4
+                    s.WhenStopped(tc => tc.StopServer()); //5
                 });
-                x.RunAsLocalSystem(); //6
+                x.RunAsLocalSystem(); //6 https://topshelf.readthedocs.io/en/latest/configuration/config_api.html#service-identity
                 x.StartAutomatically(); // Automatic (Delayed) -- only available on .NET 4.0 or later
                 x.UseSerilog();
 
@@ -51,7 +52,7 @@ namespace WengAnOwin
                 x.SetServiceName("瓮安Bentley Service"); //9
                 x.OnException(ex =>
                 {
-                    Log.Logger.Information(ex.ToString());
+                    Log.Logger.Error(ex.ToString());
                     // Do something with the exception
                 });
             }); //10

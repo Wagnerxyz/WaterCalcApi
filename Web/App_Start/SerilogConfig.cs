@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
+﻿using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
+using System;
+using System.Configuration;
 using WengAn;
 
 namespace Web.App_Start
@@ -47,11 +43,12 @@ namespace Web.App_Start
                 //var credential = new DefaultAzureCredential();
                 var blobClient = new BlobServiceClient(new Uri("https://storagebentley.blob.core.windows.net"), credential);
                 //var client = new SecretClient(new Uri("https://bentley.vault.azure.net/"), credential);
-
+                //todo:https://github.com/serilog-contrib/serilog-enrichers-clientinfo ClientInfo包有问题2.0.3，总引用Serilog老版本导致其他插件不正常！
+                //暂时移除！
                 Log.Logger = new LoggerConfiguration()
-                    .Enrich.WithRequestHeader("User-Agent")
-                    .Enrich.WithCorrelationId(headerName: "correlation-id", addValueIfHeaderAbsence: false)
-                    .Enrich.WithClientIp()
+                    //.Enrich.WithRequestHeader("User-Agent")
+                    //.Enrich.WithCorrelationId(headerName: "correlation-id", addValueIfHeaderAbsence: false)
+                    //.Enrich.WithClientIp()
                     .Enrich.WithThreadId()
                     .MinimumLevel.Debug() //Logging level要高于或等于sink level才行。否则没效果。
                                           //.WriteTo.Console()//sink 可以设置MinimumLevel  但必须高于logging level
@@ -72,9 +69,9 @@ namespace Web.App_Start
             else
             {
                 Log.Logger = new LoggerConfiguration()
-                    .Enrich.WithRequestHeader("User-Agent")
-                    .Enrich.WithCorrelationId(headerName: "correlation-id", addValueIfHeaderAbsence: false)
-                    .Enrich.WithClientIp()
+                    //.Enrich.WithRequestHeader("User-Agent")
+                    //.Enrich.WithCorrelationId(headerName: "correlation-id", addValueIfHeaderAbsence: false)
+                    //.Enrich.WithClientIp()
                     .Enrich.WithThreadId()
                     .MinimumLevel.Debug() //Logging level要高于或等于sink level才行。否则没效果。
                     .WriteTo.Debug()//
